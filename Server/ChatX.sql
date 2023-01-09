@@ -8,8 +8,8 @@ CREATE TABLE User_account
 CREATE TABLE Chat_room
 (
     chat_room_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    chat_room_name VARCHAR NOT NULL,
-    room_owner INTEGER,
+    chat_room_name VARCHAR NOT NULL UNIQUE,
+    owner INTEGER,
     CONSTRAINT fk_owner FOREIGN KEY(room_owner)
     REFERENCES User_account(user_id) ON DELETE CASCADE
 );
