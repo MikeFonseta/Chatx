@@ -250,3 +250,56 @@ int removeUser(const int user_id,const int chat_room_id)
     return rows;
 }
 
+int createRoom(const char* owner, const char* chat_room_name)
+{
+	int rows = 0;
+	PGconn* conn = getConnection();
+	char sql[256];
+	sprintf(sql, "INSERT INTO Chat_room (chat_room_name, owner) VALUES ('%s', (SELECT user_id FROM User WHERE User.username = '%s'))", chat_room_name, owner);
+	PGresult *res = PQexec(conn, sql);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+		rows = -1;
+	} else
+		rows = PQntuples(res);
+
+	PQclear(res);
+	PQfinish(conn);
+	return rows;
+}
+
+int updateRoom(const char* owner, const char* chat_room_name, const char* new_name)
+{
+	int rows = 0;
+	PGconn* conn = getConnection();
+	char sql[256];
+	sprintf(sql, "UPDATE Chat_room SET chat_room_name = '%s' WHERE chat_room_name = '%s'", new_name, chat_room_name);
+	PGresult *res = PQexec(conn, sql);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+		rows = -1;
+	} else
+		rows = PQntuples(res);
+
+	PQclear(res);
+	PQfinish(conn);
+	return rows;
+}
+
+int deleteRoom(const char* owner, const char* chat_room_name)
+{
+	int rows = 0;
+	PGconn* conn = getConnection();
+	char sql[256];
+	sprintf(sql, "DELETE FROM Chat_room WHERE chat_room_name = '%s'", chat_room_name);
+	PGresult *res = PQexec(conn, sql);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+		rows = -1;
+	} else
+		rows = PQntuples(res);
+
+	PQclear(res);
+	PQfinish(conn);
+	return rows;
+}
