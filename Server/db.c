@@ -1,67 +1,34 @@
 #include <stdio.h>
-#include <postgresql/libpq-fe.h>
+#include <libpq-fe.h>
 #include <stdlib.h>
 #include <string.h>
 #include <json-c/json.h>
 
 
 PGconn* getConnection();
+int evaluate_action(json_object*);
+
 int checkUser(const char* user);
 int registerUser(const char* user,const char* password);
 int loginUser(const char* user,const char* password);
 int joinRoom(const int user_id,const int chat_room_id);
 int acceptRequest(const int user_id,const int chat_room_id);
 int removeUser(const int user_id,const int chat_room_id);
+int createRoom(const char*, const char*);
+int updateRoom(const char*, const char*, const char*);
+int deleteRoom(const char*, const char*);
 
-int main()
-{
+void test_removeUser();
+void test_createRoom();
+void test_updateRoom();
+void test_deleteRoom();
 
-	FILE *fp;
+int main() {
 
-	char buffer[1024];
-
-	struct json_object *parsed_json;
-	
-	struct json_object *action;
-	struct json_object *username;
-	struct json_object *password;
-
-	struct json_object *user_id;
-	struct json_object *chat_room_id;
-
-	fp = fopen("test.json", "r");
-	fread(buffer, 1024, 1, fp);
-	fclose(fp);
-
-	parsed_json = json_tokener_parse(buffer);
-
-	json_object_object_get_ex(parsed_json, "action", &action);
-
-	if(strcmp(json_object_get_string(action), "LOGIN") == 0){
-		json_object_object_get_ex(parsed_json, "username", &username);
-		json_object_object_get_ex(parsed_json, "password", &password);
-		printf("Login user: %d\n", loginUser(json_object_get_string(username),json_object_get_string(password)));
-	}
-	if(strcmp(json_object_get_string(action), "REGISTER") == 0){
-		json_object_object_get_ex(parsed_json, "username", &username);
-		json_object_object_get_ex(parsed_json, "password", &password);
-		printf("Register user: %d\n", registerUser(json_object_get_string(username),json_object_get_string(password)));
-	}
-	if(strcmp(json_object_get_string(action), "JOIN_ROOM") == 0){
-		json_object_object_get_ex(parsed_json, "user_id", &user_id);
-		json_object_object_get_ex(parsed_json, "chat_room_id", &chat_room_id);
-		printf("Join room: %d\n", joinRoom(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
-	}
-	if(strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0){
-		json_object_object_get_ex(parsed_json, "user_id", &user_id);
-		json_object_object_get_ex(parsed_json, "chat_room_id", &chat_room_id);
-		printf("Accept user: %d\n", acceptRequest(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
-	}
-	if(strcmp(json_object_get_string(action), "REMOVE_USER") == 0){
-		json_object_object_get_ex(parsed_json, "user_id", &user_id);
-		json_object_object_get_ex(parsed_json, "chat_room_id", &chat_room_id);
-		printf("Remove user: %d\n", removeUser(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
-	}
+	test_removeUser();
+	test_createRoom();
+	test_updateRoom();
+	test_deleteRoom();
 
 	return 0;
 }
@@ -72,11 +39,64 @@ PGconn* getConnection() {
 	conn = PQconnectdb("dbname=chatx host=localhost user=mike password=admin");
 
 	if (PQstatus(conn) == CONNECTION_BAD) {
-			puts("We were unable to connect to the database");
+			fprintf(stderr, "Unable to connect to the database: %s\n", PQerrorMessage(conn));
 			exit(0);
 	}
 	return conn;
-};
+}
+
+int evaluate_Action(json_object *json_file) {
+	json_object *action;
+	json_object *username, *password;
+	json_object *user_id, *chat_room_id;
+	json_object *owner, *roomName, *newName;
+
+	json_object_object_get_ex(json_file, "action", &action);
+
+	if(strcmp(json_object_get_string(action), "LOGIN") == 0){
+		json_object_object_get_ex(json_file, "username", &username);
+		json_object_object_get_ex(json_file, "password", &password);
+		printf("Login user: %d\n", loginUser(json_object_get_string(username),json_object_get_string(password)));
+	}
+	if(strcmp(json_object_get_string(action), "REGISTER") == 0){
+		json_object_object_get_ex(json_file, "username", &username);
+		json_object_object_get_ex(json_file, "password", &password);
+		printf("Register user: %d\n", registerUser(json_object_get_string(username),json_object_get_string(password)));
+	}
+	if(strcmp(json_object_get_string(action), "JOIN_ROOM") == 0){
+		json_object_object_get_ex(json_file, "user_id", &user_id);
+		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		printf("Join room: %d\n", joinRoom(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
+	}
+	if(strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0){
+		json_object_object_get_ex(json_file, "user_id", &user_id);
+		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		printf("Accept user: %d\n", acceptRequest(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
+	}
+	if(strcmp(json_object_get_string(action), "REMOVE_USER") == 0){
+		json_object_object_get_ex(json_file, "user_id", &user_id);
+		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		printf("Remove user: %d\n", removeUser(json_object_get_int(user_id),json_object_get_int(chat_room_id)));
+	}
+	if(strcmp(json_object_get_string(action), "CREATE") == 0) {
+		json_object_object_get_ex(json_file, "owner", &owner);
+		json_object_object_get_ex(json_file, "roomName", &roomName);
+		return createRoom(json_object_get_string(owner), json_object_get_string(roomName));
+	}
+	if(strcmp(json_object_get_string(action), "UPDATE") == 0) {
+		json_object_object_get_ex(json_file, "owner", &owner);
+		json_object_object_get_ex(json_file, "roomName", &roomName);
+		json_object_object_get_ex(json_file, "newName", &newName);
+		return updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName));
+	}
+	if(strcmp(json_object_get_string(action), "DELETE") == 0) {
+		json_object_object_get_ex(json_file, "owner", &owner);
+		json_object_object_get_ex(json_file, "roomName", &roomName);
+		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
+	}
+
+    json_object_put(json_file);
+}
 
 int checkUser(const char* user)
 {
@@ -97,7 +117,7 @@ int checkUser(const char* user)
     PQfinish(conn);
 
     return rows==1 ? 1: 0;
-};
+}
 
 int registerUser(const char* user,const char* password)
 {
@@ -122,7 +142,7 @@ int registerUser(const char* user,const char* password)
 	PQfinish(conn);
 
 	return 1;
-};
+}
 
 int loginUser(const char* user,const char* password)
 {
@@ -148,10 +168,9 @@ int loginUser(const char* user,const char* password)
 	PQclear(res);
     PQfinish(conn);
     return rows==1 ? 1 : 0;
-};
+}
 
-int joinRoom(const int user_id,const int chat_room_id)
-{
+int joinRoom(const int user_id,const int chat_room_id) {
 	int rows = 0;
 	PGconn* conn = getConnection();
 	char sql[256];
@@ -196,8 +215,7 @@ int joinRoom(const int user_id,const int chat_room_id)
     return rows;
 }
 
-int acceptRequest(const int user_id,const int chat_room_id)
-{
+int acceptRequest(const int user_id,const int chat_room_id) {
 	int rows = 0;
 	PGconn* conn = getConnection();
 	char sql[256];
@@ -229,8 +247,7 @@ int acceptRequest(const int user_id,const int chat_room_id)
     return rows;
 }
 
-int removeUser(const int user_id,const int chat_room_id)
-{
+int removeUser(const int user_id,const int chat_room_id) {
 	int rows = 0;
 	PGconn* conn = getConnection();
 	char sql[256];
@@ -250,16 +267,15 @@ int removeUser(const int user_id,const int chat_room_id)
     return rows;
 }
 
-int createRoom(const char* owner, const char* chat_room_name)
-{
+int createRoom(const char* room_owner, const char* chat_room_name) {
 	int rows = 0;
+	char *PGstatement = "INSERT INTO Chat_room (chat_room_name, room_owner) VALUES ($1::VARCHAR, (SELECT user_id FROM user_account WHERE user_account.username = $2::VARCHAR))";
+	const char* paramValues[2] = {chat_room_name, room_owner};
 	PGconn* conn = getConnection();
-	char sql[256];
-	sprintf(sql, "INSERT INTO Chat_room (chat_room_name, owner) VALUES ('%s', (SELECT user_id FROM User WHERE User.username = '%s'))", chat_room_name, owner);
-	PGresult *res = PQexec(conn, sql);
+	PGresult *res = PQexecParams(conn, PGstatement, 2, NULL, paramValues, NULL, NULL, 0);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-		rows = -1;
+		printf("%s\n", PQresultErrorMessage(res));
 	} else
 		rows = PQntuples(res);
 
@@ -268,16 +284,15 @@ int createRoom(const char* owner, const char* chat_room_name)
 	return rows;
 }
 
-int updateRoom(const char* owner, const char* chat_room_name, const char* new_name)
-{
+int updateRoom(const char* room_owner, const char* chat_room_name, const char* new_name) {
 	int rows = 0;
+	char *PGstatement = "UPDATE Chat_room SET chat_room_name = $2::VARCHAR WHERE chat_room_name = $1::VARCHAR";
+	const char* paramValues[2] = {chat_room_name, new_name};
 	PGconn* conn = getConnection();
-	char sql[256];
-	sprintf(sql, "UPDATE Chat_room SET chat_room_name = '%s' WHERE chat_room_name = '%s'", new_name, chat_room_name);
-	PGresult *res = PQexec(conn, sql);
+	PGresult *res = PQexecParams(conn, PGstatement, 2, NULL, paramValues, NULL, NULL, 0);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-		rows = -1;
+		printf("%s\n", PQresultErrorMessage(res));
 	} else
 		rows = PQntuples(res);
 
@@ -286,20 +301,78 @@ int updateRoom(const char* owner, const char* chat_room_name, const char* new_na
 	return rows;
 }
 
-int deleteRoom(const char* owner, const char* chat_room_name)
-{
+int deleteRoom(const char* room_owner, const char* chat_room_name) {
 	int rows = 0;
+	char *PGstatement = "DELETE FROM Chat_room WHERE chat_room_name = $1::VARCHAR";
+	const char* paramValues[1] = {chat_room_name};
 	PGconn* conn = getConnection();
-	char sql[256];
-	sprintf(sql, "DELETE FROM Chat_room WHERE chat_room_name = '%s'", chat_room_name);
-	PGresult *res = PQexec(conn, sql);
+	PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-		rows = -1;
+		printf("%s\n", PQresultErrorMessage(res));
 	} else
 		rows = PQntuples(res);
 
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
+}
+
+void test_removeUser() {
+	json_object *root = json_object_from_file("test/test.json");
+	if (!root)
+		printf("errore apertura json\n");
+	
+	evaluate_Action(root);
+}
+
+void test_createRoom() {
+
+	json_object *root = json_object_from_file("test/newChatRoom.json");
+	if (!root)
+    	printf("errore apertura json\n");
+
+	json_object_object_del(root,"owner");
+    json_object_object_add(root,"owner",json_object_new_string("gaetano"));
+
+	json_object_object_del(root,"roomName");
+	json_object_object_add(root,"roomName",json_object_new_string("testRoom"));
+
+	evaluate_Action(root);
+	json_object_put(root);
+}
+
+void test_updateRoom() {
+
+	json_object *root = json_object_from_file("test/updateChatRoom.json");
+	if (!root)
+    	printf("errore apertura json\n");
+
+	json_object_object_del(root,"owner");
+    json_object_object_add(root,"owner",json_object_new_string("gaetano"));
+
+	json_object_object_del(root,"roomName");
+	json_object_object_add(root,"roomName",json_object_new_string("testRoom"));
+
+	json_object_object_del(root,"newName");
+	json_object_object_add(root,"newName",json_object_new_string("room1"));
+
+	evaluate_Action(root);
+	json_object_put(root);
+}
+
+void test_deleteRoom() {
+
+	json_object *root = json_object_from_file("test/deleteChatRoom.json");
+	if (!root)
+    	printf("errore apertura json\n");
+
+	json_object_object_del(root,"owner");
+    json_object_object_add(root,"owner",json_object_new_string("gaetano"));
+
+	json_object_object_del(root,"roomName");
+	json_object_object_add(root,"roomName",json_object_new_string("room1"));
+
+	evaluate_Action(root);
+	json_object_put(root);
 }
