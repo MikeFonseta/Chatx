@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">MultiChat</string>
+    <string name="Accedi">Accedi</string>
+    <string name="Registrati">Registrati</string>
+    <string name="Indietro">Indietro</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Home</string>
+
+    <string name="title_activity_NuovaStanza">Crea Nuova Stanza</string>
+    <string name="text_nuovaStanza">Nuova Stanza</string>
+
+    <string name="title_activity_UtentiAttesa">Utenti In Attesa</string>
+    <string name="title_attesa">Utenti In Attesa</string>
+    <string name="text_attesa">Utenti In Attesa</string>
+
+    <string name="title_activity_Profilo">Profilo</string>
+    <string name="title_profilo">Profilo</string>
+    <string name="text_profilo">Profilo</string>
+</resources>
