@@ -42,7 +42,7 @@
         android:layout_width="193dp"
         android:layout_height="50dp"
         android:layout_gravity="start"
-        android:onClick="onClickAccedi"
+        android:onClick="onClickLogin"
         android:text="@string/Accedi"
         android:textColor="@color/white"
         app:circularflow_angles="50dp"

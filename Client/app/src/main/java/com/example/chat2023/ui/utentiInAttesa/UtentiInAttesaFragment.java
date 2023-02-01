@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.example.chat2023.databinding.FragmentUtentiAttesaBinding;
 
 public class UtentiInAttesaFragment extends Fragment {

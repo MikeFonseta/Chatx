@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MultiChat</string>
+    <string name="app_name">Chatx</string>
     <string name="Accedi">Accedi</string>
     <string name="Registrati">Registrati</string>
     <string name="Indietro">Indietro</string>
@@ -19,4 +19,6 @@
     <string name="title_activity_Profilo">Profilo</string>
     <string name="title_profilo">Profilo</string>
     <string name="text_profilo">Profilo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

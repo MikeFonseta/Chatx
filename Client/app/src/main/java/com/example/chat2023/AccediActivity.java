@@ -1,10 +1,10 @@
 package com.example.chat2023;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class AccediActivity extends AppCompatActivity {
     @Override
@@ -14,12 +14,12 @@ public class AccediActivity extends AppCompatActivity {
     }
 
     public void onClickIndietro(View view) {
-        Intent i=new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
 
     public void onClickAccedi(View view) {
-        Intent i=new Intent(this, HomeActivity.class);
+        Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }
 }
