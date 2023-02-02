@@ -8,6 +8,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Chat2023">
+        <service
+            android:name=".util.ConnectionService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.chat2023.LOGIN" />
+                <action android:name="com.example.chat2023.REGISTER" />
+                <action android:name="com.example.chat2023.GET_CHATS" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".HomeActivity"
             android:exported="false"

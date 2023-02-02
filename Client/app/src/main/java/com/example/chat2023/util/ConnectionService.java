@@ -2,7 +2,6 @@ package com.example.chat2023.util;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -11,13 +10,9 @@ import android.os.Message;
 import android.os.Process;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 public class ConnectionService extends Service {
-
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
-    private final IBinder binder = new ConnectionBinder();
 
     @Override
     public void onCreate() {
@@ -42,10 +37,10 @@ public class ConnectionService extends Service {
         return START_STICKY;
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     private final class ServiceHandler extends Handler {
@@ -68,12 +63,4 @@ public class ConnectionService extends Service {
             stopSelf(msg.arg1);
         }
     }
-
-    public class ConnectionBinder extends Binder {
-        ConnectionService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return ConnectionService.this;
-        }
-    }
-
 }

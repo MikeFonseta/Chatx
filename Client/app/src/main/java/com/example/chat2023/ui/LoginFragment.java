@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.chat2023.HomeActivity;
 import com.example.chat2023.R;
 import com.example.chat2023.entity.User;
+import com.example.chat2023.util.ConnectionService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -37,6 +38,7 @@ public class LoginFragment extends Fragment {
             User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             JSONObject login = user.login();
             System.out.println("json: " + login.toString());
+            getActivity().startService(new Intent(getActivity(), ConnectionService.class));
             Intent i = new Intent(getActivity(), HomeActivity.class);
             startActivity(i);
         });
