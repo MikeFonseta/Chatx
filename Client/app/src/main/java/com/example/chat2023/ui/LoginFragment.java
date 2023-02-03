@@ -2,9 +2,11 @@ package com.example.chat2023.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,14 +37,27 @@ public class LoginFragment extends Fragment {
         MaterialButton loginButton = view.findViewById(R.id.login_button);
 
         loginButton.setOnClickListener(view1 -> {
-            User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
-            JSONObject login = user.login();
-            System.out.println("json: " + login.toString());
-            getActivity().startService(new Intent(getActivity(), ConnectionService.class));
+            if (isEmpty(usernameEditText) || isEmpty(passwordEditText)) {
+
+            } else {
+                User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
+                JSONObject login = user.login();
+                System.out.println("json: " + login.toString());
+                Intent loginIntent = new Intent();
+                loginIntent.setAction(ConnectionService.LOGIN);
+                loginIntent.putExtra("json", login.toString());
+                loginIntent.setPackage("com.example.chat2023");
+                getActivity().startService(loginIntent);
+            }
+
             Intent i = new Intent(getActivity(), HomeActivity.class);
             startActivity(i);
         });
 
         return view;
+    }
+
+    private boolean isEmpty(EditText text) {
+        return TextUtils.isEmpty(text.getText().toString());
     }
 }
