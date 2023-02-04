@@ -14,6 +14,7 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
+                <action android:name="com.example.chat2023.CONNECT" />
                 <action android:name="com.example.chat2023.LOGIN" />
                 <action android:name="com.example.chat2023.REGISTER" />
                 <action android:name="com.example.chat2023.GET_CHATS" />

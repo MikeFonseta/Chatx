@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 public class ConnectionService extends Service {
     public static final String LOGIN = "com.example.chat2023.LOGIN";
+    public static final String CONNECT = "com.example.chat2023.CONNECT";
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
 
@@ -28,17 +29,16 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
 
-        System.out.println("intent: " + intent.toString());
-
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
 
-        if (intent.getStringExtra("connection") != null && intent.getStringExtra("connection").equals("open"))
+        if(intent.getAction().equals(CONNECT))
             msg.what = ServiceHandler.OPEN;
-        else {
+        if(intent.getAction().equals(LOGIN)) {
             msg.what = ServiceHandler.SEND;
             msg.setData(intent.getExtras());
         }
+
         System.out.println("msg: " + msg);
         // For each start request, send a message to start a job and deliver the
         // start ID so we know which request we're stopping when we finish the job

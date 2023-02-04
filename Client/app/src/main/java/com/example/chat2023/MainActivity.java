@@ -15,9 +15,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, ConnectionService.class);
-        intent.putExtra("connection", "open");
-        startService(intent);
+        Intent startIntent = new Intent(this, ConnectionService.class);
+        startIntent.setAction(ConnectionService.CONNECT);
+        startService(startIntent);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()

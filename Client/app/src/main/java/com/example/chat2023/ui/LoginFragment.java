@@ -43,10 +43,9 @@ public class LoginFragment extends Fragment {
                 User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
                 JSONObject login = user.login();
                 System.out.println("json: " + login.toString());
-                Intent loginIntent = new Intent();
+                Intent loginIntent = new Intent(view.getContext(), ConnectionService.class);
                 loginIntent.setAction(ConnectionService.LOGIN);
                 loginIntent.putExtra("json", login.toString());
-                loginIntent.setPackage("com.example.chat2023");
                 getActivity().startService(loginIntent);
             }
 
