@@ -16,13 +16,6 @@
         android:padding="24dp"
         android:paddingTop="16dp">
 
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="16dp" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,6 +73,21 @@
                 android:layout_toStartOf="@id/login_button"
                 android:text="@string/Indietro" />
 
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="132dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/sign_up"
+                android:textSize="16sp" />
         </RelativeLayout>
 
     </LinearLayout>
