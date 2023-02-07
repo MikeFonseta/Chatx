@@ -40,4 +40,16 @@ public class User {
             throw new RuntimeException(e);
         }
     }
+
+    public JSONObject register() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("action", "REGISTER");
+            object.put("username", username);
+            object.put("password", password);
+            return object;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
