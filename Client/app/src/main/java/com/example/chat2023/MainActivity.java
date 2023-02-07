@@ -26,15 +26,4 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
-//    public void onClickRegistrati(View view) {
-//        Intent i = new Intent(this, RegistratiActivity.class);
-//        startActivity(i);
-//    }
-//
-//    public void onClickLogin(View view) {
-//        Intent i = new Intent(this, LoginFragment.class);
-//        startActivity(i);
-//    }
-
 }

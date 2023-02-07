@@ -10,8 +10,9 @@ import android.os.Process;
 import android.widget.Toast;
 
 public class ConnectionService extends Service {
-    public static final String LOGIN = "com.example.chat2023.LOGIN";
+    public static final String SEND = "com.example.chat2023.SEND";
     public static final String CONNECT = "com.example.chat2023.CONNECT";
+
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
 
@@ -32,9 +33,9 @@ public class ConnectionService extends Service {
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
 
-        if(intent.getAction().equals(CONNECT))
+        if (intent.getAction().equals(CONNECT))
             msg.what = ServiceHandler.OPEN;
-        if(intent.getAction().equals(LOGIN)) {
+        if (intent.getAction().equals(SEND)) {
             msg.what = ServiceHandler.SEND;
             msg.setData(intent.getExtras());
         }
