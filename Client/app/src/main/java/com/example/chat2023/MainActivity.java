@@ -15,9 +15,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, ConnectionService.class);
-        intent.putExtra("connection", "open");
-        startService(intent);
+        Intent startIntent = new Intent(this, ConnectionService.class);
+        startIntent.setAction(ConnectionService.CONNECT);
+        startService(startIntent);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -26,15 +26,4 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
-//    public void onClickRegistrati(View view) {
-//        Intent i = new Intent(this, RegistratiActivity.class);
-//        startActivity(i);
-//    }
-//
-//    public void onClickLogin(View view) {
-//        Intent i = new Intent(this, LoginFragment.class);
-//        startActivity(i);
-//    }
-
 }

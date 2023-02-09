@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 final class ServiceHandler extends Handler {
 
@@ -49,10 +50,15 @@ final class ServiceHandler extends Handler {
         int port = 8888;
         try {
             chatSocket = new Socket(ip, port);
-            out = new PrintWriter(chatSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
+            out = new PrintWriter(chatSocket.getOutputStream(), true);
+            send("");
+        } catch (UnknownHostException e) {
+            System.err.println("Cannot find host called: " + ip);
+            e.printStackTrace();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Could not establish connection for " + ip);
+            e.printStackTrace();
         }
     }
 

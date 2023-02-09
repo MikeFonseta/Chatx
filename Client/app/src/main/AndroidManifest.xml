@@ -14,8 +14,8 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.example.chat2023.LOGIN" />
-                <action android:name="com.example.chat2023.REGISTER" />
+                <action android:name="com.example.chat2023.CONNECT" />
+                <action android:name="com.example.chat2023.SEND" />
                 <action android:name="com.example.chat2023.GET_CHATS" />
             </intent-filter>
         </service>
@@ -24,12 +24,6 @@
             android:name=".HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home" />
-        <activity
-            android:name=".AccediActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegistratiActivity"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
