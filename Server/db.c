@@ -455,7 +455,7 @@ void test_createRoom()
 
 	evaluate_action(root, response);
 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-	
+
 	json_object_put(root);
 	json_object_put(response);
 }
@@ -479,7 +479,7 @@ void test_updateRoom()
 
 	evaluate_action(root, response);
 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-	
+
 	json_object_put(root);
 	json_object_put(response);
 }
@@ -500,7 +500,7 @@ void test_deleteRoom()
 
 	evaluate_action(root, response);
 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-	
+
 	json_object_put(root);
 	json_object_put(response);
 }
