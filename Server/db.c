@@ -356,7 +356,7 @@ void test_removeUser()
 	if (!root)
 		printf("errore apertura json\n");
 
-	evaluate_action(root);
+	evaluate_Action(root);
 }
 
 void test_createRoom()
@@ -372,7 +372,7 @@ void test_createRoom()
 	json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
 
-	evaluate_action(root);
+	evaluate_Action(root);
 	json_object_put(root);
 }
 
@@ -392,7 +392,7 @@ void test_updateRoom()
 	json_object_object_del(root, "newName");
 	json_object_object_add(root, "newName", json_object_new_string("room1"));
 
-	evaluate_action(root);
+	evaluate_Action(root);
 	json_object_put(root);
 }
 
@@ -409,6 +409,6 @@ void test_deleteRoom()
 	json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("room1"));
 
-	evaluate_action(root);
+	evaluate_Action(root);
 	json_object_put(root);
 }
