@@ -16,6 +16,7 @@ int removeUser(const int user_id, const int chat_room_id);
 int createRoom(const char *room_owner, const char *chat_room_name);
 int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name);
 int deleteRoom(const char *room_owner, const char *chat_room_name);
+int getRooms(const int user_id);
 
 void test_removeUser();
 void test_createRoom();
@@ -348,6 +349,24 @@ int deleteRoom(const char *room_owner, const char *chat_room_name)
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
+}
+
+int getRooms(const int user_id)
+{
+    int rows = 0;
+    char *PGstatement = "SELECT * FROM Chat_room c LEFT JOIN Join_requests j ON c.chat_room_id = j.chat_room WHERE j.user_id = $1::INTEGER";
+    const char *paramValues[1] = {user_id};
+    PGconn *conn = getConnection();
+    PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
+
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		printf("%s\n", PQresultErrorMessage(res));
+	else {
+		rows = PQntuples(res);
+		for (int i = 0; i < rows; i++) {
+
+		}
+	}
 }
 
 void test_removeUser()

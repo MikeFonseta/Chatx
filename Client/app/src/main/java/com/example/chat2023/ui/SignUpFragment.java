@@ -65,9 +65,7 @@ public class SignUpFragment extends Fragment {
         });
 
         MaterialButton backButton = view.findViewById(R.id.back_button);
-        backButton.setOnClickListener(view1 -> {
-            getParentFragmentManager().popBackStack();
-        });
+        backButton.setOnClickListener(view1 -> getParentFragmentManager().popBackStack());
 
         return view;
     }
