@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <json-c/json.h>
+#include <arpa/inet.h>
 
 PGconn *getConnection();
 int evaluate_action(json_object *json_file);
@@ -24,17 +25,17 @@ void test_updateRoom();
 void test_deleteRoom();
 void test_getChats();
 
-// int main()
-// {
+int main()
+{
 
-// 	test_removeUser();
-// 	test_createRoom();
-// 	test_updateRoom();
-// 	test_deleteRoom();
-// 	test_getChats();
+	// test_removeUser();
+	// test_createRoom();
+	// test_updateRoom();
+	// test_deleteRoom();
+	test_getChats();
 
-// 	return 0;
-// }
+	return 0;
+}
 
 PGconn *getConnection()
 {
@@ -371,7 +372,16 @@ int deleteRoom(const char *room_owner, const char *chat_room_name)
 
 int getRooms(const int user_id)
 {
+	json_object *response = json_object_new_object();
+	json_object *accepted = json_object_new_array();
+	json_object_object_add(response, "accepted", accepted);
+	json_object *waiting = json_object_new_array();
+	json_object_object_add(response, "waiting", waiting);
+	json_object *other = json_object_new_array();
+	json_object_object_add(response, "other", other);
+
 	int rows = 0;
+	int char_converted;
 	char char_id[10];
 	sprintf(char_id, "%d", user_id);
 	char *PGstatement = "SELECT C.CHAT_ROOM_ID, C.CHAT_ROOM_NAME, C.ROOM_OWNER, U.username, J.ACCEPTED FROM CHAT_ROOM C "
@@ -388,14 +398,30 @@ int getRooms(const int user_id)
 		rows = PQntuples(res);
 		for (int i = 0; i < rows; i++)
 		{
-			char *chat_room_id = PQgetvalue(res, i, 0);
-			char *chat_room_name = PQgetvalue(res, i, 1);
-			char *room_owner = PQgetvalue(res, i, 2);
-			char *username = PQgetvalue(res, i, 3);
-			char *accepted = PQgetvalue(res, i, 4);
-			printf("%s, %s, %s, %s, %s\n", chat_room_id, chat_room_name, room_owner, username, accepted);
+			json_object *obj = json_object_new_object();
+
+			char_converted = strtol(PQgetvalue(res, i, 0), NULL, 10);
+			json_object_object_add(obj, "chat_room_id", json_object_new_int64(char_converted));
+
+			json_object_object_add(obj, "chat_room_name", json_object_new_string(PQgetvalue(res, i, 1)));
+
+			char_converted = strtol(PQgetvalue(res, i, 2), NULL, 10);
+			json_object_object_add(obj, "room_owner_id", json_object_new_int64(char_converted));
+
+			json_object_object_add(obj, "owner", json_object_new_string(PQgetvalue(res, i, 3)));
+
+			if (PQgetisnull(res, i, 4) == 1)
+				json_object_array_add(other, obj);
+			else
+			{
+				if (strcmp(PQgetvalue(res, i, 4), "t")  == 0)
+					json_object_array_add(accepted, obj);
+				else
+					json_object_array_add(waiting, obj);
+			}
 		}
 	}
+	json_object_put(response);
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
