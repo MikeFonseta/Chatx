@@ -22,6 +22,19 @@ void test_removeUser();
 void test_createRoom();
 void test_updateRoom();
 void test_deleteRoom();
+void test_getChats();
+
+// int main()
+// {
+
+// 	test_removeUser();
+// 	test_createRoom();
+// 	test_updateRoom();
+// 	test_deleteRoom();
+// 	test_getChats();
+
+// 	return 0;
+// }
 
 PGconn *getConnection()
 {
@@ -94,6 +107,11 @@ int evaluate_action(json_object *json_file)
 		json_object_object_get_ex(json_file, "owner", &owner);
 		json_object_object_get_ex(json_file, "roomName", &roomName);
 		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
+	}
+	if (strcmp(json_object_get_string(action), "GET") == 0)
+	{
+		json_object_object_get_ex(json_file, "user_id", &user_id);
+		return getRooms(json_object_get_int(user_id));
 	}
 
 	json_object_put(json_file);
@@ -353,20 +371,34 @@ int deleteRoom(const char *room_owner, const char *chat_room_name)
 
 int getRooms(const int user_id)
 {
-    int rows = 0;
-    char *PGstatement = "SELECT * FROM Chat_room c LEFT JOIN Join_requests j ON c.chat_room_id = j.chat_room WHERE j.user_id = $1::INTEGER";
-    const char *paramValues[1] = {user_id};
-    PGconn *conn = getConnection();
-    PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
+	int rows = 0;
+	char char_id[10];
+	sprintf(char_id, "%d", user_id);
+	char *PGstatement = "SELECT C.CHAT_ROOM_ID, C.CHAT_ROOM_NAME, C.ROOM_OWNER, U.username, J.ACCEPTED FROM CHAT_ROOM C "
+						"LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM, "
+						"USER_ACCOUNT U WHERE C.ROOM_OWNER = U.USER_ID";
+	const char *paramValues[1] = {(const char *)char_id};
+	PGconn *conn = getConnection();
+	PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
 
-    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	if (PQresultStatus(res) != PGRES_TUPLES_OK)
 		printf("%s\n", PQresultErrorMessage(res));
-	else {
+	else
+	{
 		rows = PQntuples(res);
-		for (int i = 0; i < rows; i++) {
-
+		for (int i = 0; i < rows; i++)
+		{
+			char *chat_room_id = PQgetvalue(res, i, 0);
+			char *chat_room_name = PQgetvalue(res, i, 1);
+			char *room_owner = PQgetvalue(res, i, 2);
+			char *username = PQgetvalue(res, i, 3);
+			char *accepted = PQgetvalue(res, i, 4);
+			printf("%s, %s, %s, %s, %s\n", chat_room_id, chat_room_name, room_owner, username, accepted);
 		}
 	}
+	PQclear(res);
+	PQfinish(conn);
+	return rows;
 }
 
 void test_removeUser()
@@ -375,7 +407,7 @@ void test_removeUser()
 	if (!root)
 		printf("errore apertura json\n");
 
-	evaluate_Action(root);
+	evaluate_action(root);
 }
 
 void test_createRoom()
@@ -391,7 +423,7 @@ void test_createRoom()
 	json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
 
-	evaluate_Action(root);
+	evaluate_action(root);
 	json_object_put(root);
 }
 
@@ -411,7 +443,7 @@ void test_updateRoom()
 	json_object_object_del(root, "newName");
 	json_object_object_add(root, "newName", json_object_new_string("room1"));
 
-	evaluate_Action(root);
+	evaluate_action(root);
 	json_object_put(root);
 }
 
@@ -428,6 +460,18 @@ void test_deleteRoom()
 	json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("room1"));
 
-	evaluate_Action(root);
+	evaluate_action(root);
+	json_object_put(root);
+}
+
+void test_getChats()
+{
+	json_object *root = json_object_from_file("test/getChats.json");
+	if (!root)
+		printf("errore apertura json\n");
+
+	json_object_object_add(root, "user_id", json_object_new_int(1));
+
+	evaluate_action(root);
 	json_object_put(root);
 }
