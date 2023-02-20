@@ -25,17 +25,17 @@ void test_updateRoom();
 void test_deleteRoom();
 void test_getChats();
 
-int main()
-{
+// int main()
+// {
 
-	// test_removeUser();
-	// test_createRoom();
-	// test_updateRoom();
-	// test_deleteRoom();
-	test_getChats();
+// 	test_removeUser();
+// 	test_createRoom();
+// 	test_updateRoom();
+// 	test_deleteRoom();
+// 	test_getChats();
 
-	return 0;
-}
+// 	return 0;
+// }
 
 PGconn *getConnection()
 {
