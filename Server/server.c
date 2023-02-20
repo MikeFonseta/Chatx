@@ -184,10 +184,16 @@ int main(int argc, char *argv[])
 void client_handler(int sockfd)
 {
 	json_object *received;
+	json_object *response = json_object_new_object();
 	if ((received = json_object_from_fd_ex(sockfd, -1)) == NULL)
 		printf("Error: %s\n", json_util_get_last_err());
-	else
+	else {
 		printf("json file:\n\n%s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PRETTY));
-		evaluate_action(received);
+		evaluate_action(received, response);
+		const char *response_char = json_object_to_json_string_ext(received, JSON_C_TO_STRING_PLAIN);
+		write(sockfd, response_char, strlen(response_char));
+	}
+		
 	json_object_put(received);
+	json_object_put(response);
 }

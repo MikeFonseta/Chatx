@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 
 PGconn *getConnection();
-int evaluate_action(json_object *json_file);
+int evaluate_action(json_object *request, json_object *response);
 
 int checkUser(const char *user);
 int registerUser(const char *user, const char *password);
@@ -17,7 +17,7 @@ int removeUser(const int user_id, const int chat_room_id);
 int createRoom(const char *room_owner, const char *chat_room_name);
 int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name);
 int deleteRoom(const char *room_owner, const char *chat_room_name);
-int getRooms(const int user_id);
+int getRooms(const int user_id, json_object *response);
 
 void test_removeUser();
 void test_createRoom();
@@ -51,71 +51,71 @@ PGconn *getConnection()
 	return conn;
 }
 
-int evaluate_action(json_object *json_file)
+int evaluate_action(json_object *request, json_object *response)
 {
 	json_object *action;
 	json_object *username, *password;
 	json_object *user_id, *chat_room_id;
 	json_object *owner, *roomName, *newName;
 
-	json_object_object_get_ex(json_file, "action", &action);
+	json_object_object_get_ex(request, "action", &action);
 
 	if (strcmp(json_object_get_string(action), "LOGIN") == 0)
 	{
-		json_object_object_get_ex(json_file, "username", &username);
-		json_object_object_get_ex(json_file, "password", &password);
+		json_object_object_get_ex(request, "username", &username);
+		json_object_object_get_ex(request, "password", &password);
 		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password)));
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
-		json_object_object_get_ex(json_file, "username", &username);
-		json_object_object_get_ex(json_file, "password", &password);
+		json_object_object_get_ex(request, "username", &username);
+		json_object_object_get_ex(request, "password", &password);
 		printf("Register user: %d\n", registerUser(json_object_get_string(username), json_object_get_string(password)));
 	}
 	if (strcmp(json_object_get_string(action), "JOIN_ROOM") == 0)
 	{
-		json_object_object_get_ex(json_file, "user_id", &user_id);
-		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		json_object_object_get_ex(request, "user_id", &user_id);
+		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		printf("Join room: %d\n", joinRoom(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
 	}
 	if (strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0)
 	{
-		json_object_object_get_ex(json_file, "user_id", &user_id);
-		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		json_object_object_get_ex(request, "user_id", &user_id);
+		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		printf("Accept user: %d\n", acceptRequest(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
 	}
 	if (strcmp(json_object_get_string(action), "REMOVE_USER") == 0)
 	{
-		json_object_object_get_ex(json_file, "user_id", &user_id);
-		json_object_object_get_ex(json_file, "chat_room_id", &chat_room_id);
+		json_object_object_get_ex(request, "user_id", &user_id);
+		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		printf("Remove user: %d\n", removeUser(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
 	}
 	if (strcmp(json_object_get_string(action), "CREATE") == 0)
 	{
-		json_object_object_get_ex(json_file, "owner", &owner);
-		json_object_object_get_ex(json_file, "roomName", &roomName);
+		json_object_object_get_ex(request, "owner", &owner);
+		json_object_object_get_ex(request, "roomName", &roomName);
 		return createRoom(json_object_get_string(owner), json_object_get_string(roomName));
 	}
 	if (strcmp(json_object_get_string(action), "UPDATE") == 0)
 	{
-		json_object_object_get_ex(json_file, "owner", &owner);
-		json_object_object_get_ex(json_file, "roomName", &roomName);
-		json_object_object_get_ex(json_file, "newName", &newName);
+		json_object_object_get_ex(request, "owner", &owner);
+		json_object_object_get_ex(request, "roomName", &roomName);
+		json_object_object_get_ex(request, "newName", &newName);
 		return updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName));
 	}
 	if (strcmp(json_object_get_string(action), "DELETE") == 0)
 	{
-		json_object_object_get_ex(json_file, "owner", &owner);
-		json_object_object_get_ex(json_file, "roomName", &roomName);
+		json_object_object_get_ex(request, "owner", &owner);
+		json_object_object_get_ex(request, "roomName", &roomName);
 		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
 	}
 	if (strcmp(json_object_get_string(action), "GET") == 0)
 	{
-		json_object_object_get_ex(json_file, "user_id", &user_id);
-		return getRooms(json_object_get_int(user_id));
+		json_object_object_get_ex(request, "user_id", &user_id);
+		return getRooms(json_object_get_int(user_id), response);
 	}
 
-	json_object_put(json_file);
+	json_object_put(request);
 }
 
 int checkUser(const char *user)
@@ -370,9 +370,8 @@ int deleteRoom(const char *room_owner, const char *chat_room_name)
 	return rows;
 }
 
-int getRooms(const int user_id)
+int getRooms(const int user_id, json_object *response)
 {
-	json_object *response = json_object_new_object();
 	json_object *accepted = json_object_new_array();
 	json_object_object_add(response, "accepted", accepted);
 	json_object *waiting = json_object_new_array();
@@ -421,7 +420,6 @@ int getRooms(const int user_id)
 			}
 		}
 	}
-	json_object_put(response);
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
@@ -432,8 +430,13 @@ void test_removeUser()
 	json_object *root = json_object_from_file("test/test.json");
 	if (!root)
 		printf("errore apertura json\n");
+	json_object *response = json_object_new_object();
 
-	evaluate_action(root);
+	evaluate_action(root, response);
+	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
+	
+	json_object_put(root);
+	json_object_put(response);
 }
 
 void test_createRoom()
@@ -442,15 +445,19 @@ void test_createRoom()
 	json_object *root = json_object_from_file("test/newChatRoom.json");
 	if (!root)
 		printf("errore apertura json\n");
+	json_object *response = json_object_new_object();
 
-	json_object_object_del(root, "owner");
+	// json_object_object_del(root, "owner");
 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
 
-	json_object_object_del(root, "roomName");
+	// json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
 
-	evaluate_action(root);
+	evaluate_action(root, response);
+	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
+	
 	json_object_put(root);
+	json_object_put(response);
 }
 
 void test_updateRoom()
@@ -459,18 +466,22 @@ void test_updateRoom()
 	json_object *root = json_object_from_file("test/updateChatRoom.json");
 	if (!root)
 		printf("errore apertura json\n");
+	json_object *response = json_object_new_object();
 
-	json_object_object_del(root, "owner");
+	// json_object_object_del(root, "owner");
 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
 
-	json_object_object_del(root, "roomName");
+	// json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
 
-	json_object_object_del(root, "newName");
+	// json_object_object_del(root, "newName");
 	json_object_object_add(root, "newName", json_object_new_string("room1"));
 
-	evaluate_action(root);
+	evaluate_action(root, response);
+	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
+	
 	json_object_put(root);
+	json_object_put(response);
 }
 
 void test_deleteRoom()
@@ -479,15 +490,19 @@ void test_deleteRoom()
 	json_object *root = json_object_from_file("test/deleteChatRoom.json");
 	if (!root)
 		printf("errore apertura json\n");
+	json_object *response = json_object_new_object();
 
-	json_object_object_del(root, "owner");
+	// json_object_object_del(root, "owner");
 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
 
-	json_object_object_del(root, "roomName");
+	// json_object_object_del(root, "roomName");
 	json_object_object_add(root, "roomName", json_object_new_string("room1"));
 
-	evaluate_action(root);
+	evaluate_action(root, response);
+	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
+	
 	json_object_put(root);
+	json_object_put(response);
 }
 
 void test_getChats()
@@ -495,9 +510,13 @@ void test_getChats()
 	json_object *root = json_object_from_file("test/getChats.json");
 	if (!root)
 		printf("errore apertura json\n");
+	json_object *response = json_object_new_object();
 
 	json_object_object_add(root, "user_id", json_object_new_int(1));
 
-	evaluate_action(root);
+	evaluate_action(root, response);
+	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
+
 	json_object_put(root);
+	json_object_put(response);
 }
