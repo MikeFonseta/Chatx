@@ -46,7 +46,7 @@ final class ServiceHandler extends Handler {
     }
 
     public void startConnection() {
-        String ip = "192.168.0.108";
+        String ip = "192.168.0.113";
         int port = 8888;
         try {
             chatSocket = new Socket(ip, port);
