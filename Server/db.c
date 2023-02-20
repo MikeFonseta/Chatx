@@ -5,8 +5,9 @@
 #include <json-c/json.h>
 
 PGconn *getConnection();
-int evaluate_action(json_object *json_file);
+char* evaluate_action(json_object *json_file);
 
+char *response(char* status, char* message);
 int checkUser(const char *user);
 int registerUser(const char *user, const char *password);
 int loginUser(const char *user, const char *password);
@@ -36,7 +37,14 @@ PGconn *getConnection()
 	return conn;
 }
 
-int evaluate_action(json_object *json_file)
+char* response(char* status, char* message)
+{
+	char *response = (char*)malloc(200 * sizeof(char));
+	sprintf(response, "{'status':'%s', 'message':'%s'}", status,message);
+	return response;
+}
+
+char * evaluate_action(json_object *json_file)
 {
 	json_object *action;
 	json_object *username, *password;
@@ -49,7 +57,16 @@ int evaluate_action(json_object *json_file)
 	{
 		json_object_object_get_ex(json_file, "username", &username);
 		json_object_object_get_ex(json_file, "password", &password);
-		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password)));
+		if(loginUser(json_object_get_string(username),json_object_get_string(password)) == 1)
+		{
+			return response("OK","Accesso eseguito");
+		}
+		else
+		{
+			return response("FAILED","Username o password errati");
+		}
+
+		//printf("Login user: %d\n", , json_object_get_string(password)));
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
@@ -79,20 +96,20 @@ int evaluate_action(json_object *json_file)
 	{
 		json_object_object_get_ex(json_file, "owner", &owner);
 		json_object_object_get_ex(json_file, "roomName", &roomName);
-		return createRoom(json_object_get_string(owner), json_object_get_string(roomName));
+		createRoom(json_object_get_string(owner), json_object_get_string(roomName));
 	}
 	if (strcmp(json_object_get_string(action), "UPDATE") == 0)
 	{
 		json_object_object_get_ex(json_file, "owner", &owner);
 		json_object_object_get_ex(json_file, "roomName", &roomName);
 		json_object_object_get_ex(json_file, "newName", &newName);
-		return updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName));
+		updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName));
 	}
 	if (strcmp(json_object_get_string(action), "DELETE") == 0)
 	{
 		json_object_object_get_ex(json_file, "owner", &owner);
 		json_object_object_get_ex(json_file, "roomName", &roomName);
-		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
+		deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
 	}
 
 	json_object_put(json_file);
@@ -166,11 +183,11 @@ int loginUser(const char *user, const char *password)
 		rows = PQntuples(res);
 	}
 
-	for (int i = 0; i < rows; i++)
-	{
-		printf("%s %s %s\n", PQgetvalue(res, i, 0),
-			   PQgetvalue(res, i, 1), PQgetvalue(res, i, 2));
-	}
+	// for (int i = 0; i < rows; i++)
+	// {
+	// 	printf("%s %s %s\n", PQgetvalue(res, i, 0),
+	// 		   PQgetvalue(res, i, 1), PQgetvalue(res, i, 2));
+	// }
 
 	PQclear(res);
 	PQfinish(conn);

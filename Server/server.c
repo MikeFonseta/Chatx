@@ -1,5 +1,3 @@
-// Example code: A simple server side code, which echos back the received message.
-// Handle multiple socket_Master connections with select and fd_set on Linux
 #include <stdio.h>
 #include <string.h> //strlen
 #include <stdlib.h>
@@ -12,19 +10,13 @@
 #include <pthread.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include "db.c"
-
-#define TRUE 1
-#define FALSE 0
-#define PORT 5001
+#include "server.h"
 
 struct client
 {
 	int sock;
 	struct sockaddr_in address;
 };
-
-
-void* client_handler(void* arg);
 
 int main(int argc, char *argv[])
 {
@@ -96,13 +88,15 @@ void* client_handler(void * arg)
 
 	while((read_size = recv(clientInfo.sock,client_message,100,0)) > 0)
 	{
-		printf("[ ] %s:%d %s\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port),client_message);
-		write(clientInfo.sock,client_message,strlen(client_message));
+		//printf("[ ] %s:%d %s\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port),client_message);
+		char* response = evaluate_action(json_tokener_parse(client_message));
+		write(clientInfo.sock,response,strlen(response));
+		free(response);
 	}
 
 	if(read_size == 0)
 	{
-		printf("[ ] %s:%d disconnected\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+		printf("[-] %s:%d disconnected\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
 		fflush(stdout);
 	}else if(read_size == -1)
 	{
