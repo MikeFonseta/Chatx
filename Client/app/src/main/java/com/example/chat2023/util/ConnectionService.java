@@ -1,6 +1,7 @@
 package com.example.chat2023.util;
 
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -10,7 +11,7 @@ import android.os.Process;
 import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.MutableLiveData;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +26,6 @@ public class ConnectionService extends LifecycleService {
 
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
-
-    private MutableLiveData<String> response;
 
     @Override
     public void onCreate() {
@@ -74,6 +73,12 @@ public class ConnectionService extends LifecycleService {
         Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
     }
 
+    private void sendResponse(String response) {
+        Intent intent = new Intent("signing");
+        intent.putExtra("response", response);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     private final class ServiceHandler extends Handler {
 
         public static final int OPEN = 0;
@@ -92,7 +97,7 @@ public class ConnectionService extends LifecycleService {
             switch (msg.what) {
                 case OPEN:
                     startConnection();
-                    send("\n");
+//                    send("\n");
                     break;
                 case CLOSE:
                     stopConnection();
@@ -101,7 +106,9 @@ public class ConnectionService extends LifecycleService {
                     String json = msg.getData().getString("json");
                     System.out.println(json);
                     String resp = send(json);
+                    ConnectionRepository.getInstance().response.postValue(resp);
                     System.out.println(resp);
+                    sendResponse(resp);
                     break;
             }
             // Stop the service using the startId, so that we don't stop
@@ -111,12 +118,11 @@ public class ConnectionService extends LifecycleService {
 
         public void startConnection() {
             String ip = "192.168.0.113";
-            int port = 5002;
+            int port = 8888;
             try {
                 chatSocket = new Socket(ip, port);
                 in = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
                 out = new PrintWriter(chatSocket.getOutputStream(), true);
-                send("");
             } catch (UnknownHostException e) {
                 System.err.println("Cannot find host called: " + ip);
                 e.printStackTrace();

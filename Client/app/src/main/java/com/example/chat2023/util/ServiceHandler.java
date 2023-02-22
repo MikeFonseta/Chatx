@@ -1,16 +1,5 @@
 package com.example.chat2023.util;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 //final class ServiceHandler extends Handler {
 //
 //    public static final int OPEN = 0;
