@@ -1,10 +1,8 @@
 package com.example.chat2023.util;
 
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
@@ -53,18 +51,10 @@ public class ConnectionService extends LifecycleService {
         }
 
         System.out.println("msg: " + msg);
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
         serviceHandler.sendMessage(msg);
 
         // If we get killed, after returning from here, restart
         return START_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        super.onBind(intent);
-        return null;
     }
 
     @Override
@@ -106,8 +96,7 @@ public class ConnectionService extends LifecycleService {
                     String json = msg.getData().getString("json");
                     System.out.println(json);
                     String resp = send(json);
-                    ConnectionRepository.getInstance().response.postValue(resp);
-                    System.out.println(resp);
+//                    System.out.println(resp);
                     sendResponse(resp);
                     break;
             }
