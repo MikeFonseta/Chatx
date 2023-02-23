@@ -15,25 +15,23 @@
 
 #define TRUE 1
 #define FALSE 0
-#define PORT 5001
+#define PORT 8888
 
 struct client
 {
-	int sock;
+	int socketfd;
 	struct sockaddr_in address;
 };
 
-
-void* client_handler(void* arg);
+void *client_handler(void *arg);
 
 int main(int argc, char *argv[])
 {
-	int socket_Master,*new_sock,connect_sd,listen_sd;
-	int* thread_sd;
+	int socket_Master, connect_sd;
 	socklen_t client_len;
 	pthread_t tid;
-	struct sockaddr_in address,client_addr;
-	char buffer[1025]; // data buffer of 1K
+	struct sockaddr_in address, client_addr;
+	struct client *newClient;
 
 	// create a socket_Master
 	if ((socket_Master = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -66,17 +64,19 @@ int main(int argc, char *argv[])
 	// accept the incoming connection
 	client_len = sizeof(client_len);
 
-	while(1)
+	while (1)
 	{
-		connect_sd = accept(socket_Master, (struct sockaddr *) &client_addr, &client_len);
-		if(connect_sd != -1)
+		connect_sd = accept(socket_Master, (struct sockaddr *)&client_addr, &client_len);
+		if (connect_sd != -1)
 		{
-			struct client newClient;
-			newClient.sock = connect_sd;
-			newClient.address = client_addr;
+			newClient = malloc(sizeof(struct client));
+			newClient->socketfd = connect_sd;
+			newClient->address = client_addr;
+			// newClient.sock = connect_sd;
+			// newClient.address = client_addr;
 
 			printf("[+] %s:%d connected\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-			pthread_create(&tid, 0, client_handler, (void *)&newClient);
+			pthread_create(&tid, 0, client_handler, (void *)newClient);
 			pthread_detach(tid);
 		}
 	}
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-//void client_handler(int sockfd)
+// void client_handler(int sockfd)
 //{
 //	json_object *received;
 //	json_object *response = json_object_new_object();
@@ -99,29 +99,30 @@ int main(int argc, char *argv[])
 //
 //	json_object_put(received);
 //	json_object_put(response);
-//}
+// }
 
-void* client_handler(void * arg)
+void *client_handler(void *arg)
 {
 	char client_message[100];
-	struct client clientInfo = *(struct client*)arg;
-	struct sockaddr_in address = clientInfo.address;
+	// struct client clientInfo = *(struct client *)arg;
+	struct client *clientInfo = (struct client *)arg;
+	// struct sockaddr_in address = clientInfo.address;
 
-	int read_size,write_size;
-	char* message;
+	int read_size, write_size;
+	char *message;
 
-
-	while((read_size = recv(clientInfo.sock,client_message,100,0)) > 0)
+	while ((read_size = recv(clientInfo->socketfd, client_message, 100, 0)) > 0)
 	{
-		printf("[ ] %s:%d %s\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port),client_message);
-		write(clientInfo.sock,client_message,strlen(client_message));
+		printf("[ ] %s:%d %s\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port), client_message);
+		write(clientInfo->socketfd, client_message, strlen(client_message));
 	}
 
-	if(read_size == 0)
+	if (read_size == 0)
 	{
-		printf("[ ] %s:%d disconnected\n", inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+		printf("[ ] %s:%d disconnected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
 		fflush(stdout);
-	}else if(read_size == -1)
+	}
+	else if (read_size == -1)
 	{
 		perror("recv failed");
 	}
