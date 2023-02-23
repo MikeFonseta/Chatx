@@ -1,5 +1,5 @@
 {
-    "action": "GET",
+    "action": "GETROOMS",
     "username": null,
     "user_id": null
 }
