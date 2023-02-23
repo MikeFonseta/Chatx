@@ -1,29 +1,7 @@
-#include <stdio.h>
-#include <libpq-fe.h>
-#include <stdlib.h>
+// #include <stdio.h>
+// #include <stdlib.h>
 #include <string.h>
-#include <json-c/json.h>
-#include <arpa/inet.h>
-
-PGconn *getConnection();
-int evaluate_action(json_object *request, json_object *response);
-
-int checkUser(const char *user);
-int registerUser(const char *user, const char *password);
-int loginUser(const char *user, const char *password);
-int joinRoom(const int user_id, const int chat_room_id);
-int acceptRequest(const int user_id, const int chat_room_id);
-int removeUser(const int user_id, const int chat_room_id);
-int createRoom(const char *room_owner, const char *chat_room_name);
-int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name);
-int deleteRoom(const char *room_owner, const char *chat_room_name);
-int getRooms(const int user_id, json_object *response);
-
-void test_removeUser();
-void test_createRoom();
-void test_updateRoom();
-void test_deleteRoom();
-void test_getChats();
+#include "db.h"
 
 // int main()
 // {
@@ -64,7 +42,7 @@ int evaluate_action(json_object *request, json_object *response)
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
-		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password)));
+		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password), response));
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
@@ -109,7 +87,7 @@ int evaluate_action(json_object *request, json_object *response)
 		json_object_object_get_ex(request, "roomName", &roomName);
 		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
 	}
-	if (strcmp(json_object_get_string(action), "GET") == 0)
+	if (strcmp(json_object_get_string(action), "GETROOMS") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
 		return getRooms(json_object_get_int(user_id), response);
@@ -168,9 +146,10 @@ int registerUser(const char *user, const char *password)
 	return 1;
 }
 
-int loginUser(const char *user, const char *password)
+int loginUser(const char *user, const char *password, json_object *response)
 {
 	int rows = 0;
+	int char_converted;
 	PGconn *conn = getConnection();
 	char sql[256];
 	sprintf(sql, "SELECT * FROM user_account WHERE user_account.username = '%s' AND user_account.password = '%s'", user, password);
@@ -184,17 +163,24 @@ int loginUser(const char *user, const char *password)
 	else
 	{
 		rows = PQntuples(res);
+		if (rows == 0)
+		{
+			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
+			json_object_object_add(response, "status", json_object_new_int64(404));
+			json_object_object_add(response, "message", json_object_new_string("Credenziali errate"));
+		}
+		else
+		{
+			char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
+			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
+			json_object_object_add(response, "status", json_object_new_int64(200));
+			json_object_object_add(response, "user_id", json_object_new_int64(char_converted));
+			json_object_object_add(response, "username", json_object_new_string(PQgetvalue(res, 0, 1)));
+		}
 	}
-
-	for (int i = 0; i < rows; i++)
-	{
-		printf("%s %s %s\n", PQgetvalue(res, i, 0),
-			   PQgetvalue(res, i, 1), PQgetvalue(res, i, 2));
-	}
-
 	PQclear(res);
 	PQfinish(conn);
-	return rows == 1 ? 1 : 0;
+	return rows;
 }
 
 int joinRoom(const int user_id, const int chat_room_id)
@@ -413,7 +399,7 @@ int getRooms(const int user_id, json_object *response)
 				json_object_array_add(other, obj);
 			else
 			{
-				if (strcmp(PQgetvalue(res, i, 4), "t")  == 0)
+				if (strcmp(PQgetvalue(res, i, 4), "t") == 0)
 					json_object_array_add(accepted, obj);
 				else
 					json_object_array_add(waiting, obj);
@@ -434,7 +420,7 @@ void test_removeUser()
 
 	evaluate_action(root, response);
 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-	
+
 	json_object_put(root);
 	json_object_put(response);
 }

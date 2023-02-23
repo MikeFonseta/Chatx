@@ -1,29 +1,11 @@
-// Example code: A simple server side code, which echos back the received message.
-// Handle multiple socket_Master connections with select and fd_set on Linux
 #include <stdio.h>
-#include <string.h> //strlen
+#include <string.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>	   //close
-#include <arpa/inet.h> //close
-#include <sys/types.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <pthread.h>
-#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
-#include "db.c"
-
-#define TRUE 1
-#define FALSE 0
-#define PORT 8888
-
-struct client
-{
-	int socketfd;
-	struct sockaddr_in address;
-};
-
-void *client_handler(void *arg);
+#include "server.h"
+#include "db.h"
 
 int main(int argc, char *argv[])
 {
@@ -72,8 +54,6 @@ int main(int argc, char *argv[])
 			newClient = malloc(sizeof(struct client));
 			newClient->socketfd = connect_sd;
 			newClient->address = client_addr;
-			// newClient.sock = connect_sd;
-			// newClient.address = client_addr;
 
 			printf("[+] %s:%d connected\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 			pthread_create(&tid, 0, client_handler, (void *)newClient);
@@ -84,37 +64,38 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-// void client_handler(int sockfd)
-//{
-//	json_object *received;
-//	json_object *response = json_object_new_object();
-//	if ((received = json_object_from_fd_ex(sockfd, -1)) == NULL)
-//		printf("Error: %s\n", json_util_get_last_err());
-//	else {
-//		printf("json file:\n\n%s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PRETTY));
-//		evaluate_action(received, response);
-//		const char *response_char = json_object_to_json_string_ext(received, JSON_C_TO_STRING_PLAIN);
-//		write(sockfd, response_char, strlen(response_char));
-//	}
-//
-//	json_object_put(received);
-//	json_object_put(response);
-// }
-
 void *client_handler(void *arg)
 {
 	char client_message[100];
-	// struct client clientInfo = *(struct client *)arg;
 	struct client *clientInfo = (struct client *)arg;
-	// struct sockaddr_in address = clientInfo.address;
-
-	int read_size, write_size;
+	int read_size, write_size, sent_size;
 	char *message;
+	json_object *received;
+	json_object *response;
 
 	while ((read_size = recv(clientInfo->socketfd, client_message, 100, 0)) > 0)
 	{
-		printf("[ ] %s:%d %s\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port), client_message);
-		write(clientInfo->socketfd, client_message, strlen(client_message));
+		if ((received = json_tokener_parse(client_message)) == NULL)
+			printf("Error: %s\n", json_util_get_last_err());
+		else
+		{
+			printf("received:\n\n%s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PRETTY));
+			response = json_object_new_object();
+			evaluate_action(received, response);
+			const char *response_char = json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN);
+
+			char *sending = malloc(strlen(response_char) + 2);
+			strcpy(sending, response_char);
+			strcat(sending, "\n");
+			int response_size = strlen(sending);
+
+			printf("sending: %s\n", sending);
+			printf("size: %d\n", sending);
+
+			if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
+				perror("send failed");
+			json_object_put(response);
+		}
 	}
 
 	if (read_size == 0)
@@ -126,6 +107,6 @@ void *client_handler(void *arg)
 	{
 		perror("recv failed");
 	}
-
+	json_object_put(received);
 	return 0;
 }

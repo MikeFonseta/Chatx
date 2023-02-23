@@ -9,7 +9,7 @@ int evaluate_action(json_object *request, json_object *response);
 
 int checkUser(const char *user);
 int registerUser(const char *user, const char *password);
-int loginUser(const char *user, const char *password);
+int loginUser(const char *user, const char *password, json_object *response);
 int joinRoom(const int user_id, const int chat_room_id);
 int acceptRequest(const int user_id, const int chat_room_id);
 int removeUser(const int user_id, const int chat_room_id);
