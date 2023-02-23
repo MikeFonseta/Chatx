@@ -87,7 +87,6 @@ public class ConnectionService extends LifecycleService {
             switch (msg.what) {
                 case OPEN:
                     startConnection();
-//                    send("\n");
                     break;
                 case CLOSE:
                     stopConnection();
@@ -96,13 +95,9 @@ public class ConnectionService extends LifecycleService {
                     String json = msg.getData().getString("json");
                     System.out.println(json);
                     String resp = send(json);
-//                    System.out.println(resp);
                     sendResponse(resp);
                     break;
             }
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
-//        connectionService.stopSelf(msg.arg1);
         }
 
         public void startConnection() {
