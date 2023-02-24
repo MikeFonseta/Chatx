@@ -90,7 +90,7 @@ void *client_handler(void *arg)
 			int response_size = strlen(sending);
 
 			printf("sending: %s\n", sending);
-			printf("size: %d\n", sending);
+			printf("size: %d\n", response_size);
 
 			if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
 				perror("send failed");
