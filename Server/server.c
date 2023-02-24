@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	}
 
 	// accept the incoming connection
-	client_len = sizeof(client_len);
+	client_len = sizeof(address);
 
 	while (1)
 	{
@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
 			newClient->socketfd = connect_sd;
 			newClient->address = client_addr;
 
-			printf("[+] %s:%d connected\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 			pthread_create(&tid, 0, client_handler, (void *)newClient);
 			pthread_detach(tid);
 		}
@@ -73,6 +72,10 @@ void *client_handler(void *arg)
 	json_object *received;
 	json_object *response;
 
+
+	printf("[+] %s:%d connected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
+	fflush(stdout);
+
 	while ((read_size = recv(clientInfo->socketfd, client_message, 100, 0)) > 0)
 	{
 		if ((received = json_tokener_parse(client_message)) == NULL)
@@ -89,8 +92,8 @@ void *client_handler(void *arg)
 			strcat(sending, "\n");
 			int response_size = strlen(sending);
 
-			printf("sending: %s\n", sending);
-			printf("size: %d\n", response_size);
+			//printf("sending: %s\n", sending);
+			//printf("size: %d\n", response_size);
 
 			if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
 				perror("send failed");
@@ -100,7 +103,7 @@ void *client_handler(void *arg)
 
 	if (read_size == 0)
 	{
-		printf("[ ] %s:%d disconnected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
+		printf("[-] %s:%d disconnected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
 		fflush(stdout);
 	}
 	else if (read_size == -1)

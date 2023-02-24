@@ -42,50 +42,50 @@ int evaluate_action(json_object *request, json_object *response)
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
-		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password), response));
+		return loginUser(json_object_get_string(username), json_object_get_string(password), response);
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
-		printf("Register user: %d\n", registerUser(json_object_get_string(username), json_object_get_string(password)));
+		return registerUser(json_object_get_string(username), json_object_get_string(password), response);
 	}
 	if (strcmp(json_object_get_string(action), "JOIN_ROOM") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
-		printf("Join room: %d\n", joinRoom(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
+		return joinRoom(json_object_get_int(user_id), json_object_get_int(chat_room_id), response);
 	}
 	if (strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
-		printf("Accept user: %d\n", acceptRequest(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
+		return acceptRequest(json_object_get_int(user_id), json_object_get_int(chat_room_id), response);
 	}
 	if (strcmp(json_object_get_string(action), "REMOVE_USER") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
-		printf("Remove user: %d\n", removeUser(json_object_get_int(user_id), json_object_get_int(chat_room_id)));
+		return removeUser(json_object_get_int(user_id), json_object_get_int(chat_room_id), response);
 	}
 	if (strcmp(json_object_get_string(action), "CREATE") == 0)
 	{
 		json_object_object_get_ex(request, "owner", &owner);
 		json_object_object_get_ex(request, "roomName", &roomName);
-		return createRoom(json_object_get_string(owner), json_object_get_string(roomName));
+		return createRoom(json_object_get_string(owner), json_object_get_string(roomName), response);
 	}
 	if (strcmp(json_object_get_string(action), "UPDATE") == 0)
 	{
 		json_object_object_get_ex(request, "owner", &owner);
 		json_object_object_get_ex(request, "roomName", &roomName);
 		json_object_object_get_ex(request, "newName", &newName);
-		return updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName));
+		return updateRoom(json_object_get_string(owner), json_object_get_string(roomName), json_object_get_string(newName), response);
 	}
 	if (strcmp(json_object_get_string(action), "DELETE") == 0)
 	{
 		json_object_object_get_ex(request, "owner", &owner);
 		json_object_object_get_ex(request, "roomName", &roomName);
-		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName));
+		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName), response);
 	}
 	if (strcmp(json_object_get_string(action), "GETROOMS") == 0)
 	{
@@ -119,7 +119,7 @@ int checkUser(const char *user)
 	return rows == 1 ? 1 : 0;
 }
 
-int registerUser(const char *user, const char *password)
+int registerUser(const char *user, const char *password, json_object *response)
 {
 	PGconn *conn = getConnection();
 
@@ -139,9 +139,16 @@ int registerUser(const char *user, const char *password)
 	}
 	else
 	{
+		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
+		json_object_object_add(response, "status", json_object_new_string("FAILED"));
+		json_object_object_add(response, "message", json_object_new_string("Username non disponibile"));
 		return 0;
 	}
 	PQfinish(conn);
+
+	json_object_object_add(response, "action", json_object_new_string("REGISTER"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+	json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
 
 	return 1;
 }
@@ -166,14 +173,14 @@ int loginUser(const char *user, const char *password, json_object *response)
 		if (rows == 0)
 		{
 			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
-			json_object_object_add(response, "status", json_object_new_int64(404));
+		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 			json_object_object_add(response, "message", json_object_new_string("Credenziali errate"));
 		}
 		else
 		{
 			char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
 			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
-			json_object_object_add(response, "status", json_object_new_int64(200));
+			json_object_object_add(response, "status", json_object_new_string("OK"));
 			json_object_object_add(response, "user_id", json_object_new_int64(char_converted));
 			json_object_object_add(response, "username", json_object_new_string(PQgetvalue(res, 0, 1)));
 		}
@@ -183,7 +190,7 @@ int loginUser(const char *user, const char *password, json_object *response)
 	return rows;
 }
 
-int joinRoom(const int user_id, const int chat_room_id)
+int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
@@ -239,7 +246,7 @@ int joinRoom(const int user_id, const int chat_room_id)
 	return rows;
 }
 
-int acceptRequest(const int user_id, const int chat_room_id)
+int acceptRequest(const int user_id, const int chat_room_id, json_object *response)
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
@@ -278,7 +285,7 @@ int acceptRequest(const int user_id, const int chat_room_id)
 	return rows;
 }
 
-int removeUser(const int user_id, const int chat_room_id)
+int removeUser(const int user_id, const int chat_room_id, json_object *response)
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
@@ -302,7 +309,7 @@ int removeUser(const int user_id, const int chat_room_id)
 	return rows;
 }
 
-int createRoom(const char *room_owner, const char *chat_room_name)
+int createRoom(const char *room_owner, const char *chat_room_name, json_object *response)
 {
 	int rows = 0;
 	char *PGstatement = "INSERT INTO Chat_room (chat_room_name, room_owner) VALUES ($1::VARCHAR, (SELECT user_id FROM user_account WHERE user_account.username = $2::VARCHAR))";
@@ -320,7 +327,7 @@ int createRoom(const char *room_owner, const char *chat_room_name)
 	return rows;
 }
 
-int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name)
+int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name, json_object *response)
 {
 	int rows = 0;
 	char *PGstatement = "UPDATE Chat_room SET chat_room_name = $2::VARCHAR WHERE chat_room_name = $1::VARCHAR";
@@ -338,7 +345,7 @@ int updateRoom(const char *room_owner, const char *chat_room_name, const char *n
 	return rows;
 }
 
-int deleteRoom(const char *room_owner, const char *chat_room_name)
+int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *response)
 {
 	int rows = 0;
 	char *PGstatement = "DELETE FROM Chat_room WHERE chat_room_name = $1::VARCHAR";
