@@ -38,7 +38,7 @@ public class ConnectionService extends LifecycleService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
 
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
@@ -101,7 +101,7 @@ public class ConnectionService extends LifecycleService {
         }
 
         public void startConnection() {
-            String ip = "192.168.0.113";
+            String ip = "192.168.1.14";
             int port = 8888;
             try {
                 chatSocket = new Socket(ip, port);

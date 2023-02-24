@@ -72,8 +72,6 @@ public class LoginFragment extends Fragment {
                 loginIntent.setAction(ConnectionService.SEND);
                 loginIntent.putExtra("json", login.toString());
                 getActivity().startService(loginIntent);
-                Intent i = new Intent(getActivity(), HomeActivity.class);
-                startActivity(i);
             }
         });
 
