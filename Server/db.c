@@ -43,7 +43,7 @@ int evaluate_action(json_object *request, json_object *response)
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
 		printf("Login user: %d\n", loginUser(json_object_get_string(username), json_object_get_string(password), response));
-	}
+  }
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
 		json_object_object_get_ex(request, "username", &username);
