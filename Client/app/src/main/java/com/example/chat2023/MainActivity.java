@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.chat2023.controller.AuthenticationController;
 import com.example.chat2023.ui.LoginFragment;
 import com.example.chat2023.util.ConnectionService;
 
@@ -22,28 +23,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("response");
-            JSONObject response = null;
-            try {
-                response = new JSONObject(message);
-
-                if (response.getString("action").equals("LOGIN"))
-                {
-                    if(response.getInt("status") == 200)
-                    {
-                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                    }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                    }
-                }
-                else if(response.getString("action").equals("LOGIN"))
-                {
-                    Toast.makeText(MainActivity.this, response.getString("message"), Toast.LENGTH_LONG).show();
-                }
-            }catch (JSONException e) {
-                e.printStackTrace();
-            }
+            AuthenticationController.evaluate_action(MainActivity.this, message);
             //System.out.println("da main activity: " + message);
         }
     };

@@ -1,6 +1,5 @@
 package com.example.chat2023.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -16,15 +15,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.chat2023.HomeActivity;
 import com.example.chat2023.R;
-import com.example.chat2023.entity.User;
-import com.example.chat2023.util.ConnectionService;
+import com.example.chat2023.controller.AuthenticationController;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +60,7 @@ public class LoginFragment extends Fragment {
                 }
             }
             if (noErrors) {
-                User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
-                JSONObject login = user.login();
-                System.out.println("json: " + login.toString());
-                Intent loginIntent = new Intent(view.getContext(), ConnectionService.class);
-                loginIntent.setAction(ConnectionService.SEND);
-                loginIntent.putExtra("json", login.toString());
-                getActivity().startService(loginIntent);
+                AuthenticationController.login(getActivity(), usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
 

@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.chat2023.HomeActivity;
 import com.example.chat2023.R;
+import com.example.chat2023.controller.AuthenticationController;
 import com.example.chat2023.entity.User;
 import com.example.chat2023.util.ConnectionService;
 import com.google.android.material.button.MaterialButton;
@@ -52,15 +53,7 @@ public class SignUpFragment extends Fragment {
                 }
             }
             if (noErrors) {
-                User user = new User(usernameEditText.getText().toString(), passwordEditText.getText().toString());
-                JSONObject register = user.register();
-                System.out.println("json: " + register.toString());
-                Intent registerIntent = new Intent(view.getContext(), ConnectionService.class);
-                registerIntent.setAction(ConnectionService.SEND);
-                registerIntent.putExtra("json", register.toString());
-                getActivity().startService(registerIntent);
-                Intent i = new Intent(getActivity(), HomeActivity.class);
-                startActivity(i);
+                AuthenticationController.register(getActivity(), usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
 
