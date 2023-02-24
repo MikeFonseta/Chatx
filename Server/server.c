@@ -7,7 +7,6 @@
 #include "server.h"
 #include "db.h"
 
-
 int main(int argc, char *argv[])
 {
 	int socket_Master, connect_sd;
@@ -80,7 +79,7 @@ void *client_handler(void *arg)
 			printf("Error: %s\n", json_util_get_last_err());
 		else
 		{
-			printf("received:\n\n%s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PRETTY));
+			printf("received: %s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PLAIN));
 			response = json_object_new_object();
 			evaluate_action(received, response);
 			const char *response_char = json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN);
@@ -108,6 +107,5 @@ void *client_handler(void *arg)
 	{
 		perror("recv failed");
 	}
-	json_object_put(received);
 	return 0;
 }
