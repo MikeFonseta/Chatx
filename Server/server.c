@@ -9,11 +9,12 @@
 
 int main(int argc, char *argv[])
 {
+
 	int socket_Master, connect_sd;
 	socklen_t client_len;
 	pthread_t tid;
 	struct sockaddr_in address, client_addr;
-	struct client *newClient;
+	client *newClient;
 
 	// create a socket_Master
 	if ((socket_Master = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -45,13 +46,13 @@ int main(int argc, char *argv[])
 
 	// accept the incoming connection
 	client_len = sizeof(address);
-
 	while (1)
 	{
 		connect_sd = accept(socket_Master, (struct sockaddr *)&client_addr, &client_len);
 		if (connect_sd != -1)
 		{
-			newClient = malloc(sizeof(struct client));
+			
+			newClient = malloc(sizeof(client));
 			newClient->socketfd = connect_sd;
 			newClient->address = client_addr;
 
@@ -63,15 +64,17 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+
 void *client_handler(void *arg)
 {
 	char client_message[100];
-	struct client *clientInfo = (struct client *)arg;
+	client *clientInfo = (client *)arg;
 	int read_size, write_size, sent_size;
 	char *message;
 	json_object *received;
 	json_object *response;
 
+	json_object* chat_room_list = getAllChatRoom();
 
 	printf("[+] %s:%d connected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
 	fflush(stdout);
@@ -83,8 +86,11 @@ void *client_handler(void *arg)
 		else
 		{
 			printf("received: %s\n", json_object_to_json_string_ext(received, JSON_C_TO_STRING_PLAIN));
+			
 			response = json_object_new_object();
-			evaluate_action(received, response);
+
+			evaluate_action(clientInfo->socketfd ,chat_room_list, received, response);
+
 			const char *response_char = json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN);
 
 			char *sending = malloc(strlen(response_char) + 2);
@@ -94,6 +100,7 @@ void *client_handler(void *arg)
 
 			//printf("sending: %s\n", sending);
 			//printf("size: %d\n", response_size);
+
 
 			if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
 				perror("send failed");

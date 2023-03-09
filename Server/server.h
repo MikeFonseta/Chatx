@@ -4,11 +4,11 @@
 #include <netinet/in.h>
 #define PORT 8888
 
-struct client
+typedef struct
 {
 	int socketfd;
 	struct sockaddr_in address;
-};
+}client;
 
 void *client_handler(void *arg);
 
