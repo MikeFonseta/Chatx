@@ -24,8 +24,6 @@ public class NuovaStanzaFragment extends Fragment {
         binding = FragmentNuovaStanzaBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNuovaStanza;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

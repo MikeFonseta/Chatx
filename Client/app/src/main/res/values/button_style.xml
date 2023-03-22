@@ -1,0 +1,15 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="buttonstyle">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">@drawable/button_style_background</item>
+        <item name="android:paddingLeft">15dp</item>
+    </style>
+
+    <style name="buttonstyle2">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">@drawable/button2_style_background</item>
+        <item name="android:paddingLeft">15dp</item>
+    </style>
+</resources>

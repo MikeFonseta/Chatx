@@ -11,14 +11,15 @@
         android:icon="@drawable/ic_nuova_stanza_add_24"
         android:title="@string/title_activity_NuovaStanza" />
 
-    <item
-        android:id="@+id/navigation_profilo"
-        android:icon="@drawable/ic_profilo_24"
-        android:title="@string/title_activity_Profilo" />
 
     <item
         android:id="@+id/navigation_utenti_attesa"
         android:icon="@drawable/ic_utenti_in_attesa_24"
         android:title="@string/title_activity_UtentiAttesa" />
+
+    <item
+        android:id="@+id/navigation_profilo"
+        android:icon="@drawable/ic_profilo_24"
+        android:title="@string/title_activity_Profilo" />
 
 </menu>
