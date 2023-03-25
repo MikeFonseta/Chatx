@@ -466,6 +466,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 
 int getRooms(const int user_id, json_object *response)
 {
+	json_object_object_add(response, "action", json_object_new_string("GETROOMS"));
 	json_object *accepted = json_object_new_array();
 	json_object_object_add(response, "accepted", accepted);
 	json_object *waiting = json_object_new_array();

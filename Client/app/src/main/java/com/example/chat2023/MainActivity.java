@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -13,9 +12,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.chat2023.controller.AuthenticationController;
 import com.example.chat2023.ui.LoginFragment;
 import com.example.chat2023.util.ConnectionService;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 

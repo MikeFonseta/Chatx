@@ -1,6 +1,5 @@
 package com.example.chat2023.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,16 +9,11 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.chat2023.HomeActivity;
 import com.example.chat2023.R;
 import com.example.chat2023.controller.AuthenticationController;
-import com.example.chat2023.entity.User;
-import com.example.chat2023.util.ConnectionService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
