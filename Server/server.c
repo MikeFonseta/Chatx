@@ -76,7 +76,7 @@ void *client_handler(void *arg)
 
 	json_object* chat_room_list = getAllChatRoom();
 
-	printf("[+] %s:%d connected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
+	printf("[+] %s:%d connected at socket %d\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port), clientInfo->socketfd);
 	fflush(stdout);
 
 	while ((read_size = recv(clientInfo->socketfd, client_message, 100, 0)) > 0)
