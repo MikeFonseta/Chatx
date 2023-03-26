@@ -3,6 +3,8 @@ package com.example.chat2023.controller;
 import android.app.Application;
 import android.content.Intent;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.chat2023.entity.ChatRoom;
 import com.example.chat2023.util.ConnectionService;
 
@@ -38,8 +40,9 @@ public class ChatController {
         }
     }
 
-    public List<ChatRoom> getAcceptedRooms(String response) {
+    public MutableLiveData<List<ChatRoom>> getAcceptedRooms(String response) {
         List<ChatRoom> chatRooms = new ArrayList<>();
+        MutableLiveData<List<ChatRoom>> mutableLiveData = new MutableLiveData<>();
         try {
             JSONObject json = new JSONObject(response);
             JSONArray array = json.getJSONArray("accepted");
@@ -55,6 +58,7 @@ public class ChatController {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return chatRooms;
+        mutableLiveData.setValue(chatRooms);
+        return mutableLiveData;
     }
 }

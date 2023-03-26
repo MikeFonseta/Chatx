@@ -18,9 +18,6 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.UserCh
 
     private List<ChatRoom> chatRooms = new ArrayList<>();
 
-//    public UserChatAdapter() {
-//    }
-
     @NonNull
     @Override
     public UserChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
