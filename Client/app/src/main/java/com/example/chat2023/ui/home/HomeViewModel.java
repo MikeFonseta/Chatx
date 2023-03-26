@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.chat2023.controller.ChatController;
@@ -32,6 +33,10 @@ public class HomeViewModel extends AndroidViewModel {
     public void getData(String response) {
         chatController.getChatRooms(getApplication());
         acceptedChat = (MutableLiveData<List<ChatRoom>>) chatController.getAcceptedRooms(response);
+    }
+
+    public LiveData<List<ChatRoom>> getAcceptedChat() {
+        return acceptedChat;
     }
 
 }

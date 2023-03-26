@@ -18,8 +18,8 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.UserCh
 
     private List<ChatRoom> chatRooms = new ArrayList<>();
 
-    public UserChatAdapter() {
-    }
+//    public UserChatAdapter() {
+//    }
 
     @NonNull
     @Override
@@ -32,11 +32,17 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.UserCh
     @Override
     public void onBindViewHolder(@NonNull UserChatViewHolder holder, int position) {
         ChatRoom room = chatRooms.get(position);
+        holder.textViewName.setText(room.getChat_room_name());
     }
 
     @Override
     public int getItemCount() {
         return chatRooms.size();
+    }
+
+    public void setChatRooms(List<ChatRoom> rooms) {
+        this.chatRooms = rooms;
+        notifyDataSetChanged();
     }
 
     public static class UserChatViewHolder extends RecyclerView.ViewHolder {
@@ -47,8 +53,8 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.UserCh
             textViewName = view.findViewById(R.id.textView);
         }
 
-//        public TextView getTextView() {
-//            return textView;
-//        }
+        public TextView getTextView() {
+            return textViewName;
+        }
     }
 }
