@@ -11,6 +11,9 @@ import android.widget.Toast;
 import androidx.lifecycle.LifecycleService;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -64,9 +67,23 @@ public class ConnectionService extends LifecycleService {
     }
 
     private void sendResponse(String response) {
-        Intent intent = new Intent("signing");
-        intent.putExtra("response", response);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        try {
+            JSONObject json = new JSONObject(response);
+            String action = json.getString("action");
+
+            if (action.equals("LOGIN") || action.equals("REGISTER")) {
+                Intent intent = new Intent("signing");
+                intent.putExtra("response", json.toString());
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            }
+            if (action.equals("GETROOMS")) {
+                Intent intent = new Intent("chatrooms");
+                intent.putExtra("response", json.toString());
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final class ServiceHandler extends Handler {
@@ -101,7 +118,7 @@ public class ConnectionService extends LifecycleService {
         }
 
         public void startConnection() {
-            String ip = "192.168.1.14";
+            String ip = "192.168.0.113";
             int port = 8888;
             try {
                 chatSocket = new Socket(ip, port);

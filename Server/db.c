@@ -192,7 +192,7 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 	PGconn *conn = getConnection();
 	json_object *single_chat_room;
 	char sql[256];
-	sprintf(sql, "SELECT chat_room_id,u.user_id FROM (SELECT * FROM user_account WHERE user_account.username = '%s') AS u INNER JOIN join_requests AS j ON u.user_id = j.user_id AND j.accepted=true AND u.password= '%s'", user, password);
+	sprintf(sql, "SELECT j.chat_room,u.user_id FROM (SELECT * FROM user_account WHERE user_account.username = '%s') AS u INNER JOIN join_requests AS j ON u.user_id = j.user_id AND j.accepted=true AND u.password= '%s'", user, password);
 
 	PGresult *res = PQexec(conn, sql);
 
@@ -479,6 +479,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 
 int getRooms(const int user_id, json_object *response)
 {
+	json_object_object_add(response, "action", json_object_new_string("GETROOMS"));
 	json_object *accepted = json_object_new_array();
 	json_object_object_add(response, "accepted", accepted);
 	json_object *waiting = json_object_new_array();
