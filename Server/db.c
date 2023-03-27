@@ -1,19 +1,6 @@
-// #include <stdio.h>
-// #include <stdlib.h>
 #include <string.h>
 #include "db.h"
 
-// int main()
-// {
-
-// 	test_removeUser();
-// 	test_createRoom();
-// 	test_updateRoom();
-// 	test_deleteRoom();
-// 	test_getChats();
-
-// 	return 0;
-// }
 
 PGconn *getConnection()
 {
@@ -32,11 +19,13 @@ PGconn *getConnection()
 int evaluate_action(int fd, json_object *chat_room_list, json_object *request, json_object *response)
 {
 	json_object *action;
-	json_object *username, *password, *message;
+	json_object *username, *password, *message, *from;
 	json_object *user_id, *chat_room_id;
 	json_object *owner, *roomName, *newName;
 	
 	json_object_object_get_ex(request, "action", &action);
+
+
 
 	if (strcmp(json_object_get_string(action), "LOGIN") == 0)
 	{
@@ -55,7 +44,8 @@ int evaluate_action(int fd, json_object *chat_room_list, json_object *request, j
 	{
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		json_object_object_get_ex(request, "message", &message);
-		return sendMessage(chat_room_list, json_object_get_int64(chat_room_id), json_object_get_string(message), response);
+		json_object_object_get_ex(request, "from", &from);
+		return sendMessage(fd,chat_room_list, json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
 	}
 	if (strcmp(json_object_get_string(action), "JOIN_ROOM") == 0)
 	{
@@ -242,20 +232,54 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 	return rows == 0 ? 0 : 1;
 }
 
-
-int sendMessage(json_object *chat_room_list, const long chat_room_id, const char *message, json_object *response)
+int logout(int fd, json_object *chat_room_list)
 {
-	json_object *char_room;
-	char* room_id_str;
+	int len =  json_object_object_length(chat_room_list);
+	printf("QUI");
+	
+	json_object_object_foreach(chat_room_list, key,chat_room)
+	{
+		for (int i = 0; i < json_object_array_length(chat_room); i++)
+		{
+			if(json_object_get_int(json_object_array_get_idx(chat_room,i)))
+			{
+				json_object_array_del_idx(chat_room,i,1);
+			}
+		}
+	}
+}
 
-	if(json_object_object_get_ex(chat_room_list, "5", &char_room))
+int sendMessage(int fd, json_object *chat_room_list, const char* chat_room_id, const char *from,const char *message, json_object *response)
+{
+	printf("SEND MESS START");
+	json_object *chat_room;
+	json_object *sendMessage = json_object_new_object();
+
+	if(json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
 	{
-		printf("TROVATA");
+
+		json_object_object_add(sendMessage, "chat_room_id", json_object_new_string(chat_room_id));
+		json_object_object_add(sendMessage, "from", json_object_new_string(from));
+		json_object_object_add(sendMessage, "message", json_object_new_string(message));
+
+		const char *response_char = json_object_to_json_string_ext(sendMessage, JSON_C_TO_STRING_PLAIN);
+		char *sending = malloc(strlen(response_char) + 2);
+		strcpy(sending, response_char);
+		strcat(sending, "\n");
+		int response_size = strlen(sending);
+
+		for (int i = 0; i < json_object_array_length(chat_room); i++)
+		{
+			int sockFD = json_object_get_int(json_object_array_get_idx(chat_room,i));
+			if(sockFD != fd)
+			{
+				//Invio al client connesso che appartiene a questa chat_room_id
+				send(sockFD,response_char,response_size,0);
+			}
+		}
+
 	}
-	else
-	{
-		printf("NON TROVATA");  // PROBLEMA CHE LE SOCKET HANNO ROOM LIST DIFFERENTI (METTERE VARIA>BILE GLOBALE)
-	}
+
 	// int rows = 0;
 	// int char_converted;
 	// PGconn *conn = getConnection();
@@ -274,19 +298,8 @@ int sendMessage(json_object *chat_room_list, const long chat_room_id, const char
 	// {
 	// 	rows = PQntuples(res_select);
 
-	// 	json_object *user_id_list = json_object_new_array();
-	// 	json_object_object_add(response, "user_id_list", user_id_list);
-
-	// 	for(int i=0; i<rows; i++) {
-    // 		printf("%d\n", atoi(PQgetvalue(res_select, i, 0)));
-			   
-  	// 		json_object_array_add(user_id_list, json_object_new_int(atoi(PQgetvalue(res_select, i, 0))));
-	// 	}
-	// }
-
-	// json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
-	// json_object_object_add(response, "status", json_object_new_string("OK"));
-
+	json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
+	json_object_object_add(response, "status", json_object_new_string("OK"));
 	
 	return 1;
 }
