@@ -18,9 +18,9 @@
 
     <fragment
         android:id="@+id/navigation_profilo"
-        android:name="com.example.chat2023.ui.profilo.ProfiloFragment"
+        android:name="com.example.chat2023.ui.ProfileFragment"
         android:label="@string/title_activity_Profilo"
-        tools:layout="@layout/fragment_profilo" />
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_utenti_attesa"

@@ -118,8 +118,8 @@ public class ConnectionService extends LifecycleService {
         }
 
         public void startConnection() {
-            String ip = "192.168.0.113";
-            int port = 8888;
+            String ip = "192.168.0.104";
+            int port = 32768;
             try {
                 chatSocket = new Socket(ip, port);
                 in = new BufferedReader(new InputStreamReader(chatSocket.getInputStream()));
