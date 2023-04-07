@@ -192,7 +192,7 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 	PGconn *conn = getConnection();
 	json_object *single_chat_room;
 	char sql[256];
-	sprintf(sql, "SELECT j.chat_room,u.user_id FROM (SELECT * FROM user_account WHERE user_account.username = '%s') AS u INNER JOIN join_requests AS j ON u.user_id = j.user_id AND j.accepted=true AND u.password= '%s'", user, password);
+	sprintf(sql, "SELECT * FROM user_account WHERE user_account.username = '%s' AND user_account.password = '%s'", user, password);
 
 	PGresult *res = PQexec(conn, sql);
 
