@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	printf("Listener on port %d \n", PORT);
+	printf("Listener on port %d \n", atoi(argv[1]));
 
 	// try to specify maximum of 3 pending connections for the master socket_Master
 	if (listen(socket_Master, 3) < 0)
@@ -97,7 +97,7 @@ void *client_handler(void *arg)
 			
 			response = json_object_new_object();
 
-			evaluate_action(clientInfo->socketfd ,chat_room_list, received, response);
+			evaluate_action(clientInfo->socketfd , received, response);
 			
 			const char *response_char = json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN);
 			char *sending = malloc(strlen(response_char) + 2);
@@ -117,7 +117,7 @@ void *client_handler(void *arg)
 
 	if (read_size == 0)
 	{
-		logout(clientInfo->socketfd,chat_room_list);
+		logout(clientInfo->socketfd);
 		printf("[-] %s:%d disconnected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
 		fflush(stdout);
 	}

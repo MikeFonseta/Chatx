@@ -16,7 +16,7 @@ PGconn *getConnection()
 	return conn;
 }
 
-int evaluate_action(int fd, json_object *chat_room_list, json_object *request, json_object *response)
+int evaluate_action(int fd, json_object *request, json_object *response)
 {
 	json_object *action;
 	json_object *username, *password, *message, *from;
@@ -31,7 +31,7 @@ int evaluate_action(int fd, json_object *chat_room_list, json_object *request, j
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
-		return loginUser(fd, chat_room_list,json_object_get_string(username), json_object_get_string(password), response);
+		return loginUser(fd, json_object_get_string(username), json_object_get_string(password), response);
 	
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
@@ -45,7 +45,7 @@ int evaluate_action(int fd, json_object *chat_room_list, json_object *request, j
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		json_object_object_get_ex(request, "message", &message);
 		json_object_object_get_ex(request, "from", &from);
-		return sendMessage(fd,chat_room_list, json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
+		return sendMessage(fd, json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
 	}
 	if (strcmp(json_object_get_string(action), "JOIN_ROOM") == 0)
 	{
@@ -87,7 +87,7 @@ int evaluate_action(int fd, json_object *chat_room_list, json_object *request, j
 	if (strcmp(json_object_get_string(action), "GETROOMS") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
-		return getRooms(fd, chat_room_list, json_object_get_int(user_id), response);
+		return getRooms(fd, json_object_get_int(user_id), response);
 	}
 
 	json_object_put(request);
@@ -185,7 +185,7 @@ int registerUser(const char *user, const char *password, json_object *response)
 	return 1;
 }
 
-int loginUser(int fd, json_object *chat_room_list, const char *user, const char *password, json_object *response)
+int loginUser(int fd, const char *user, const char *password, json_object *response)
 {
 	int rows = 0;
 	int char_converted;
@@ -231,7 +231,7 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 	return rows;
 }
 
-int logout(int fd, json_object *chat_room_list)
+int logout(int fd)
 {
 	int len =  json_object_object_length(chat_room_list);
 	printf("QUI");
@@ -248,7 +248,7 @@ int logout(int fd, json_object *chat_room_list)
 	}
 }
 
-int sendMessage(int fd, json_object *chat_room_list, const char* chat_room_id, const char *from,const char *message, json_object *response)
+int sendMessage(int fd, const char* chat_room_id, const char *from,const char *message, json_object *response)
 {
 	printf("SEND MESS START");
 	json_object *chat_room;
@@ -474,7 +474,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 	return rows;
 }
 
-int getRooms(int fd, json_object *chat_room_list, const int user_id, json_object *response)
+int getRooms(int fd, const int user_id, json_object *response)
 {
 	json_object_object_add(response, "action", json_object_new_string("GETROOMS"));
 	json_object *accepted = json_object_new_array();

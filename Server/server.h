@@ -2,7 +2,6 @@
 #define SERVER_H_INCLUDED
 
 #include <netinet/in.h>
-#define PORT 8888
 
 typedef struct
 {
