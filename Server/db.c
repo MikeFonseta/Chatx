@@ -87,7 +87,7 @@ int evaluate_action(int fd, json_object *chat_room_list, json_object *request, j
 	if (strcmp(json_object_get_string(action), "GETROOMS") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
-		return getRooms(json_object_get_int(user_id), response);
+		return getRooms(fd, chat_room_list, json_object_get_int(user_id), response);
 	}
 
 	json_object_put(request);
@@ -211,13 +211,13 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 		}
 		else
 		{
-			for (int i = 0; i < rows; i++)
-			{
-				if(json_object_object_get_ex(chat_room_list, PQgetvalue(res, i, 0), &single_chat_room))
-				{
-					json_object_array_add(single_chat_room, json_object_new_int(fd));
-				}
-			}
+			// for (int i = 0; i < rows; i++)
+			// {
+			// 	if(json_object_object_get_ex(chat_room_list, PQgetvalue(res, i, 0), &single_chat_room))
+			// 	{
+			// 		json_object_array_add(single_chat_room, json_object_new_int(fd));
+			// 	}
+			// }
 			
 			char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
 			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
@@ -228,8 +228,7 @@ int loginUser(int fd, json_object *chat_room_list, const char *user, const char 
 	}
 	PQclear(res);
 	PQfinish(conn);
-	printf("%s\n", json_object_to_json_string_ext(chat_room_list, JSON_C_TO_STRING_PRETTY));
-	return rows == 0 ? 0 : 1;
+	return rows;
 }
 
 int logout(int fd, json_object *chat_room_list)
@@ -324,7 +323,6 @@ int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 
 	if (rows == 0)
 	{
-		// Insert request
 		sprintf(sql, "INSERT INTO join_requests(user_id,chat_room,accepted) VALUES(%d,%d,false)", user_id, chat_room_id);
 		PGresult *res = PQexec(conn, sql);
 
@@ -380,7 +378,6 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 
 	if (rows == 1)
 	{
-		// Insert request
 		sprintf(sql, "UPDATE join_requests SET accepted=true WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
 		PGresult *res = PQexec(conn, sql);
 
@@ -477,7 +474,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 	return rows;
 }
 
-int getRooms(const int user_id, json_object *response)
+int getRooms(int fd, json_object *chat_room_list, const int user_id, json_object *response)
 {
 	json_object_object_add(response, "action", json_object_new_string("GETROOMS"));
 	json_object *accepted = json_object_new_array();
@@ -487,7 +484,7 @@ int getRooms(const int user_id, json_object *response)
 	json_object *other = json_object_new_array();
 	json_object_object_add(response, "other", other);
 
-	int rows = 0;
+	int rows, found = 0;
 	int char_converted;
 	char char_id[10];
 	sprintf(char_id, "%d", user_id);
@@ -527,7 +524,29 @@ int getRooms(const int user_id, json_object *response)
 					json_object_array_add(waiting, obj);
 			}
 		}
+		for (int i = 0; i < json_object_array_length(accepted); ++i)
+		{
+			json_object *chat_room_id, *array;
+			json_object *room = json_object_array_get_idx(accepted, i);
+			json_object_object_get_ex(room, "chat_room_id", &chat_room_id);
+			int chat = json_object_get_int(chat_room_id);
+			sprintf(char_id, "%d", chat);
+			json_object_object_get_ex(chat_room_list, char_id, &array);
+			for (int j = 0; j < json_object_array_length(array); ++j)
+			{
+				if (json_object_get_int(json_object_array_get_idx(array, j)) == fd)
+				{
+					found = 1;
+				}
+			}
+			if (!found)
+			{
+				json_object_array_add(array, json_object_new_int64(fd));
+			}
+			found = 0;
+		}
 	}
+	printf("%s\n", json_object_to_json_string_ext(chat_room_list, JSON_C_TO_STRING_PRETTY));
 	PQclear(res);
 	PQfinish(conn);
 	return rows;

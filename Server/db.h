@@ -20,7 +20,7 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 int createRoom(const char *room_owner, const char *chat_room_name, json_object *response);
 int updateRoom(const char *room_owner, const char *chat_room_name, const char *new_name, json_object *response);
 int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *response);
-int getRooms(const int user_id, json_object *response);
+int getRooms(const int fd, json_object *chat_room_list, const int user_id, json_object *response);
 
 // void test_removeUser();
 // void test_createRoom();
