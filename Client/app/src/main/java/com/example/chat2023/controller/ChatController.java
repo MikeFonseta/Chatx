@@ -50,7 +50,7 @@ public class ChatController {
                 JSONObject data = array.getJSONObject(i);
                 int chat_room_id = data.getInt("chat_room_id");
                 String chat_room_name = data.getString("chat_room_name");
-                int room_owner = data.getInt("room_owner");
+                int room_owner = data.getInt("room_owner_id");
                 String owner = data.getString("owner");
                 ChatRoom chatRoom = new ChatRoom(chat_room_id, chat_room_name, room_owner, owner);
                 chatRooms.add(chatRoom);
