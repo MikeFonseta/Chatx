@@ -7,7 +7,7 @@ typedef struct
 {
 	int socketfd;
 	struct sockaddr_in address;
-}client;
+} client;
 
 void *client_handler(void *arg);
 

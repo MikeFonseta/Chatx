@@ -1,10 +1,8 @@
 #include <string.h>
 #include "db.h"
 
-
 PGconn *getConnection()
 {
-
 	PGconn *conn;
 	conn = PQconnectdb("dbname=chatx host=localhost user=mike password=admin");
 
@@ -22,17 +20,14 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 	json_object *username, *password, *message, *from;
 	json_object *user_id, *chat_room_id;
 	json_object *owner, *roomName, *newName;
-	
+
 	json_object_object_get_ex(request, "action", &action);
-
-
 
 	if (strcmp(json_object_get_string(action), "LOGIN") == 0)
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
 		return loginUser(fd, json_object_get_string(username), json_object_get_string(password), response);
-	
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
@@ -89,42 +84,32 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 		json_object_object_get_ex(request, "user_id", &user_id);
 		return getRooms(fd, json_object_get_int(user_id), response);
 	}
-
 	json_object_put(request);
 }
 
-json_object* getAllChatRoom()
+json_object *getAllChatRoom()
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
 	json_object *chat_room_list = json_object_new_object();
-	json_object* single_chat_room;
+	json_object *single_chat_room;
 	char sql[256];
 	sprintf(sql, "SELECT chat_room_id FROM chat_room");
 	PGresult *res = PQexec(conn, sql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
-	{
-		rows = -1;
-	}
+		printf("%s\n", PQresultErrorMessage(res));
 	else
 	{
 		rows = PQntuples(res);
-
-		for(int i=0; i<rows; i++) {
-
+		for (int i = 0; i < rows; i++)
+		{
 			single_chat_room = json_object_new_array();
 			json_object_object_add(chat_room_list, PQgetvalue(res, i, 0), single_chat_room);
-			// json_object_array_add(single_chat_room, json_object_new_int(atoi(PQgetvalue(res, i, 1))));
-			
 		}
-
 		printf("%s\n", json_object_to_json_string_ext(chat_room_list, JSON_C_TO_STRING_PRETTY));
-
 	}
-
 	PQclear(res);
 	PQfinish(conn);
-
 	return chat_room_list;
 }
 
@@ -137,24 +122,19 @@ int checkUser(const char *user)
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
-	{
-		rows = -1;
-	}
+		printf("%s\n", PQresultErrorMessage(res));
 	else
-	{
 		rows = PQntuples(res);
-	}
 
 	PQclear(res);
 	PQfinish(conn);
 
-	return rows == 1 ? 1 : 0;
+	return rows;
 }
 
 int registerUser(const char *user, const char *password, json_object *response)
 {
 	PGconn *conn = getConnection();
-
 	int userTaken = checkUser(user);
 
 	if (userTaken == 0)
@@ -211,14 +191,6 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 		}
 		else
 		{
-			// for (int i = 0; i < rows; i++)
-			// {
-			// 	if(json_object_object_get_ex(chat_room_list, PQgetvalue(res, i, 0), &single_chat_room))
-			// 	{
-			// 		json_object_array_add(single_chat_room, json_object_new_int(fd));
-			// 	}
-			// }
-			
 			char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
 			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
 			json_object_object_add(response, "status", json_object_new_string("OK"));
@@ -233,28 +205,26 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 
 int logout(int fd)
 {
-	int len =  json_object_object_length(chat_room_list);
-	printf("QUI");
-	
-	json_object_object_foreach(chat_room_list, key,chat_room)
+	int len = json_object_object_length(chat_room_list);
+	json_object_object_foreach(chat_room_list, key, chat_room)
 	{
 		for (int i = 0; i < json_object_array_length(chat_room); i++)
 		{
-			if(json_object_get_int(json_object_array_get_idx(chat_room,i)))
+			if (json_object_get_int(json_object_array_get_idx(chat_room, i)))
 			{
-				json_object_array_del_idx(chat_room,i,1);
+				json_object_array_del_idx(chat_room, i, 1);
 			}
 		}
 	}
 }
 
-int sendMessage(int fd, const char* chat_room_id, const char *from,const char *message, json_object *response)
+int sendMessage(int fd, const char *chat_room_id, const char *from, const char *message, json_object *response)
 {
 	printf("SEND MESS START");
 	json_object *chat_room;
 	json_object *sendMessage = json_object_new_object();
 
-	if(json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
+	if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
 	{
 
 		json_object_object_add(sendMessage, "chat_room_id", json_object_new_string(chat_room_id));
@@ -269,37 +239,16 @@ int sendMessage(int fd, const char* chat_room_id, const char *from,const char *m
 
 		for (int i = 0; i < json_object_array_length(chat_room); i++)
 		{
-			int sockFD = json_object_get_int(json_object_array_get_idx(chat_room,i));
-			if(sockFD != fd)
+			int sockFD = json_object_get_int(json_object_array_get_idx(chat_room, i));
+			if (sockFD != fd)
 			{
-				//Invio al client connesso che appartiene a questa chat_room_id
-				send(sockFD,response_char,response_size,0);
+				// Invio al client connesso che appartiene a questa chat_room_id
+				send(sockFD, response_char, response_size, 0);
 			}
 		}
-
 	}
-
-	// int rows = 0;
-	// int char_converted;
-	// PGconn *conn = getConnection();
-	// char sql[256];
-
-	// sprintf(sql, "SELECT user_id FROM join_requests WHERE chat_room_id = %ld AND accepted=true", chat_room_id);
-
-	// PGresult *res_select = PQexec(conn, sql);
-
-	// if (PQresultStatus(res_select) != PGRES_TUPLES_OK)
-	// {
-	// 	rows = -1;
-	// 	return 0;
-	// }
-	// else
-	// {
-	// 	rows = PQntuples(res_select);
-
 	json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
 	json_object_object_add(response, "status", json_object_new_string("OK"));
-	
 	return 1;
 }
 
@@ -309,7 +258,6 @@ int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 	PGconn *conn = getConnection();
 	char sql[256];
 	sprintf(sql, "SELECT * FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
-
 	PGresult *res_select = PQexec(conn, sql);
 
 	if (PQresultStatus(res_select) != PGRES_TUPLES_OK)
@@ -535,14 +483,11 @@ int getRooms(int fd, const int user_id, json_object *response)
 			for (int j = 0; j < json_object_array_length(array); ++j)
 			{
 				if (json_object_get_int(json_object_array_get_idx(array, j)) == fd)
-				{
 					found = 1;
-				}
 			}
 			if (!found)
-			{
 				json_object_array_add(array, json_object_new_int64(fd));
-			}
+				
 			found = 0;
 		}
 	}
