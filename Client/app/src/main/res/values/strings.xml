@@ -10,23 +10,17 @@
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_home">Home</string>
 
-    <string name="title_activity_NuovaStanza">Crea Nuova Stanza</string>
-    <string name="text_nuovaStanza">Nuova Stanza</string>
-    <string name="text_nomeStanza">Nome Stanza</string>
-    <string name="text_edit_NomeStanza">Scrivi il nome della stanza</string>
+    <string name="title_activity_NuovaStanza">Nuova Stanza</string>
+    <string name="text_new_room">Crea Stanza</string>
 
     <string name="title_activity_UtentiAttesa">Utenti In Attesa</string>
-    <string name="title_attesa">Utenti In Attesa</string>
-    <string name="text_attesa">Utenti In Attesa</string>
 
     <string name="title_activity_Profilo">Profilo</string>
-    <string name="title_profilo">Profilo</string>
     <string name="text_profilo">Profilo</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_input">Questo campo non può essere vuoto</string>
     <string name="text_tab_1">Tue chat</string>
     <string name="text_tab_2">Altre</string>
     <string name="room_name" />
+    <string name="label_room_name">Nome stanza</string>
 </resources>
