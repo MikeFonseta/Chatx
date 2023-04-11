@@ -9,19 +9,16 @@
         android:name="com.example.chat2023.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
-
     <fragment
         android:id="@+id/navigation_nuova_stanza"
         android:name="com.example.chat2023.ui.nuovaStanza.NuovaStanzaFragment"
         android:label="@string/title_activity_NuovaStanza"
         tools:layout="@layout/fragment_nuova_stanza" />
-
     <fragment
         android:id="@+id/navigation_profilo"
         android:name="com.example.chat2023.ui.ProfileFragment"
         android:label="@string/title_activity_Profilo"
         tools:layout="@layout/fragment_profile" />
-
     <fragment
         android:id="@+id/navigation_utenti_attesa"
         android:name="com.example.chat2023.ui.utentiInAttesa.UtentiInAttesaFragment"

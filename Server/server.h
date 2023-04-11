@@ -2,13 +2,12 @@
 #define SERVER_H_INCLUDED
 
 #include <netinet/in.h>
-#define PORT 8888
 
 typedef struct
 {
 	int socketfd;
 	struct sockaddr_in address;
-}client;
+} client;
 
 void *client_handler(void *arg);
 

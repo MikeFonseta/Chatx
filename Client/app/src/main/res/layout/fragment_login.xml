@@ -90,7 +90,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/sign_up"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
         </RelativeLayout>
 
     </LinearLayout>
