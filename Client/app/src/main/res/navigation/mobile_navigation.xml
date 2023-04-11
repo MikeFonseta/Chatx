@@ -6,22 +6,25 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.chat2023.ui.home.HomeFragment"
+        android:name="com.mikefonseta.chatx.Fragment.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
+
     <fragment
         android:id="@+id/navigation_nuova_stanza"
-        android:name="com.example.chat2023.ui.nuovaStanza.NuovaStanzaFragment"
+        android:name="com.mikefonseta.chatx.Fragment.NewRoomFragment"
         android:label="@string/title_activity_NuovaStanza"
         tools:layout="@layout/fragment_nuova_stanza" />
+
     <fragment
         android:id="@+id/navigation_profilo"
-        android:name="com.example.chat2023.ui.ProfileFragment"
+        android:name="com.mikefonseta.chatx.Fragment.ProfileFragment"
         android:label="@string/title_activity_Profilo"
         tools:layout="@layout/fragment_profile" />
+
     <fragment
         android:id="@+id/navigation_utenti_attesa"
-        android:name="com.example.chat2023.ui.utentiInAttesa.UtentiInAttesaFragment"
+        android:name="com.mikefonseta.chatx.Fragment.UtentiInAttesaFragment"
         android:label="@string/title_activity_UtentiAttesa"
         tools:layout="@layout/fragment_utenti_attesa" />
 </navigation>

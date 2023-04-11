@@ -4,43 +4,4 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" />
-
-    <!--<?xml version="1.0" encoding="utf-8"?>-->
-
-
-    <!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--    xmlns:tools="http://schemas.android.com/tools"-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:layout_height="match_parent"-->
-    <!--    android:focusable="auto"-->
-    <!--    tools:context=".MainActivity">-->
-
-    <!--&lt;!&ndash;    <Button&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:id="@+id/buttonAccedi"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:text="@string/Accedi"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:onClick="onClickLogin"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintBottom_toBottomOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintEnd_toEndOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintHorizontal_bias="0.498"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintVertical_bias="0.781" />&ndash;&gt;-->
-
-    <!--&lt;!&ndash;    <Button&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:id="@+id/buttonRegistrati"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:text="@string/Registrati"&ndash;&gt;-->
-    <!--&lt;!&ndash;        android:onClick="onClickRegistrati"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintBottom_toTopOf="@+id/buttonAccedi"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintEnd_toEndOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintHorizontal_bias="0.498"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;        app:layout_constraintVertical_bias="0.842" />&ndash;&gt;-->
-
-    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+    tools:context=".Activity.AuthenticationActivity" />
