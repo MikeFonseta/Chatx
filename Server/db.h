@@ -23,10 +23,4 @@ int updateRoom(const char *room_owner, const char *chat_room_name, const char *n
 int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *response);
 int getRooms(const int fd, const int user_id, json_object *response);
 
-// void test_removeUser();
-// void test_createRoom();
-// void test_updateRoom();
-// void test_deleteRoom();
-// void test_getChats();
-
 #endif
