@@ -15,7 +15,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -29,6 +28,4 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onDestroy();
         ConnectionHandler.getInstance().stopListen();
     }
-
-
 }
