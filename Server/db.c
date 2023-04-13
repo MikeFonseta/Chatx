@@ -113,56 +113,31 @@ json_object *getAllChatRoom()
 	return chat_room_list;
 }
 
-int checkUser(const char *user)
+int registerUser(const char *user, const char *password, json_object *response)
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
-	sprintf(sql, "SELECT * FROM user_account WHERE user_account.username = '%s'", user);
+	sprintf(sql, "INSERT INTO user_account(username,password) VALUES('%s','%s')", user, password);
 	PGresult *res = PQexec(conn, sql);
 
-	if (PQresultStatus(res) != PGRES_TUPLES_OK)
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	{
 		printf("%s\n", PQresultErrorMessage(res));
-	else
-		rows = PQntuples(res);
-
-	PQclear(res);
-	PQfinish(conn);
-
-	return rows;
-}
-
-int registerUser(const char *user, const char *password, json_object *response)
-{
-	PGconn *conn = getConnection();
-	int userTaken = checkUser(user);
-
-	if (userTaken == 0)
-	{
-		char sql[256];
-		sprintf(sql, "INSERT INTO user_account(username,password) VALUES('%s','%s')", user, password);
-		PGresult *res = PQexec(conn, sql);
-
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		{
-			return -1;
-		}
-		PQclear(res);
-	}
-	else
-	{
 		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 		json_object_object_add(response, "message", json_object_new_string("Username non disponibile"));
-		return 0;
 	}
+	else
+	{
+		rows = PQntuples(res);
+		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
+	}
+	PQclear(res);
 	PQfinish(conn);
-
-	json_object_object_add(response, "action", json_object_new_string("REGISTER"));
-	json_object_object_add(response, "status", json_object_new_string("OK"));
-	json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
-
-	return 1;
+	return rows;
 }
 
 int loginUser(int fd, const char *user, const char *password, json_object *response)
@@ -487,7 +462,7 @@ int getRooms(int fd, const int user_id, json_object *response)
 			}
 			if (!found)
 				json_object_array_add(array, json_object_new_int64(fd));
-				
+
 			found = 0;
 		}
 	}

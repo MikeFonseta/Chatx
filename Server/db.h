@@ -11,7 +11,6 @@ PGconn *getConnection();
 int evaluate_action(int fd, json_object *request, json_object *response);
 json_object *getAllChatRoom();
 
-int checkUser(const char *user);
 int registerUser(const char *user, const char *password, json_object *response);
 int loginUser(int fd, const char *user, const char *password, json_object *response);
 int logout(int fd);
