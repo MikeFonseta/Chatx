@@ -9,12 +9,12 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
-import com.mikefonseta.chatx.Network.ConnectionHandler;
-import com.mikefonseta.chatx.R;
-import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mikefonseta.chatx.Controller.AuthenticationController;
+import com.mikefonseta.chatx.Network.ConnectionHandler;
+import com.mikefonseta.chatx.R;
 
 import java.util.ArrayList;
 import java.util.List;

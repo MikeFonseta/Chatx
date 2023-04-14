@@ -15,11 +15,12 @@ import java.util.List;
 public class ChatController {
 
     private static List<ChatRoom> chatRoomList = new ArrayList<>();
+
     public static void evaluate_action(Fragment fragment, String message) {
         try {
             JSONObject response = new JSONObject(message);
             String action = response.getString("action");
-            if(action.equals(Response.GETROOMS.name())) {
+            if (action.equals(Response.GETROOMS.name())) {
                 actionGetRooms(response);
             }
         } catch (JSONException e) {
@@ -44,11 +45,11 @@ public class ChatController {
     public static String getRoomsRequest(String username, int user_id) {
         JSONObject jsonObject = new JSONObject();
 
-        try{
+        try {
             jsonObject.put("action", "GETROOMS");
             jsonObject.put("username", username);
             jsonObject.put("user_id", user_id);
-        }catch (JSONException e) {
+        } catch (JSONException e) {
             System.err.println(e.getMessage());
         }
 
