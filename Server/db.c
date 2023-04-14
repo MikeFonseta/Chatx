@@ -214,7 +214,7 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 	PQclear(res);
 	PQfinish(conn);
 
-	if(rows == 0)
+	if (rows == 0)
 	{
 		return 0;
 	}
@@ -277,7 +277,7 @@ int getMessage(const int chat_room_id, json_object *response)
 			json_object_object_add(obj, "message_content", json_object_new_string(PQgetvalue(res, i, 3)));
 			json_object_object_add(obj, "sending_time", json_object_new_string(PQgetvalue(res, i, 4)));
 
-			json_object_array_add(message_list,obj);
+			json_object_array_add(message_list, obj);
 		}
 		json_object_object_add(response, "message_list", message_list);
 	}
@@ -294,20 +294,19 @@ int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 	sprintf(sql, "INSERT INTO join_requests(user_id, chat_room, accepted) VALUES (%d, %d, false)", user_id, chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		{
-			printf("%s\n", PQresultErrorMessage(res));
-			json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
-			json_object_object_add(response, "status", json_object_new_string("FAILED"));
-			json_object_object_add(response, "message", json_object_new_string("Impossibile accedere alla stanza"));
-		}
-		else
-		{
-			json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
-			json_object_object_add(response, "status", json_object_new_string("OK"));
-			json_object_object_add(response, "message", json_object_new_string("Richiesta effettuata con successo"));
-		}
-
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	{
+		printf("%s\n", PQresultErrorMessage(res));
+		json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
+		json_object_object_add(response, "status", json_object_new_string("FAILED"));
+		json_object_object_add(response, "message", json_object_new_string("Impossibile accedere alla stanza"));
+	}
+	else
+	{
+		json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object_object_add(response, "message", json_object_new_string("Richiesta effettuata con successo"));
+	}
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
@@ -318,24 +317,22 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
+	sprintf(sql, "UPDATE join_requests SET accepted=true WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
+	PGresult *res = PQexec(conn, sql);
 
-		sprintf(sql, "UPDATE join_requests SET accepted=true WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
-		PGresult *res = PQexec(conn, sql);
-
-
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		{
-printf("%s\n", PQresultErrorMessage(res));
-			json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
-			json_object_object_add(response, "status", json_object_new_string("FAILED"));
-			json_object_object_add(response, "message", json_object_new_string("Impossibile accettare la richiesta"));		}
-		else
-		{
-			json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
-			json_object_object_add(response, "status", json_object_new_string("OK"));
-			json_object_object_add(response, "message", json_object_new_string("Richiesta accettata"));
-		}
-
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	{
+		printf("%s\n", PQresultErrorMessage(res));
+		json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
+		json_object_object_add(response, "status", json_object_new_string("FAILED"));
+		json_object_object_add(response, "message", json_object_new_string("Impossibile accettare la richiesta"));
+	}
+	else
+	{
+		json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object_object_add(response, "message", json_object_new_string("Richiesta accettata"));
+	}
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
@@ -347,7 +344,6 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	PGconn *conn = getConnection();
 	char sql[256];
 	sprintf(sql, "DELETE FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
-
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
