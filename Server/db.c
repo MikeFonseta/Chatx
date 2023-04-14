@@ -152,9 +152,7 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
-	{
 		printf("%s\n", PQresultErrorMessage(res));
-	}
 	else
 	{
 		rows = PQntuples(res);
@@ -329,14 +327,9 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-	{
-		rows = -1;
-	}
+		printf("%s\n", PQresultErrorMessage(res));
 	else
-	{
 		rows = PQntuples(res);
-		printf("Hereee %d", rows);
-	}
 
 	PQclear(res);
 	PQfinish(conn);
