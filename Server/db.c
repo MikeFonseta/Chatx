@@ -318,35 +318,25 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
-	sprintf(sql, "SELECT * FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
 
-	PGresult *res_select = PQexec(conn, sql);
-
-	if (PQresultStatus(res_select) != PGRES_TUPLES_OK)
-	{
-		rows = -1;
-	}
-	else
-	{
-		rows = PQntuples(res_select);
-	}
-
-	if (rows == 1)
-	{
 		sprintf(sql, "UPDATE join_requests SET accepted=true WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
 		PGresult *res = PQexec(conn, sql);
 
+
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		{
-			rows = -1;
-		}
+printf("%s\n", PQresultErrorMessage(res));
+			json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
+			json_object_object_add(response, "status", json_object_new_string("FAILED"));
+			json_object_object_add(response, "message", json_object_new_string("Impossibile accettare la richiesta"));		}
 		else
 		{
-			rows = PQntuples(res_select);
+			json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
+			json_object_object_add(response, "status", json_object_new_string("OK"));
+			json_object_object_add(response, "message", json_object_new_string("Richiesta accettata"));
 		}
-	}
 
-	PQclear(res_select);
+	PQclear(res);
 	PQfinish(conn);
 	return rows;
 }
