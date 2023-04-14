@@ -1,76 +1,61 @@
 package com.mikefonseta.chatx.Network;
 
-;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ConnectionHandler{
+public class ConnectionHandler {
 
-    private final String IP_ADDRESS = "192.168.1.16";
-    private final int PORT = 8880;
+    private static ConnectionHandler connectionHandler = null;
+    private final String IP_ADDRESS = "192.168.0.104";
+    private final int PORT = 32768;
     private Socket socket;
-    private boolean exit=false;
+    private boolean exit = false;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
-    private static ConnectionHandler connectionHandler = null;
 
-    public static ConnectionHandler getInstance(){
-        if(connectionHandler == null)
-        {
+    private ConnectionHandler() {
+        try {
+            socket = new Socket(IP_ADDRESS, PORT);
+            printWriter = new PrintWriter(socket.getOutputStream());
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            System.out.println("failed to create socket");
+            e.printStackTrace();
+        }
+        System.out.println("connected");
+    }
+
+    public static ConnectionHandler getInstance() {
+        if (connectionHandler == null) {
             connectionHandler = new ConnectionHandler();
         }
         return connectionHandler;
     }
 
-    private ConnectionHandler() {
-
-        try
-        {
-            socket = new Socket( IP_ADDRESS , PORT );
-            printWriter = new PrintWriter(socket.getOutputStream());
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        }
-        catch( IOException e )
-        {
-            System.out.println("failed to create socket");
-            e.printStackTrace();
-        }
-
-        System.out.println("connected");
-
-
-    }
-
-    public void listen(responseCallBack responseCallBack)
-    {
+    public void listen(responseCallBack responseCallBack) {
         exit = false;
-        while (!exit)
-        {
-            try
-            {
+        while (!exit) {
+            try {
                 String response = this.bufferedReader.readLine();
                 System.out.println(response);
                 responseCallBack.onResponse(response);
-            }
-            catch ( IOException e )
-            {
-                System.out.println( "failed to read data" );
+            } catch (IOException e) {
+                System.out.println("failed to read data");
                 e.printStackTrace();
                 break;
             }
         }
     }
 
-    public void stopListen()
-    {
+    public void stopListen() {
         System.out.println("Stopping Listen");
         exit = true;
     }
 
-    public void doRequest(String message){
+    public void doRequest(String message) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

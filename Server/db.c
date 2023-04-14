@@ -113,56 +113,31 @@ json_object *getAllChatRoom()
 	return chat_room_list;
 }
 
-int checkUser(const char *user)
+int registerUser(const char *user, const char *password, json_object *response)
 {
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
-	sprintf(sql, "SELECT * FROM user_account WHERE user_account.username = '%s'", user);
+	sprintf(sql, "INSERT INTO user_account(username,password) VALUES('%s','%s')", user, password);
 	PGresult *res = PQexec(conn, sql);
 
-	if (PQresultStatus(res) != PGRES_TUPLES_OK)
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	{
 		printf("%s\n", PQresultErrorMessage(res));
-	else
-		rows = PQntuples(res);
-
-	PQclear(res);
-	PQfinish(conn);
-
-	return rows;
-}
-
-int registerUser(const char *user, const char *password, json_object *response)
-{
-	PGconn *conn = getConnection();
-	int userTaken = checkUser(user);
-
-	if (userTaken == 0)
-	{
-		char sql[256];
-		sprintf(sql, "INSERT INTO user_account(username,password) VALUES('%s','%s')", user, password);
-		PGresult *res = PQexec(conn, sql);
-
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		{
-			return -1;
-		}
-		PQclear(res);
-	}
-	else
-	{
 		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 		json_object_object_add(response, "message", json_object_new_string("Username non disponibile"));
-		return 0;
 	}
+	else
+	{
+		rows = PQntuples(res);
+		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
+	}
+	PQclear(res);
 	PQfinish(conn);
-
-	json_object_object_add(response, "action", json_object_new_string("REGISTER"));
-	json_object_object_add(response, "status", json_object_new_string("OK"));
-	json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
-
-	return 1;
+	return rows;
 }
 
 int loginUser(int fd, const char *user, const char *password, json_object *response)
@@ -177,9 +152,7 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
-	{
 		printf("%s\n", PQresultErrorMessage(res));
-	}
 	else
 	{
 		rows = PQntuples(res);
@@ -354,14 +327,9 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	PGresult *res = PQexec(conn, sql);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-	{
-		rows = -1;
-	}
+		printf("%s\n", PQresultErrorMessage(res));
 	else
-	{
 		rows = PQntuples(res);
-		printf("Hereee %d", rows);
-	}
 
 	PQclear(res);
 	PQfinish(conn);
@@ -487,7 +455,7 @@ int getRooms(int fd, const int user_id, json_object *response)
 			}
 			if (!found)
 				json_object_array_add(array, json_object_new_int64(fd));
-				
+
 			found = 0;
 		}
 	}
@@ -496,99 +464,3 @@ int getRooms(int fd, const int user_id, json_object *response)
 	PQfinish(conn);
 	return rows;
 }
-
-// void test_removeUser()
-// {
-// 	json_object *root = json_object_from_file("test/test.json");
-// 	if (!root)
-// 		printf("errore apertura json\n");
-// 	json_object *response = json_object_new_object();
-
-// 	evaluate_action(root, response);
-// 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-
-// 	json_object_put(root);
-// 	json_object_put(response);
-// }
-
-// void test_createRoom()
-// {
-
-// 	json_object *root = json_object_from_file("test/newChatRoom.json");
-// 	if (!root)
-// 		printf("errore apertura json\n");
-// 	json_object *response = json_object_new_object();
-
-// 	// json_object_object_del(root, "owner");
-// 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
-
-// 	// json_object_object_del(root, "roomName");
-// 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
-
-// 	evaluate_action(root, response);
-// 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-
-// 	json_object_put(root);
-// 	json_object_put(response);
-// }
-
-// void test_updateRoom()
-// {
-
-// 	json_object *root = json_object_from_file("test/updateChatRoom.json");
-// 	if (!root)
-// 		printf("errore apertura json\n");
-// 	json_object *response = json_object_new_object();
-
-// 	// json_object_object_del(root, "owner");
-// 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
-
-// 	// json_object_object_del(root, "roomName");
-// 	json_object_object_add(root, "roomName", json_object_new_string("testRoom"));
-
-// 	// json_object_object_del(root, "newName");
-// 	json_object_object_add(root, "newName", json_object_new_string("room1"));
-
-// 	evaluate_action(root, response);
-// 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-
-// 	json_object_put(root);
-// 	json_object_put(response);
-// }
-
-// void test_deleteRoom()
-// {
-
-// 	json_object *root = json_object_from_file("test/deleteChatRoom.json");
-// 	if (!root)
-// 		printf("errore apertura json\n");
-// 	json_object *response = json_object_new_object();
-
-// 	// json_object_object_del(root, "owner");
-// 	json_object_object_add(root, "owner", json_object_new_string("gaetano"));
-
-// 	// json_object_object_del(root, "roomName");
-// 	json_object_object_add(root, "roomName", json_object_new_string("room1"));
-
-// 	evaluate_action(root, response);
-// 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-
-// 	json_object_put(root);
-// 	json_object_put(response);
-// }
-
-// void test_getChats()
-// {
-// 	json_object *root = json_object_from_file("test/getChats.json");
-// 	if (!root)
-// 		printf("errore apertura json\n");
-// 	json_object *response = json_object_new_object();
-
-// 	json_object_object_add(root, "user_id", json_object_new_int(1));
-
-// 	evaluate_action(root, response);
-// 	printf("Result json:\n\n%s\n\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
-
-// 	json_object_put(root);
-// 	json_object_put(response);
-// }

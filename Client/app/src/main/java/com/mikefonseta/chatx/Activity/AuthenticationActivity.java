@@ -1,11 +1,11 @@
 package com.mikefonseta.chatx.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
-import com.mikefonseta.chatx.Network.ConnectionHandler;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mikefonseta.chatx.Fragment.LoginFragment;
+import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 public class AuthenticationActivity extends AppCompatActivity {
@@ -14,7 +14,6 @@ public class AuthenticationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -29,6 +28,4 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onDestroy();
         ConnectionHandler.getInstance().stopListen();
     }
-
-
 }
