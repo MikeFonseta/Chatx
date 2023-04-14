@@ -42,6 +42,11 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 		json_object_object_get_ex(request, "from", &from);
 		return sendMessage(fd, json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
 	}
+	if (strcmp(json_object_get_string(action), "OPEN_ROOM") == 0)
+	{
+		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
+		return getMessage(json_object_get_int(chat_room_id), response);
+	}
 	if (strcmp(json_object_get_string(action), "JOIN_ROOM") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
@@ -79,7 +84,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 		json_object_object_get_ex(request, "roomName", &roomName);
 		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName), response);
 	}
-	if (strcmp(json_object_get_string(action), "GETROOMS") == 0)
+	if (strcmp(json_object_get_string(action), "GET_ROOMS") == 0)
 	{
 		json_object_object_get_ex(request, "user_id", &user_id);
 		return getRooms(fd, json_object_get_int(user_id), response);
@@ -193,9 +198,28 @@ int logout(int fd)
 
 int sendMessage(int fd, const char *chat_room_id, const char *from, const char *message, json_object *response)
 {
-	printf("SEND MESS START");
 	json_object *chat_room;
 	json_object *sendMessage = json_object_new_object();
+
+
+	int rows = 0;
+	char *PGstatement = "INSERT INTO Message (sender,chat, message_content) VALUES ($1::INTEGER, $2::INTEGER, $3::VARCHAR)";
+	const char *paramValues[3] = {from, chat_room_id, message};
+	PGconn *conn = getConnection();
+	PGresult *res = PQexecParams(conn, PGstatement, 3, NULL, paramValues, NULL, NULL, 0);
+
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		printf("%s\n", PQresultErrorMessage(res));
+	else
+		rows = PQntuples(res);
+
+	PQclear(res);
+	PQfinish(conn);
+
+	if(rows == 0)
+	{
+		return 0;
+	}
 
 	if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
 	{
@@ -222,8 +246,51 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 	}
 	json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
 	json_object_object_add(response, "status", json_object_new_string("OK"));
+	json_object_object_add(response, "message", json_object_new_string(message));
 	return 1;
 }
+
+int getMessage(const int chat_room_id, json_object *response)
+{
+	int rows = 0;
+	PGconn *conn = getConnection();
+	char sql[256];
+	sprintf(sql, "SELECT * FROM message WHERE chat = %d  ORDER BY sending_time DESC", chat_room_id);
+
+	PGresult *res = PQexec(conn, sql);
+
+	if (PQresultStatus(res) != PGRES_TUPLES_OK)
+	{
+		rows = -1;
+		json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
+		json_object_object_add(response, "status", json_object_new_string("FAILED"));
+	}
+	else
+	{
+		rows = PQntuples(res);
+		json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object *message_list = json_object_new_array();
+		for (int i = 0; i < rows; i++)
+		{
+			json_object *obj = json_object_new_object();
+			json_object_object_add(obj, "message_id", json_object_new_int(atoi(PQgetvalue(res, i, 0))));
+			json_object_object_add(obj, "sender", json_object_new_int(atoi(PQgetvalue(res, i, 1))));
+			json_object_object_add(obj, "chat", json_object_new_int(atoi(PQgetvalue(res, i, 2))));
+			json_object_object_add(obj, "message_content", json_object_new_string(PQgetvalue(res, i, 3)));
+			json_object_object_add(obj, "sending_time", json_object_new_string(PQgetvalue(res, i, 4)));
+
+			json_object_array_add(message_list,obj);
+		}
+
+		json_object_object_add(response, "message_list", message_list);
+	}
+
+	PQclear(res);
+	PQfinish(conn);
+	return rows;
+}
+
 
 int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 {
@@ -392,7 +459,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 
 int getRooms(int fd, const int user_id, json_object *response)
 {
-	json_object_object_add(response, "action", json_object_new_string("GETROOMS"));
+	json_object_object_add(response, "action", json_object_new_string("GET_ROOMS"));
 	json_object *accepted = json_object_new_array();
 	json_object_object_add(response, "accepted", accepted);
 	json_object *waiting = json_object_new_array();
@@ -405,7 +472,7 @@ int getRooms(int fd, const int user_id, json_object *response)
 	char char_id[10];
 	sprintf(char_id, "%d", user_id);
 	char *PGstatement = "SELECT C.CHAT_ROOM_ID, C.CHAT_ROOM_NAME, C.ROOM_OWNER, U.username, J.ACCEPTED FROM CHAT_ROOM C "
-						"LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM, "
+						"LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM_ID, "
 						"USER_ACCOUNT U WHERE C.ROOM_OWNER = U.USER_ID";
 	const char *paramValues[1] = {(const char *)char_id};
 	PGconn *conn = getConnection();

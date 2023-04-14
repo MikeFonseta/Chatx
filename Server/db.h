@@ -14,6 +14,8 @@ json_object *getAllChatRoom();
 int registerUser(const char *user, const char *password, json_object *response);
 int loginUser(int fd, const char *user, const char *password, json_object *response);
 int logout(int fd);
+
+int getMessage(const int chat_room_id, json_object *response);
 int joinRoom(const int user_id, const int chat_room_id, json_object *response);
 int sendMessage(int fd, const char *char_room_id, const char *from, const char *message, json_object *response);
 int acceptRequest(const int user_id, const int chat_room_id, json_object *response);
