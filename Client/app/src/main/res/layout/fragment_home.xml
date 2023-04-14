@@ -8,17 +8,17 @@
 
     <ListView
         android:id="@+id/listView"
+        tools:listitem="@layout/chat_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:divider="@null"
-        android:dividerHeight="0dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        tools:listitem="@layout/chat_item" />
+        app:layout_constraintTop_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
