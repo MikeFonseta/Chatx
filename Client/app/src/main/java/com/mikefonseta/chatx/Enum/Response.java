@@ -5,5 +5,7 @@ public enum Response {
     FAILED,
     LOGIN,
     REGISTER,
-    GETROOMS
+    GET_ROOMS,
+    OPEN_ROOM,
+    SEND_MESSAGE
 }
