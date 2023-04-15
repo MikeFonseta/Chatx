@@ -18,7 +18,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 {
 	json_object *action;
 	json_object *username, *password, *message, *from;
-	json_object *user_id, *chat_room_id;
+	json_object *user_id, *chat_room_id, *room_owner_id;
 	json_object *owner, *roomName, *newName;
 
 	json_object_object_get_ex(request, "action", &action);
@@ -67,9 +67,9 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 	}
 	if (strcmp(json_object_get_string(action), "CREATE") == 0)
 	{
-		json_object_object_get_ex(request, "owner", &owner);
+		json_object_object_get_ex(request, "room_owner_id", &room_owner_id);
 		json_object_object_get_ex(request, "roomName", &roomName);
-		return createRoom(json_object_get_string(owner), json_object_get_string(roomName), response);
+		return createRoom(json_object_get_int(room_owner_id), json_object_get_string(roomName), response);
 	}
 	if (strcmp(json_object_get_string(action), "UPDATE") == 0)
 	{
@@ -356,19 +356,30 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	return rows;
 }
 
-int createRoom(const char *room_owner, const char *chat_room_name, json_object *response)
+int createRoom(const int room_owner_id, const char *chat_room_name, json_object *response)
 {
 	int rows = 0;
-	char *PGstatement = "INSERT INTO Chat_room (chat_room_name, room_owner) VALUES ($1::VARCHAR, (SELECT user_id FROM user_account WHERE user_account.username = $2::VARCHAR))";
-	const char *paramValues[2] = {chat_room_name, room_owner};
+	int char_converted;
+	char char_id[10];
+	sprintf(char_id, "%d", room_owner_id);
+	char *PGstatement = "INSERT INTO Chat_room (chat_room_name, room_owner) VALUES ($1::VARCHAR, $2::INTEGER) RETURNING chat_room_id";
+	const char *paramValues[2] = {chat_room_name, (const char *)char_id};
 	PGconn *conn = getConnection();
 	PGresult *res = PQexecParams(conn, PGstatement, 2, NULL, paramValues, NULL, NULL, 0);
 
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	if (PQresultStatus(res) != PGRES_TUPLES_OK)
 		printf("%s\n", PQresultErrorMessage(res));
 	else
+	{
 		rows = PQntuples(res);
 
+		char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
+		json_object_object_add(response, "chat_room_id", json_object_new_int64(char_converted));
+
+		json_object_object_add(response, "chat_room_name", json_object_new_string(chat_room_name));
+
+		json_object_object_add(response, "room_owner_id", json_object_new_int64(room_owner_id));
+	}
 	PQclear(res);
 	PQfinish(conn);
 	return rows;

@@ -1,5 +1,6 @@
 {
   "action": "CREATE",
   "owner": null,
+  "room_owner_id": null,
   "roomName": null
 }
