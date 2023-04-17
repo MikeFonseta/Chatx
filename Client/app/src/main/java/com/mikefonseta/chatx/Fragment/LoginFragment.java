@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.R;
@@ -39,24 +40,6 @@ public class LoginFragment extends Fragment {
         textView.setText(signUp);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        Thread listenThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    ConnectionHandler.getInstance().listen(new responseCallBack() {
-                        @Override
-                        public void onResponse(String message) {
-                            AuthenticationController.evaluate_action(getActivity(), message);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        listenThread.start();
-
         final TextInputLayout usernameTextInput = view.findViewById(R.id.username_text_input);
         final TextInputEditText usernameEditText = view.findViewById(R.id.username_edit_text);
 
@@ -68,6 +51,8 @@ public class LoginFragment extends Fragment {
         textInputLayouts.add(passwordTextInput);
 
         MaterialButton loginButton = view.findViewById(R.id.login_button);
+
+        Controller.setCurrentFragment(this);
 
         loginButton.setOnClickListener(view1 -> {
 

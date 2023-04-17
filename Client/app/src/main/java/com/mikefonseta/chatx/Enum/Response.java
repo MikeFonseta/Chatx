@@ -7,5 +7,6 @@ public enum Response {
     REGISTER,
     GET_ROOMS,
     OPEN_ROOM,
-    SEND_MESSAGE
+    SEND_MESSAGE,
+    NEW_MESSAGE
 }

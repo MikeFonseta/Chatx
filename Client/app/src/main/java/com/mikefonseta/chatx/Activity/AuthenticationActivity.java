@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.Fragment.LoginFragment;
 import com.mikefonseta.chatx.R;
@@ -15,6 +16,15 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Controller.setCurrentActivity(this);
+        Thread connectionThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ConnectionHandler.getInstance();
+            }
+        });
+
+        connectionThread.start();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -24,11 +34,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ConnectionHandler.getInstance().stopListen();
-    }
 
 
 }

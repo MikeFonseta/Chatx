@@ -3,10 +3,9 @@ package com.mikefonseta.chatx.Controller;
 import android.content.Intent;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 
 import com.mikefonseta.chatx.Activity.MainActivity;
-import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.Entity.User;
 import com.mikefonseta.chatx.Enum.Response;
 
@@ -17,38 +16,58 @@ public class AuthenticationController {
 
     private static User user = null;
     private static boolean isLogged = false;
-    public static void evaluate_action(FragmentActivity activity, String message) {
+    public static void evaluate_action(Fragment fragment, String message) {
         try {
             JSONObject response = new JSONObject(message);
             String action = response.getString("action");
             if(action.equals(Response.LOGIN.name())) {
-                actionLogin(activity,response);
+                actionLogin(fragment,response);
             }
             else if(action.equals(Response.REGISTER.name()))
             {
-                actionLogin(activity,response);
+                actionRegister(fragment,response);
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void actionLogin(FragmentActivity activity, JSONObject response) throws JSONException {
+    private static void actionLogin(Fragment fragment, JSONObject response) throws JSONException {
         String status = response.getString("status");
         if(status.equals(Response.OK.name()))
         {
             user.setUser_id(response.getInt("user_id"));
             isLogged = true;
-            ConnectionHandler.getInstance().stopListen();
-            activity.startActivity(new Intent(activity, MainActivity.class));
+            fragment.getActivity().startActivity(new Intent(fragment.getActivity(), MainActivity.class));
         }
         else
         {
             user = null;
             isLogged = false;
-            activity.runOnUiThread(new Runnable() {
+            fragment.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    Toast.makeText(activity, "Credenziali errate", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(fragment.getActivity(), "Credenziali errate", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+    private static void actionRegister(Fragment fragment, JSONObject response) throws JSONException {
+        String status = response.getString("status");
+        String message = response.getString("message");
+        if(status.equals(Response.OK.name()))
+        {
+            fragment.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+        else
+        {
+            fragment.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show();
                 }
             });
         }

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mikefonseta.chatx.Activity.ChatActivity;
 import com.mikefonseta.chatx.Controller.ChatController;
 import com.mikefonseta.chatx.Entity.ChatRoom;
+import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 import java.util.List;

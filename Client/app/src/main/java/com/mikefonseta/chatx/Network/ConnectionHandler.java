@@ -1,6 +1,7 @@
 package com.mikefonseta.chatx.Network;
 
-;
+import com.mikefonseta.chatx.Controller.Controller;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,7 +11,7 @@ import java.net.Socket;
 public class ConnectionHandler{
 
     private final String IP_ADDRESS = "192.168.1.16";
-    private final int PORT = 8881;
+    private final int PORT = 8880;
     private Socket socket;
     private boolean exit=false;
     private PrintWriter printWriter;
@@ -32,6 +33,7 @@ public class ConnectionHandler{
             socket = new Socket( IP_ADDRESS , PORT );
             printWriter = new PrintWriter(socket.getOutputStream());
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            listen();
         }
         catch( IOException e )
         {
@@ -41,33 +43,31 @@ public class ConnectionHandler{
 
         System.out.println("connected");
 
-
     }
 
-    public void listen(responseCallBack responseCallBack)
+    public void listen()
     {
-        exit = false;
-        while (!exit)
-        {
-            try
-            {
-                String response = this.bufferedReader.readLine();
-                System.out.println(response);
-                responseCallBack.onResponse(response);
+        Thread listenThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!exit)
+                {
+                    try
+                    {
+                        String response = bufferedReader.readLine();
+                        System.out.println(response.substring(0,response.length()-1));
+                        Controller.evaluate_action(response);
+                    }
+                    catch ( IOException e )
+                    {
+                        System.out.println( "failed to read data" );
+                        e.printStackTrace();
+                        break;
+                    }
+                }
             }
-            catch ( IOException e )
-            {
-                System.out.println( "failed to read data" );
-                e.printStackTrace();
-                break;
-            }
-        }
-    }
-
-    public void stopListen()
-    {
-        System.out.println("Stopping Listen");
-        exit = true;
+        });
+        listenThread.start();
     }
 
     public void doRequest(String message){
