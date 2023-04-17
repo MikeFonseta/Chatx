@@ -35,8 +35,7 @@ public class ChatController {
             }else if(action.equals(Response.SEND_MESSAGE.name())) {
                 actionSendMessage(activity,response);
             }else if(action.equals(Response.NEW_MESSAGE.name())) {
-                //actionSendMessage(activity,response);
-                System.out.println("NEW MESSAGE");
+                actionNewMessage(activity,response);
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -46,9 +45,21 @@ public class ChatController {
     private static void actionSendMessage(Activity chatActivity,JSONObject response) throws JSONException {
         if(response.getString("status").equals(Response.OK.name()))
         {
-            messages.add(0,new Message(8,1,1,response.getString("message"),"2898"));
+            messages.add(0,new Message(-1,
+                    Integer.parseInt(response.getString("sender")),
+                    Integer.parseInt(response.getString("chat")),
+                    response.getString("message"),null));
             ((ChatActivity)chatActivity).updateUI();
-            System.out.println(messages.size());
+        }
+    }
+    private static void actionNewMessage(Activity chatActivity,JSONObject response) throws JSONException {
+        if(response.getString("status").equals(Response.OK.name()))
+        {
+            messages.add(0,new Message(-1,
+                    Integer.parseInt(response.getString("sender")),
+                    Integer.parseInt(response.getString("chat")),
+                    response.getString("message"),null));
+            ((ChatActivity)chatActivity).updateUI();
         }
     }
 

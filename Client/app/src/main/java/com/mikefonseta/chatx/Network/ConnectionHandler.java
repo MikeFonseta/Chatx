@@ -11,7 +11,7 @@ import java.net.Socket;
 public class ConnectionHandler{
 
     private final String IP_ADDRESS = "192.168.1.16";
-    private final int PORT = 8880;
+    private final int PORT = 8881;
     private Socket socket;
     private boolean exit=false;
     private PrintWriter printWriter;
@@ -55,7 +55,7 @@ public class ConnectionHandler{
                     try
                     {
                         String response = bufferedReader.readLine();
-                        System.out.println(response.substring(0,response.length()-1));
+                        System.out.println(response);
                         Controller.evaluate_action(response);
                     }
                     catch ( IOException e )

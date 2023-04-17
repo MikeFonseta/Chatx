@@ -28,39 +28,23 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         listView = view.findViewById(R.id.listView);
-        chatRoomListAdapter = new ChatRoomListAdapter(getContext(), R.layout.chat_item,  ChatController.getChatRoomList());
-        listView.setAdapter(chatRoomListAdapter);
-        chatRoomListAdapter.notifyDataSetChanged();
-
         Controller.setCurrentFragment(this);
-
-        return view;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
         if(AuthenticationController.isLogged())
         {
             ((MainActivity) getActivity()).getSupportActionBar().setTitle(AuthenticationController.getUser().getUsername());
-
-            String username = AuthenticationController.getUser().getUsername();
-            int user_id = AuthenticationController.getUser().getUser_id();
-
-            ConnectionHandler.getInstance().doRequest(ChatController.getRoomsRequest(username,user_id));
-
         }
+
+        return view;
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        ChatController.clearMessages();
 
         String username = AuthenticationController.getUser().getUsername();
         int user_id = AuthenticationController.getUser().getUser_id();
-
         ConnectionHandler.getInstance().doRequest(ChatController.getRoomsRequest(username,user_id));
     }
 

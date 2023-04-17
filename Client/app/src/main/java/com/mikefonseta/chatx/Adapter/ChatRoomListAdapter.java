@@ -51,7 +51,7 @@ public class ChatRoomListAdapter extends ArrayAdapter<ChatRoom> {
             }
         });
 
-        System.out.println(chatRoomList.get(position).getChat_room_name());
+        System.out.println("QUI => " + chatRoomList.get(position).getChat_room_name() + " => " + chatRoomList.size());
 
         return view;
     }
