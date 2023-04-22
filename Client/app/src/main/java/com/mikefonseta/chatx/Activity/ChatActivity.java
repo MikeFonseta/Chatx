@@ -55,7 +55,6 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-
     public void updateUI() {
         runOnUiThread(new Runnable() {
             @Override

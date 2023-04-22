@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class AuthenticationController {
 
-    private static User user;
+    private static User user = new User();
     private static boolean isLogged = false;
 
     public static void evaluate_action(Fragment fragment, String message) {
@@ -34,7 +34,8 @@ public class AuthenticationController {
     private static void actionLogin(Fragment fragment, JSONObject response) throws JSONException {
         String status = response.getString("status");
         if (status.equals(Response.OK.name())) {
-            user = new User(response.getInt("user_id"), response.getString("username"));
+            user.setUser_id(response.getInt("user_id"));
+            user.setUsername(response.getString("username"));
             isLogged = true;
             fragment.requireActivity().startActivity(new Intent(fragment.getActivity(), MainActivity.class));
         } else {
@@ -79,7 +80,6 @@ public class AuthenticationController {
             jsonObject.put("action", "LOGIN");
             jsonObject.put("username", username);
             jsonObject.put("password", password);
-//            user = new User(-1, username, password);
         } catch (JSONException e) {
             System.err.println(e.getMessage());
         }
@@ -94,7 +94,6 @@ public class AuthenticationController {
             jsonObject.put("action", "REGISTER");
             jsonObject.put("username", username);
             jsonObject.put("password", password);
-//            user = new User(-1, username, password);
         } catch (JSONException e) {
             System.err.println(e.getMessage());
         }
