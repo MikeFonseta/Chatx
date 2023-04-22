@@ -39,3 +39,15 @@ CREATE TABLE IF NOT EXISTS Message
     CONSTRAINT fk_chat FOREIGN KEY(chat)
     REFERENCES Chat_room(chat_room_id) ON DELETE CASCADE
 );
+
+CREATE OR REPLACE FUNCTION add_owner() RETURNS TRIGGER LANGUAGE PLPGSQL AS $$
+    BEGIN
+        INSERT INTO Join_requests VALUES (NEW.room_owner, NEW.chat_room_id, true);
+        RETURN NEW;
+    END;
+    $$;
+
+CREATE OR REPLACE TRIGGER join_owner
+AFTER INSERT ON chat_room
+FOR EACH ROW
+EXECUTE PROCEDURE add_owner();
