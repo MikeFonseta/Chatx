@@ -16,11 +16,11 @@ import com.mikefonseta.chatx.Network.responseCallBack;
 import com.mikefonseta.chatx.R;
 
 
-
-public class ChatActivity  extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
     private MessageListAdapter messageListAdapter;
     private Button sendButton;
     private EditText messageContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +50,7 @@ public class ChatActivity  extends AppCompatActivity {
         Thread listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     ConnectionHandler.getInstance().listen(new responseCallBack() {
                         @Override
                         public void onResponse(String message) {
@@ -73,8 +73,7 @@ public class ChatActivity  extends AppCompatActivity {
 
         ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(ChatController.getCurrentChatRoom().getChat_room_id()));
 
-        if(ChatController.getCurrentChatRoom() != null)
-        {
+        if (ChatController.getCurrentChatRoom() != null) {
             getSupportActionBar().setTitle(ChatController.getCurrentChatRoom().getChat_room_name());
         }
     }
