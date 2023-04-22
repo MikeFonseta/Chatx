@@ -432,7 +432,7 @@ int getRooms(int fd, const int user_id, json_object *response)
 	char char_id[10];
 	sprintf(char_id, "%d", user_id);
 	char *PGstatement = "SELECT C.CHAT_ROOM_ID, C.CHAT_ROOM_NAME, C.ROOM_OWNER, U.username, J.ACCEPTED FROM CHAT_ROOM C "
-						"LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM_ID, "
+						"LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM, "
 						"USER_ACCOUNT U WHERE C.ROOM_OWNER = U.USER_ID";
 	const char *paramValues[1] = {(const char *)char_id};
 	PGconn *conn = getConnection();
