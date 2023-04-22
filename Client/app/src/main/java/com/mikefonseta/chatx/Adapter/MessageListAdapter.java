@@ -18,7 +18,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     private List<Message> chatMessages;
 
-    public MessageListAdapter(List<Message> chatMessages){
+    public MessageListAdapter(List<Message> chatMessages) {
         this.chatMessages = chatMessages;
     }
 
@@ -26,10 +26,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if(viewType == 0)
-        {
+        if (viewType == 0) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_sent, parent, false);
-        }else{
+        } else {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_received, parent, false);
         }
         return new MessageViewHolder(view);
@@ -45,8 +44,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public int getItemViewType(int position) {
         Message message = chatMessages.get(position);
-        if(message.getSender() == AuthenticationController.getUser().getUser_id())
-        {
+        if (message.getSender() == AuthenticationController.getUser().getUser_id()) {
             return 0;
         }
         return 1;

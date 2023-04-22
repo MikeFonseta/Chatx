@@ -16,12 +16,12 @@ import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 
-
-public class ChatActivity  extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
     private MessageListAdapter messageListAdapter;
     private Button sendButton;
     private EditText messageContent;
     private RecyclerView messageRecycler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +31,7 @@ public class ChatActivity  extends AppCompatActivity {
 
         sendButton = findViewById(R.id.send_button);
         messageContent = findViewById(R.id.message_content_send);
-        messageRecycler = (RecyclerView) findViewById(R.id.message_recycler_view);
+        messageRecycler = findViewById(R.id.message_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageRecycler.setLayoutManager(linearLayoutManager);
         messageListAdapter = new MessageListAdapter(ChatController.getCurrentMessageList());
@@ -40,8 +40,7 @@ public class ChatActivity  extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!messageContent.getText().toString().equals("") && messageContent.getText().toString().length() > 0)
-                {
+                if (!messageContent.getText().toString().equals("") && messageContent.getText().toString().length() > 0) {
                     ConnectionHandler.getInstance().doRequest(ChatController.getSendMessageRequest(messageContent.getText().toString()));
                 }
             }
@@ -49,8 +48,7 @@ public class ChatActivity  extends AppCompatActivity {
 
         ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(ChatController.getCurrentChatRoom().getChat_room_id()));
 
-        if(ChatController.getCurrentChatRoom() != null)
-        {
+        if (ChatController.getCurrentChatRoom() != null) {
             getSupportActionBar().setTitle(ChatController.getCurrentChatRoom().getChat_room_name());
         }
 

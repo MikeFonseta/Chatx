@@ -1,12 +1,12 @@
 package com.mikefonseta.chatx.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mikefonseta.chatx.Controller.Controller;
-import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.Fragment.LoginFragment;
+import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 public class AuthenticationActivity extends AppCompatActivity {
@@ -33,7 +33,6 @@ public class AuthenticationActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
 
 
 }

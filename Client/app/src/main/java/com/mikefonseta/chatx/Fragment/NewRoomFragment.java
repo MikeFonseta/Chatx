@@ -7,15 +7,15 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.mikefonseta.chatx.R;
 
 public class NewRoomFragment extends Fragment {
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_nuova_stanza, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_nuova_stanza, container, false);
     }
 
 }

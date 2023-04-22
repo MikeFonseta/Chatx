@@ -8,35 +8,24 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ConnectionHandler{
+public class ConnectionHandler {
 
-    private final String IP_ADDRESS = "192.168.1.16";
+    private static ConnectionHandler connectionHandler = null;
+    private final String IP_ADDRESS = "192.168.0.105";
     private final int PORT = 8881;
     private Socket socket;
-    private boolean exit=false;
+    private boolean exit = false;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
-    private static ConnectionHandler connectionHandler = null;
-
-    public static ConnectionHandler getInstance(){
-        if(connectionHandler == null)
-        {
-            connectionHandler = new ConnectionHandler();
-        }
-        return connectionHandler;
-    }
 
     private ConnectionHandler() {
 
-        try
-        {
-            socket = new Socket( IP_ADDRESS , PORT );
+        try {
+            socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream());
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             listen();
-        }
-        catch( IOException e )
-        {
+        } catch (IOException e) {
             System.out.println("failed to create socket");
             e.printStackTrace();
         }
@@ -45,22 +34,24 @@ public class ConnectionHandler{
 
     }
 
-    public void listen()
-    {
+    public static ConnectionHandler getInstance() {
+        if (connectionHandler == null) {
+            connectionHandler = new ConnectionHandler();
+        }
+        return connectionHandler;
+    }
+
+    public void listen() {
         Thread listenThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!exit)
-                {
-                    try
-                    {
+                while (!exit) {
+                    try {
                         String response = bufferedReader.readLine();
                         System.out.println(response);
                         Controller.evaluate_action(response);
-                    }
-                    catch ( IOException e )
-                    {
-                        System.out.println( "failed to read data" );
+                    } catch (IOException e) {
+                        System.out.println("failed to read data");
                         e.printStackTrace();
                         break;
                     }
@@ -70,7 +61,7 @@ public class ConnectionHandler{
         listenThread.start();
     }
 
-    public void doRequest(String message){
+    public void doRequest(String message) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

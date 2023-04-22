@@ -11,12 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.mikefonseta.chatx.Activity.ChatActivity;
 import com.mikefonseta.chatx.Controller.ChatController;
 import com.mikefonseta.chatx.Entity.ChatRoom;
-import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 import java.util.List;
@@ -52,7 +50,6 @@ public class ChatRoomListAdapter extends ArrayAdapter<ChatRoom> {
         });
 
         System.out.println("QUI => " + chatRoomList.get(position).getChat_room_name() + " => " + chatRoomList.size());
-
         return view;
     }
 

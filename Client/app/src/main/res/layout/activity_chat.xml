@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".Activity.ChatActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.ChatActivity">
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:scrollingCache="false"
         android:id="@+id/message_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="16dp"
+        android:scrollingCache="false"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@+id/layout_send_message"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,16 +27,17 @@ tools:context=".Activity.ChatActivity">
 
 
         <EditText
-            android:layout_marginStart="16dp"
             android:id="@+id/message_content_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:layout_toStartOf="@+id/send_button"
             android:background="@android:color/transparent"
             android:hint="Enter Message"
             android:inputType="text"
             android:maxLines="6"
+            android:minHeight="48dp"
             tools:ignore="Autofill" />
 
         <Button

@@ -3,7 +3,6 @@ package com.mikefonseta.chatx.Controller;
 import android.app.Activity;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.mikefonseta.chatx.Activity.AuthenticationActivity;
 import com.mikefonseta.chatx.Activity.ChatActivity;
@@ -15,44 +14,29 @@ import com.mikefonseta.chatx.Fragment.ProfileFragment;
 import com.mikefonseta.chatx.Fragment.RegisterFragment;
 import com.mikefonseta.chatx.Fragment.UtentiInAttesaFragment;
 
-
 public class Controller {
 
     private static Activity currentActivity;
     private static Fragment currentFragment;
 
     public static void evaluate_action(String message) {
-        if(currentActivity != null)
-        {
-            if(currentActivity instanceof AuthenticationActivity)
-            {
-                if(currentFragment instanceof LoginFragment || currentFragment instanceof RegisterFragment)
-                {
-                    AuthenticationController.evaluate_action(currentFragment,message);
+        if (currentActivity != null) {
+            if (currentActivity instanceof AuthenticationActivity) {
+                if (currentFragment instanceof LoginFragment || currentFragment instanceof RegisterFragment) {
+                    AuthenticationController.evaluate_action(currentFragment, message);
                 }
-            }
-            else if(currentActivity instanceof MainActivity)
-            {
-                if(currentFragment instanceof HomeFragment)
-                {
-                    ChatController.evaluate_action(currentActivity,currentFragment,message);
-                }
-                else if(currentFragment instanceof NewRoomFragment)
-                {
+            } else if (currentActivity instanceof MainActivity) {
+                if (currentFragment instanceof HomeFragment) {
+                    ChatController.evaluate_action(currentActivity, currentFragment, message);
+                } else if (currentFragment instanceof NewRoomFragment) {
+
+                } else if (currentFragment instanceof ProfileFragment) {
+
+                } else if (currentFragment instanceof UtentiInAttesaFragment) {
 
                 }
-                else if(currentFragment instanceof ProfileFragment)
-                {
-
-                }
-                else if(currentFragment instanceof UtentiInAttesaFragment)
-                {
-
-                }
-            }
-            else if(currentActivity instanceof ChatActivity)
-            {
-                ChatController.evaluate_action(currentActivity,currentFragment,message);
+            } else if (currentActivity instanceof ChatActivity) {
+                ChatController.evaluate_action(currentActivity, currentFragment, message);
             }
         }
     }
