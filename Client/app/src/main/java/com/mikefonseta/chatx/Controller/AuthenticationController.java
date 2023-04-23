@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class AuthenticationController {
 
-    private static User user = new User();
+    private static final User user = new User();
     private static boolean isLogged = false;
 
     public static void evaluate_action(Fragment fragment, String message) {

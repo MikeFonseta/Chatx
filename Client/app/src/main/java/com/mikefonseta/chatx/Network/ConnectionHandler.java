@@ -19,7 +19,6 @@ public class ConnectionHandler {
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
-
         try {
             socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream());
@@ -29,9 +28,7 @@ public class ConnectionHandler {
             System.out.println("failed to create socket");
             e.printStackTrace();
         }
-
         System.out.println("connected");
-
     }
 
     public static ConnectionHandler getInstance() {

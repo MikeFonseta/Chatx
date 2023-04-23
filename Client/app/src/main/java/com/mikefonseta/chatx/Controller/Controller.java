@@ -22,14 +22,15 @@ public class Controller {
     public static void evaluate_action(String message) {
         if (currentActivity != null) {
             if (currentActivity instanceof AuthenticationActivity) {
-                if (currentFragment instanceof LoginFragment || currentFragment instanceof RegisterFragment) {
-                    AuthenticationController.evaluate_action(currentFragment, message);
-                }
+//                if (currentFragment instanceof LoginFragment || currentFragment instanceof RegisterFragment) {
+//                    AuthenticationController.evaluate_action(currentFragment, message);
+//                }
+                AuthenticationController.evaluate_action(currentFragment, message);
             } else if (currentActivity instanceof MainActivity) {
                 if (currentFragment instanceof HomeFragment) {
                     ChatController.evaluate_action(currentActivity, currentFragment, message);
                 } else if (currentFragment instanceof NewRoomFragment) {
-
+                    ChatController.evaluate_action(currentActivity, currentFragment, message);
                 } else if (currentFragment instanceof ProfileFragment) {
 
                 } else if (currentFragment instanceof UtentiInAttesaFragment) {

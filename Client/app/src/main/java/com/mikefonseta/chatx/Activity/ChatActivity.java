@@ -15,7 +15,6 @@ import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
-
 public class ChatActivity extends AppCompatActivity {
     private MessageListAdapter messageListAdapter;
     private Button sendButton;
@@ -51,8 +50,6 @@ public class ChatActivity extends AppCompatActivity {
         if (ChatController.getCurrentChatRoom() != null) {
             getSupportActionBar().setTitle(ChatController.getCurrentChatRoom().getChat_room_name());
         }
-
-
     }
 
     public void updateUI() {
