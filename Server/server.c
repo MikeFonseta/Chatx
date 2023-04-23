@@ -65,17 +65,15 @@ int main(int argc, char *argv[])
 
 void *client_handler(void *arg)
 {
-	char client_message[100];
 	client *clientInfo = (client *)arg;
-	int read_size, write_size, sent_size;
-	char *message;
-	json_object *received;
-	json_object *response;
+	char client_message[252];
+	int read_size, sent_size;
+	json_object *received, *response;
 
 	printf("[SOCKET: %d] [IP: %s:%d] connected\n", clientInfo->socketfd, inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
 	fflush(stdout);
 
-	while ((read_size = recv(clientInfo->socketfd, client_message, 100, 0)) > 0)
+	while ((read_size = recv(clientInfo->socketfd, client_message, 252, 0)) > 0)
 	{
 		if ((received = json_tokener_parse(client_message)) == NULL)
 			printf("Error: %s\n", json_util_get_last_err());
@@ -100,7 +98,6 @@ void *client_handler(void *arg)
 			json_object_put(response);
 		}
 	}
-
 	if (read_size == 0)
 	{
 		logout(clientInfo->socketfd);

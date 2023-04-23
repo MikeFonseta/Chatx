@@ -211,7 +211,6 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 		return 0;
 	}
 
-
 	if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
 	{
 		json_object_object_add(sendMessage, "action", json_object_new_string("NEW_MESSAGE"));
@@ -241,7 +240,6 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 	json_object_object_add(response, "message", json_object_new_string(message));
 	json_object_object_add(response, "sender", json_object_new_string(from));
 	json_object_object_add(response, "chat", json_object_new_string(chat_room_id));
-	//printf("%s", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN));
 	PQclear(res);
 	PQfinish(conn);
 	return 1;
@@ -428,7 +426,7 @@ int getRooms(int fd, const int user_id, json_object *response)
 	json_object *other = json_object_new_array();
 	json_object_object_add(response, "other", other);
 
-	int rows, found = 0;
+	int rows, found;
 	int char_converted;
 	char char_id[10];
 	sprintf(char_id, "%d", user_id);
@@ -468,8 +466,10 @@ int getRooms(int fd, const int user_id, json_object *response)
 					json_object_array_add(waiting, obj);
 			}
 		}
+		printf("\n%s\n", json_object_to_json_string_ext(response, JSON_C_TO_STRING_PRETTY));
 		for (int i = 0; i < json_object_array_length(accepted); ++i)
 		{
+			found = 0;
 			json_object *chat_room_id, *array;
 			json_object *room = json_object_array_get_idx(accepted, i);
 			json_object_object_get_ex(room, "chat_room_id", &chat_room_id);
@@ -483,11 +483,8 @@ int getRooms(int fd, const int user_id, json_object *response)
 			}
 			if (!found)
 				json_object_array_add(array, json_object_new_int64(fd));
-
-			found = 0;
 		}
 	}
-	//printf("%s\n", json_object_to_json_string_ext(chat_room_list, JSON_C_TO_STRING_PRETTY));
 	PQclear(res);
 	PQfinish(conn);
 	return rows;
