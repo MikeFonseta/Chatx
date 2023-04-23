@@ -372,6 +372,7 @@ int createRoom(const int room_owner_id, const char *chat_room_name, json_object 
 	{
 		rows = PQntuples(res);
 		char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
+		json_object_object_add(response, "action", json_object_new_string("CREATE"));
 		json_object_object_add(response, "chat_room_id", json_object_new_int64(char_converted));
 		json_object_object_add(response, "chat_room_name", json_object_new_string(chat_room_name));
 		json_object_object_add(response, "room_owner_id", json_object_new_int64(room_owner_id));
