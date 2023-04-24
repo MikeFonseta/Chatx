@@ -100,11 +100,10 @@ public class ChatController {
         chatRoomList.add(chatRoom);
     }
 
-    public static String getRoomsRequest(String username, int user_id) {
+    public static String getRoomsRequest(int user_id) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("action", Response.GET_ROOMS.name());
-            jsonObject.put("username", username);
             jsonObject.put("user_id", user_id);
         } catch (JSONException e) {
             System.err.println(e.getMessage());
