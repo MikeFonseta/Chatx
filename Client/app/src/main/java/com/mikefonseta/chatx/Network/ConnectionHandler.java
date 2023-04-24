@@ -11,8 +11,8 @@ import java.net.Socket;
 public class ConnectionHandler {
 
     private static ConnectionHandler connectionHandler = null;
-    private final String IP_ADDRESS = "192.168.43.82";
-    private final int PORT = 8881;
+    private final String IP_ADDRESS = "192.168.1.16";
+    private final int PORT = 8889;
     private Socket socket;
     private boolean exit = false;
     private PrintWriter printWriter;

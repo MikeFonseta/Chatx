@@ -31,6 +31,8 @@ public class HomeFragment extends Fragment {
 
         if (AuthenticationController.isLogged()) {
             ((MainActivity) requireActivity()).getSupportActionBar().setTitle(AuthenticationController.getUser().getUsername());
+            int user_id = AuthenticationController.getUser().getUser_id();
+            ConnectionHandler.getInstance().doRequest(ChatController.getRoomsRequest(user_id));
         }
 
         return view;
