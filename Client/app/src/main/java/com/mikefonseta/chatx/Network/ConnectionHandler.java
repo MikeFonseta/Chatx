@@ -11,7 +11,7 @@ import java.net.Socket;
 public class ConnectionHandler {
 
     private static ConnectionHandler connectionHandler = null;
-    private final String IP_ADDRESS = "192.168.0.105";
+    private final String IP_ADDRESS = "192.168.43.82";
     private final int PORT = 8881;
     private Socket socket;
     private boolean exit = false;
@@ -19,7 +19,6 @@ public class ConnectionHandler {
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
-
         try {
             socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream());
@@ -29,9 +28,7 @@ public class ConnectionHandler {
             System.out.println("failed to create socket");
             e.printStackTrace();
         }
-
         System.out.println("connected");
-
     }
 
     public static ConnectionHandler getInstance() {

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Activity.ChatActivity">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_recycler_view"
         android:layout_width="match_parent"
@@ -17,14 +16,12 @@
         app:layout_constraintBottom_toTopOf="@+id/layout_send_message"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <RelativeLayout
         android:id="@+id/layout_send_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-
 
         <EditText
             android:id="@+id/message_content_send"
@@ -50,6 +47,5 @@
             android:textColor="@color/purple_700" />
 
     </RelativeLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

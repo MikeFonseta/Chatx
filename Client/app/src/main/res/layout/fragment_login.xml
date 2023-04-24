@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".ui.LoginFragment">
+    tools:context=".Fragment.LoginFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,12 +83,12 @@
                 android:id="@+id/sign_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="132dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:minHeight="48dp"
                 android:text="@string/sign_up"
                 android:textSize="20sp" />
         </RelativeLayout>

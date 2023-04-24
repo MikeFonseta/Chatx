@@ -14,7 +14,7 @@
         android:id="@+id/navigation_nuova_stanza"
         android:name="com.mikefonseta.chatx.Fragment.NewRoomFragment"
         android:label="@string/title_activity_NuovaStanza"
-        tools:layout="@layout/fragment_nuova_stanza" />
+        tools:layout="@layout/fragment_new_room" />
 
     <fragment
         android:id="@+id/navigation_profilo"
