@@ -40,10 +40,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        String username = AuthenticationController.getUser().getUsername();
-        int user_id = AuthenticationController.getUser().getUser_id();
-        ConnectionHandler.getInstance().doRequest(ChatController.getRoomsRequest(username, user_id));
+        updateUI();
     }
 
     public void updateUI() {
