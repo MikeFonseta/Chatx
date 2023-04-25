@@ -7,12 +7,6 @@ import androidx.fragment.app.Fragment;
 import com.mikefonseta.chatx.Activity.AuthenticationActivity;
 import com.mikefonseta.chatx.Activity.ChatActivity;
 import com.mikefonseta.chatx.Activity.MainActivity;
-import com.mikefonseta.chatx.Fragment.HomeFragment;
-import com.mikefonseta.chatx.Fragment.LoginFragment;
-import com.mikefonseta.chatx.Fragment.NewRoomFragment;
-import com.mikefonseta.chatx.Fragment.ProfileFragment;
-import com.mikefonseta.chatx.Fragment.RegisterFragment;
-import com.mikefonseta.chatx.Fragment.UtentiInAttesaFragment;
 
 public class Controller {
 
@@ -22,20 +16,9 @@ public class Controller {
     public static void evaluate_action(String message) {
         if (currentActivity != null) {
             if (currentActivity instanceof AuthenticationActivity) {
-//                if (currentFragment instanceof LoginFragment || currentFragment instanceof RegisterFragment) {
-//                    AuthenticationController.evaluate_action(currentFragment, message);
-//                }
                 AuthenticationController.evaluate_action(currentFragment, message);
             } else if (currentActivity instanceof MainActivity) {
-                if (currentFragment instanceof HomeFragment) {
-                    ChatController.evaluate_action(currentActivity, currentFragment, message);
-                } else if (currentFragment instanceof NewRoomFragment) {
-                    ChatController.evaluate_action(currentActivity, currentFragment, message);
-                } else if (currentFragment instanceof ProfileFragment) {
-
-                } else if (currentFragment instanceof UtentiInAttesaFragment) {
-
-                }
+                ChatController.evaluate_action(currentActivity, currentFragment, message);
             } else if (currentActivity instanceof ChatActivity) {
                 ChatController.evaluate_action(currentActivity, currentFragment, message);
             }

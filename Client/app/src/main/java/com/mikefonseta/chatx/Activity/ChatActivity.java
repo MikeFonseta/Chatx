@@ -1,7 +1,6 @@
 package com.mikefonseta.chatx.Activity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -36,12 +35,9 @@ public class ChatActivity extends AppCompatActivity {
         messageListAdapter = new MessageListAdapter(ChatController.getCurrentMessageList());
         messageRecycler.setAdapter(messageListAdapter);
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!messageContent.getText().toString().equals("") && messageContent.getText().toString().length() > 0) {
-                    ConnectionHandler.getInstance().doRequest(ChatController.getSendMessageRequest(messageContent.getText().toString()));
-                }
+        sendButton.setOnClickListener(view -> {
+            if (!messageContent.getText().toString().equals("") && messageContent.getText().toString().length() > 0) {
+                ConnectionHandler.getInstance().doRequest(ChatController.getSendMessageRequest(messageContent.getText().toString()));
             }
         });
 
@@ -53,12 +49,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void updateUI() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageContent.getText().clear();
-                messageListAdapter.notifyDataSetChanged();
-            }
+        runOnUiThread(() -> {
+            messageContent.getText().clear();
+            messageListAdapter.notifyDataSetChanged();
         });
     }
 }

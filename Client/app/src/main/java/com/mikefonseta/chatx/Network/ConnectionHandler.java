@@ -7,23 +7,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class ConnectionHandler {
 
     private static ConnectionHandler connectionHandler = null;
-    private final String IP_ADDRESS = "192.168.1.16";
-    private final int PORT = 8889;
-    private Socket socket;
     private boolean exit = false;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
+        String IP_ADDRESS = "192.168.0.107";
+        int PORT = 8889;
         try {
-            socket = new Socket(IP_ADDRESS, PORT);
+            Socket socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream());
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             listen();
+        } catch (UnknownHostException e) {
+            System.err.println("Cannot find host called: " + IP_ADDRESS);
+            e.printStackTrace();
         } catch (IOException e) {
             System.out.println("failed to create socket");
             e.printStackTrace();
@@ -39,19 +42,16 @@ public class ConnectionHandler {
     }
 
     public void listen() {
-        Thread listenThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!exit) {
-                    try {
-                        String response = bufferedReader.readLine();
-                        System.out.println(response);
-                        Controller.evaluate_action(response);
-                    } catch (IOException e) {
-                        System.out.println("failed to read data");
-                        e.printStackTrace();
-                        break;
-                    }
+        Thread listenThread = new Thread(() -> {
+            while (!exit) {
+                try {
+                    String response = bufferedReader.readLine();
+                    System.out.println(response);
+                    Controller.evaluate_action(response);
+                } catch (IOException e) {
+                    System.out.println("failed to read data");
+                    e.printStackTrace();
+                    break;
                 }
             }
         });
@@ -59,12 +59,9 @@ public class ConnectionHandler {
     }
 
     public void doRequest(String message) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                printWriter.println(message);
-                printWriter.flush();
-            }
+        Thread thread = new Thread(() -> {
+            printWriter.println(message);
+            printWriter.flush();
         });
         thread.start();
     }
