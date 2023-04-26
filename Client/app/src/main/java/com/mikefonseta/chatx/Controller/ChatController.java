@@ -30,7 +30,7 @@ public class ChatController {
             if (action.equals(Response.GET_ROOMS.name())) {
                 actionGetRooms(fragment, response);
             } else if (action.equals(Response.OPEN_ROOM.name())) {
-                actionOpenRoom(activity, response);
+                actionOpenRoom(response);
             } else if (action.equals(Response.SEND_MESSAGE.name())) {
                 actionSendMessage(activity, response);
             } else if (action.equals(Response.NEW_MESSAGE.name())) {
@@ -77,7 +77,7 @@ public class ChatController {
         ((HomeFragment) fragment).updateUI();
     }
 
-    private static void actionOpenRoom(Activity activity, JSONObject response) throws JSONException {
+    private static void actionOpenRoom(JSONObject response) throws JSONException {
         JSONArray array = response.getJSONArray("message_list");
         ChatController.messages.clear();
         for (int i = 0; i < array.length(); i++) {

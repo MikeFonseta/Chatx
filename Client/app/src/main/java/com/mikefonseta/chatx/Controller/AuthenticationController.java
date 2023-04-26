@@ -39,30 +39,13 @@ public class AuthenticationController {
             isLogged = true;
             fragment.requireActivity().startActivity(new Intent(fragment.getActivity(), MainActivity.class));
         } else {
-            fragment.requireActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(fragment.getActivity(), "Credenziali errate", Toast.LENGTH_SHORT).show();
-                }
-            });
+            fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), "Credenziali errate", Toast.LENGTH_SHORT).show());
         }
     }
 
     private static void actionRegister(Fragment fragment, JSONObject response) throws JSONException {
-        String status = response.getString("status");
         String message = response.getString("message");
-        if (status.equals(Response.OK.name())) {
-            fragment.requireActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            fragment.requireActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show());
     }
 
     public static boolean isLogged() {

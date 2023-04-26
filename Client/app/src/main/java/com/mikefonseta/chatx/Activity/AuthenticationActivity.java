@@ -17,12 +17,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Controller.setCurrentActivity(this);
-        Thread connectionThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ConnectionHandler.getInstance();
-            }
-        });
+        Thread connectionThread = new Thread(ConnectionHandler::getInstance);
 
         connectionThread.start();
 
