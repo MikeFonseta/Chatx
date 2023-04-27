@@ -1,11 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="50dp"
+    android:layout_marginStart="50dp"
     android:padding="10dp">
 
     <RelativeLayout
-        android:id="@+id/layout_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -21,7 +20,7 @@
             android:paddingBottom="7dp"
             android:text="My message (Sender Message Layout)   My message (Sender Message Layout) My message (Sender Message Layout)"
             android:textColor="@color/white"
-            android:textSize="17sp"></TextView>
+            android:textSize="17sp" />
 
     </RelativeLayout>
 

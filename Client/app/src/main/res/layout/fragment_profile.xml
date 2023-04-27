@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="8dp"
                 android:contentDescription="@string/text_profilo"
                 android:scaleType="center"
                 app:srcCompat="@drawable/logo_avatar_anonymous_40dp" />
