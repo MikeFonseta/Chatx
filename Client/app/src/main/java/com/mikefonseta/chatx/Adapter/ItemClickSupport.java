@@ -2,6 +2,7 @@ package com.mikefonseta.chatx.Adapter;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mikefonseta.chatx.R;
@@ -22,14 +23,14 @@ public class ItemClickSupport {
     private final RecyclerView.OnChildAttachStateChangeListener mAttachListener
             = new RecyclerView.OnChildAttachStateChangeListener() {
         @Override
-        public void onChildViewAttachedToWindow(View view) {
+        public void onChildViewAttachedToWindow(@NonNull View view) {
             if (mOnItemClickListener != null) {
                 view.setOnClickListener(mOnClickListener);
             }
         }
 
         @Override
-        public void onChildViewDetachedFromWindow(View view) {
+        public void onChildViewDetachedFromWindow(@NonNull View view) {
 
         }
     };
