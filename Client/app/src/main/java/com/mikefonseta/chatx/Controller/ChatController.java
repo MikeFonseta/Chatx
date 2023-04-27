@@ -65,7 +65,7 @@ public class ChatController {
 
     private static void actionJoinRoom(Activity activity, JSONObject response) throws JSONException {
         String message = response.getString("message");
-        Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());
     }
 
     private static void actionGetRooms(JSONObject response) throws JSONException {
@@ -172,6 +172,7 @@ public class ChatController {
     public static String getAccessRequest(int user_id, int chat_room_id) {
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("action", Response.JOIN_ROOM.name());
             jsonObject.put("user_id", user_id);
             jsonObject.put("chat_room_id", chat_room_id);
         } catch (JSONException e) {
