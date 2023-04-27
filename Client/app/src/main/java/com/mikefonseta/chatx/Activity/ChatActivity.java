@@ -16,9 +16,7 @@ import com.mikefonseta.chatx.R;
 
 public class ChatActivity extends AppCompatActivity {
     private MessageListAdapter messageListAdapter;
-    private Button sendButton;
     private EditText messageContent;
-    private RecyclerView messageRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +25,9 @@ public class ChatActivity extends AppCompatActivity {
 
         Controller.setCurrentActivity(this);
 
-        sendButton = findViewById(R.id.send_button);
+        Button sendButton = findViewById(R.id.send_button);
         messageContent = findViewById(R.id.message_content_send);
-        messageRecycler = findViewById(R.id.message_recycler_view);
+        RecyclerView messageRecycler = findViewById(R.id.message_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageRecycler.setLayoutManager(linearLayoutManager);
         messageListAdapter = new MessageListAdapter(ChatController.getCurrentMessageList());
