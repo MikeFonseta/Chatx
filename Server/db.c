@@ -125,17 +125,16 @@ int registerUser(const char *user, const char *password, json_object *response)
 	sprintf(sql, "INSERT INTO user_account(username,password) VALUES('%s','%s')", user, password);
 	PGresult *res = PQexec(conn, sql);
 
+	json_object_object_add(response, "action", json_object_new_string("REGISTER"));
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 	{
 		printf("%s\n", PQresultErrorMessage(res));
-		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 		json_object_object_add(response, "message", json_object_new_string("Username non disponibile"));
 	}
 	else
 	{
 		rows = PQntuples(res);
-		json_object_object_add(response, "action", json_object_new_string("REGISTER"));
 		json_object_object_add(response, "status", json_object_new_string("OK"));
 		json_object_object_add(response, "message", json_object_new_string("Registrazione avvenuta con successo"));
 	}
@@ -158,17 +157,16 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 		printf("%s\n", PQresultErrorMessage(res));
 	else
 	{
+		json_object_object_add(response, "action", json_object_new_string("LOGIN"));
 		rows = PQntuples(res);
 		if (rows == 0)
 		{
-			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
 			json_object_object_add(response, "status", json_object_new_string("FAILED"));
 			json_object_object_add(response, "message", json_object_new_string("Credenziali errate"));
 		}
 		else
 		{
 			char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
-			json_object_object_add(response, "action", json_object_new_string("LOGIN"));
 			json_object_object_add(response, "status", json_object_new_string("OK"));
 			json_object_object_add(response, "user_id", json_object_new_int64(char_converted));
 			json_object_object_add(response, "username", json_object_new_string(user));
@@ -251,15 +249,14 @@ int getMessage(const int chat_room_id, json_object *response)
 	sprintf(sql, "SELECT * FROM message WHERE chat = %d  ORDER BY sending_time DESC", chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
+	json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
 	{
-		json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 	}
 	else
 	{
 		rows = PQntuples(res);
-		json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
 		json_object_object_add(response, "status", json_object_new_string("OK"));
 		json_object *message_list = json_object_new_array();
 		for (int i = 0; i < rows; i++)
@@ -288,16 +285,15 @@ int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 	sprintf(sql, "INSERT INTO join_requests(user_id, chat_room, accepted) VALUES (%d, %d, false)", user_id, chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
+	json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 	{
 		printf("%s\n", PQresultErrorMessage(res));
-		json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 		json_object_object_add(response, "message", json_object_new_string("Impossibile accedere alla stanza"));
 	}
 	else
 	{
-		json_object_object_add(response, "action", json_object_new_string("JOIN_ROOM"));
 		json_object_object_add(response, "status", json_object_new_string("OK"));
 		json_object_object_add(response, "message", json_object_new_string("Richiesta effettuata con successo"));
 	}
@@ -314,16 +310,15 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 	sprintf(sql, "UPDATE join_requests SET accepted=true WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
+	json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 	{
 		printf("%s\n", PQresultErrorMessage(res));
-		json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
 		json_object_object_add(response, "message", json_object_new_string("Impossibile accettare la richiesta"));
 	}
 	else
 	{
-		json_object_object_add(response, "action", json_object_new_string("ACCEPT_REQUEST"));
 		json_object_object_add(response, "status", json_object_new_string("OK"));
 		json_object_object_add(response, "message", json_object_new_string("Richiesta accettata"));
 	}
