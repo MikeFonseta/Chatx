@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
 
-    private List<Message> chatMessages;
+    private final List<Message> chatMessages;
 
     public MessageListAdapter(List<Message> chatMessages) {
         this.chatMessages = chatMessages;

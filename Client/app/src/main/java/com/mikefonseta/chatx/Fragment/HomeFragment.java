@@ -4,13 +4,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.mikefonseta.chatx.Activity.MainActivity;
-import com.mikefonseta.chatx.Adapter.ChatRoomListAdapter;
+import com.mikefonseta.chatx.Adapter.TabAdapter;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
 import com.mikefonseta.chatx.Controller.Controller;
@@ -19,40 +22,32 @@ import com.mikefonseta.chatx.R;
 
 public class HomeFragment extends Fragment {
 
-    private ChatRoomListAdapter chatRoomListAdapter;
-    private ListView listView;
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        listView = view.findViewById(R.id.listView);
         Controller.setCurrentFragment(this);
-
         if (AuthenticationController.isLogged()) {
             ((MainActivity) requireActivity()).getSupportActionBar().setTitle(AuthenticationController.getUser().getUsername());
             int user_id = AuthenticationController.getUser().getUser_id();
             ConnectionHandler.getInstance().doRequest(ChatController.getRoomsRequest(user_id));
         }
-
         return view;
     }
 
-
     @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        TabLayout tabLayout = view.findViewById(R.id.tabLayout);
+        ViewPager2 viewPager = view.findViewById(R.id.viewPager2);
+        viewPager.setAdapter(new TabAdapter(this));
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(getTitle(position))).attach();
     }
 
-    public void updateUI() {
-        requireActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                chatRoomListAdapter = new ChatRoomListAdapter(getContext(), R.layout.chat_item, ChatController.getChatRoomList());
-                listView.setAdapter(chatRoomListAdapter);
-                chatRoomListAdapter.notifyDataSetChanged();
-            }
-        });
+    private String getTitle(int position) {
+        if (position == 0)
+            return "Chat";
+        else
+            return "Altre";
     }
 }

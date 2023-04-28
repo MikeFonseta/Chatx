@@ -12,12 +12,12 @@ import java.net.UnknownHostException;
 public class ConnectionHandler {
 
     private static ConnectionHandler connectionHandler = null;
-    private boolean exit = false;
+    private final boolean exit = false;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
-        String IP_ADDRESS = "192.168.0.107";
+        String IP_ADDRESS = "192.168.172.82";
         int PORT = 8889;
         try {
             Socket socket = new Socket(IP_ADDRESS, PORT);

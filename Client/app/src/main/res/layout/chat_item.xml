@@ -19,6 +19,6 @@
         android:gravity="center"
         android:text="NOME STANZA"
         android:textColor="@color/white"
-        android:textSize="27dp" />
+        android:textSize="27sp" />
 </RelativeLayout>
 

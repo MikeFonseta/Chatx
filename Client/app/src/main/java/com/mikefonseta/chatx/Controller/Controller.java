@@ -18,9 +18,9 @@ public class Controller {
             if (currentActivity instanceof AuthenticationActivity) {
                 AuthenticationController.evaluate_action(currentFragment, message);
             } else if (currentActivity instanceof MainActivity) {
-                ChatController.evaluate_action(currentActivity, currentFragment, message);
+                ChatController.evaluate_action(currentActivity, message);
             } else if (currentActivity instanceof ChatActivity) {
-                ChatController.evaluate_action(currentActivity, currentFragment, message);
+                ChatController.evaluate_action(currentActivity, message);
             }
         }
     }

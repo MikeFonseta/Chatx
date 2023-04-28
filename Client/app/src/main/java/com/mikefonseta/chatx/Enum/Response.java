@@ -9,5 +9,6 @@ public enum Response {
     OPEN_ROOM,
     SEND_MESSAGE,
     NEW_MESSAGE,
-    CREATE
+    CREATE,
+    JOIN_ROOM
 }

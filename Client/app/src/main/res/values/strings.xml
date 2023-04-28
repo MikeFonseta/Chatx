@@ -7,7 +7,6 @@
     <string name="password">password</string>
     <string name="sign_up">Nuovo utente? Registrati</string>
 
-    <string name="title_activity_home">HomeActivity</string>
     <string name="title_home">Home</string>
 
     <string name="title_activity_NuovaStanza">Nuova Stanza</string>
@@ -19,10 +18,6 @@
     <string name="text_profilo">Profilo</string>
 
     <string name="no_input">Questo campo non può essere vuoto</string>
-    <string name="text_tab_1">Tue chat</string>
-    <string name="text_tab_2">Altre</string>
-    <string name="room_name" />
     <string name="label_room_name">Nome stanza</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="request_access">Vuoi chiedere l\'accesso a questa stanza?</string>
 </resources>
