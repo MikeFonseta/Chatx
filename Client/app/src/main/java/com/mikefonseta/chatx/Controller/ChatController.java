@@ -17,10 +17,10 @@ import java.util.List;
 
 public class ChatController {
 
-    private static List<ChatRoom> acceptedChatRooms = new ArrayList<>();
-    private static List<ChatRoom> otherChatRooms = new ArrayList<>();
-    private static ChatRoom currentChatRoom = null;
-    private static List<Message> messages = new ArrayList<>();
+    private static final List<ChatRoom> acceptedChatRooms = new ArrayList<>();
+    private static final List<ChatRoom> otherChatRooms = new ArrayList<>();
+    private static final List<Message> messages = new ArrayList<>();
+//    private static ChatRoom currentChatRoom = null;
 
     public static void evaluate_action(Activity activity, String message) {
         try {
@@ -45,21 +45,21 @@ public class ChatController {
 
     private static void actionSendMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            messages.add(0, new Message(-1,
+            Message message = new Message(-1,
                     Integer.parseInt(response.getString("sender")),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null));
-            ((ChatActivity) chatActivity).updateUI();
+                    response.getString("message"), null);
+            ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
 
     private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            messages.add(0, new Message(-1,
+            Message message = new Message(-1,
                     Integer.parseInt(response.getString("sender")),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null));
-            ((ChatActivity) chatActivity).updateUI();
+                    response.getString("message"), null);
+            ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
 
@@ -101,7 +101,7 @@ public class ChatController {
 
     private static void actionOpenRoom(JSONObject response) throws JSONException {
         JSONArray array = response.getJSONArray("message_list");
-        ChatController.messages.clear();
+        messages.clear();
         for (int i = 0; i < array.length(); i++) {
             JSONObject data = array.getJSONObject(i);
             int message_id = data.getInt("message_id");
@@ -110,7 +110,7 @@ public class ChatController {
             String message_content = data.getString("message_content");
             String sending_time = data.getString("sending_time");
             Message message = new Message(message_id, sender, chat, message_content, sending_time);
-            ChatController.messages.add(message);
+            messages.add(message);
         }
     }
 
@@ -144,11 +144,11 @@ public class ChatController {
         return jsonObject.toString();
     }
 
-    public static String getSendMessageRequest(String message) {
+    public static String getSendMessageRequest(String message, int chat_room_id) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("action", Response.SEND_MESSAGE.name());
-            jsonObject.put("chat_room_id", currentChatRoom.getChat_room_id());
+            jsonObject.put("chat_room_id", chat_room_id);
             jsonObject.put("from", AuthenticationController.getUser().getUser_id());
             jsonObject.put("message", message);
         } catch (JSONException e) {
@@ -189,20 +189,20 @@ public class ChatController {
         return otherChatRooms;
     }
 
-    public static ChatRoom getCurrentChatRoom() {
-        return currentChatRoom;
-    }
-
-    public static void setCurrentChatRoom(ChatRoom chatRoom) {
-        currentChatRoom = chatRoom;
-    }
-
     public static List<Message> getCurrentMessageList() {
         return messages;
     }
 
-    public static void clearMessages() {
-        ChatController.messages.clear();
-    }
+//    public static ChatRoom getCurrentChatRoom() {
+//        return currentChatRoom;
+//    }
+//
+//    public static void setCurrentChatRoom(ChatRoom chatRoom) {
+//        currentChatRoom = chatRoom;
+//    }
+//
+//    public static void clearMessages() {
+//        ChatController.messages.clear();
+//    }
 
 }
