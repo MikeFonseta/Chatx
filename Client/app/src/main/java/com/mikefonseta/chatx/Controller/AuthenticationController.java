@@ -58,7 +58,6 @@ public class AuthenticationController {
 
     public static String getLoginRequest(String username, String password) {
         JSONObject jsonObject = new JSONObject();
-
         try {
             jsonObject.put("action", "LOGIN");
             jsonObject.put("username", username);
@@ -66,13 +65,11 @@ public class AuthenticationController {
         } catch (JSONException e) {
             System.err.println(e.getMessage());
         }
-
         return jsonObject.toString();
     }
 
     public static String getRegisterRequest(String username, String password) {
         JSONObject jsonObject = new JSONObject();
-
         try {
             jsonObject.put("action", "REGISTER");
             jsonObject.put("username", username);

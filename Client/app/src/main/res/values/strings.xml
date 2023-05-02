@@ -20,4 +20,6 @@
     <string name="no_input">Questo campo non può essere vuoto</string>
     <string name="label_room_name">Nome stanza</string>
     <string name="request_access">Vuoi chiedere l\'accesso a questa stanza?</string>
+    <string name="message_hint">Enter Message</string>
+    <string name="send_button">INVIA</string>
 </resources>

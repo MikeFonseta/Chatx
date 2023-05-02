@@ -1,6 +1,5 @@
 package com.mikefonseta.chatx.Fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import com.mikefonseta.chatx.Adapter.ChatRoomListAdapter;
 import com.mikefonseta.chatx.Adapter.ItemClickSupport;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
+import com.mikefonseta.chatx.Entity.ChatRoom;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
@@ -48,16 +48,13 @@ public class TabFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         position = getArguments().getInt(ARG_POSITION);
         recyclerView = view.findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         setUi();
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener((recyclerView, position, v) -> {
             ChatRoomListAdapter adapter = (ChatRoomListAdapter) recyclerView.getAdapter();
             if (adapter.getTab() == 0) {
-                Activity activity = (Activity) view.getContext();
-                ChatController.setCurrentChatRoom(adapter.getChatRoom(position));
-                activity.startActivity(new Intent(activity, ChatActivity.class));
+                openRoom(adapter.getChatRoom(position));
             }
             if (adapter.getTab() == 1) {
                 new MaterialAlertDialogBuilder(requireActivity())
@@ -72,7 +69,7 @@ public class TabFragment extends Fragment {
             }
         });
 
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             int user_id = AuthenticationController.getUser().getUser_id();
@@ -91,5 +88,19 @@ public class TabFragment extends Fragment {
                 recyclerView.setAdapter(new ChatRoomListAdapter(ChatController.getOtherChatRooms(), position));
                 break;
         }
+    }
+
+    public void openRoom(ChatRoom chatRoom) {
+        int chat_room_id = chatRoom.getChat_room_id();
+        String chat_room_name = chatRoom.getChat_room_name();
+        ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(chat_room_id));
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("ROOM_ID", chat_room_id);
+        bundle.putString("ROOM_NAME", chat_room_name);
+
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

@@ -8,12 +8,14 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_recycler_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginBottom="16dp"
         android:scrollingCache="false"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@+id/layout_send_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
@@ -31,7 +33,7 @@
             android:layout_marginStart="16dp"
             android:layout_toStartOf="@+id/send_button"
             android:background="@android:color/transparent"
-            android:hint="Enter Message"
+            android:hint="@string/message_hint"
             android:inputType="text"
             android:maxLines="6"
             android:minHeight="48dp"
@@ -43,7 +45,7 @@
             android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackground"
-            android:text="INVIA"
+            android:text="@string/send_button"
             android:textColor="@color/purple_700" />
 
     </RelativeLayout>
