@@ -36,7 +36,6 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-
         Message message = chatMessages.get(position);
         holder.message.setText(message.getMessage_content());
     }
@@ -55,7 +54,12 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         return chatMessages.size();
     }
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder {
+    public void addMessage(Message message) {
+        chatMessages.add(message);
+        notifyItemInserted(chatMessages.size());
+    }
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         public TextView message;
 
@@ -65,4 +69,3 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         }
     }
 }
-
