@@ -93,7 +93,6 @@ public class TabFragment extends Fragment {
     public void openRoom(ChatRoom chatRoom) {
         int chat_room_id = chatRoom.getChat_room_id();
         String chat_room_name = chatRoom.getChat_room_name();
-        ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(chat_room_id));
 
         Bundle bundle = new Bundle();
         bundle.putInt("ROOM_ID", chat_room_id);

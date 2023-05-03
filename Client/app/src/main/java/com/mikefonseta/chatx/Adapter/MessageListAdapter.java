@@ -16,10 +16,15 @@ import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
 
-    private final List<Message> chatMessages;
+    private List<Message> chatMessages;
 
-    public MessageListAdapter(List<Message> chatMessages) {
+    public MessageListAdapter() {
+
+    }
+
+    public void setChatMessages(List<Message> chatMessages) {
         this.chatMessages = chatMessages;
+        notifyItemRangeInserted(0, chatMessages.size() - 1);
     }
 
     @NonNull
@@ -54,9 +59,14 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         return chatMessages.size();
     }
 
+    public void clearAdapter() {
+        chatMessages.clear();
+        notifyItemRangeRemoved(0, chatMessages.size() - 1);
+    }
+
     public void addMessage(Message message) {
         chatMessages.add(message);
-        notifyItemInserted(chatMessages.size());
+        notifyItemInserted(chatMessages.size() - 1);
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {

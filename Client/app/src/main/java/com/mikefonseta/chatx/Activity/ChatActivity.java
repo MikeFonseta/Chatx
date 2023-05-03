@@ -19,6 +19,7 @@ import com.mikefonseta.chatx.R;
 public class ChatActivity extends AppCompatActivity {
     private MessageListAdapter messageListAdapter;
     private EditText messageContent;
+    private RecyclerView messageRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,11 @@ public class ChatActivity extends AppCompatActivity {
         int room_id = bundle.getInt("ROOM_ID");
         getSupportActionBar().setTitle(room_name);
         Controller.setCurrentActivity(this);
+        ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(room_id));
 
+        messageRecycler = findViewById(R.id.message_recycler_view);
+        messageRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        messageListAdapter = new MessageListAdapter();
         messageContent = findViewById(R.id.message_content_send);
         Button sendButton = findViewById(R.id.send_button);
         sendButton.setOnClickListener(view -> {
@@ -39,20 +44,26 @@ public class ChatActivity extends AppCompatActivity {
                 ConnectionHandler.getInstance().doRequest(ChatController.getSendMessageRequest(messageContent.getText().toString(), room_id));
             }
         });
+    }
 
-        RecyclerView messageRecycler = findViewById(R.id.message_recycler_view);
-        messageRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        System.out.println(ChatController.getCurrentMessageList());
-        messageListAdapter = new MessageListAdapter(ChatController.getCurrentMessageList());
-        messageRecycler.setAdapter(messageListAdapter);
+    @Override
+    public void onBackPressed() {
+        messageListAdapter.clearAdapter();
+        super.onBackPressed();
+    }
+
+    public void setUI() {
+        runOnUiThread(() -> {
+            messageListAdapter.setChatMessages(ChatController.getCurrentMessageList());
+            messageRecycler.setAdapter(messageListAdapter);
+        });
     }
 
     public void addNewMessage(Message message) {
         runOnUiThread(() -> {
             messageContent.getText().clear();
             messageListAdapter.addMessage(message);
+            messageRecycler.scrollToPosition(messageListAdapter.getItemCount() - 1);
         });
     }
-
-
 }

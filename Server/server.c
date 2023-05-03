@@ -102,7 +102,7 @@ void *client_handler(void *arg)
 	{
 		logout(clientInfo->socketfd);
 		printf("[-] %s:%d disconnected\n", inet_ntoa(clientInfo->address.sin_addr), ntohs(clientInfo->address.sin_port));
-		json_object_put(received);
+		// json_object_put(received);
 		fflush(stdout);
 	}
 	else if (read_size == -1)

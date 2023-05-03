@@ -20,7 +20,6 @@ public class ChatController {
     private static final List<ChatRoom> acceptedChatRooms = new ArrayList<>();
     private static final List<ChatRoom> otherChatRooms = new ArrayList<>();
     private static final List<Message> messages = new ArrayList<>();
-//    private static ChatRoom currentChatRoom = null;
 
     public static void evaluate_action(Activity activity, String message) {
         try {
@@ -29,7 +28,7 @@ public class ChatController {
             if (action.equals(Response.GET_ROOMS.name())) {
                 actionGetRooms(response);
             } else if (action.equals(Response.OPEN_ROOM.name())) {
-                actionOpenRoom(response);
+                actionOpenRoom(activity, response);
             } else if (action.equals(Response.SEND_MESSAGE.name())) {
                 actionSendMessage(activity, response);
             } else if (action.equals(Response.NEW_MESSAGE.name())) {
@@ -99,7 +98,7 @@ public class ChatController {
         }
     }
 
-    private static void actionOpenRoom(JSONObject response) throws JSONException {
+    private static void actionOpenRoom(Activity activity, JSONObject response) throws JSONException {
         JSONArray array = response.getJSONArray("message_list");
         messages.clear();
         for (int i = 0; i < array.length(); i++) {
@@ -112,6 +111,7 @@ public class ChatController {
             Message message = new Message(message_id, sender, chat, message_content, sending_time);
             messages.add(message);
         }
+        ((ChatActivity) activity).setUI();
     }
 
     private static void actionNewRoom(JSONObject response) throws JSONException {
@@ -192,17 +192,5 @@ public class ChatController {
     public static List<Message> getCurrentMessageList() {
         return messages;
     }
-
-//    public static ChatRoom getCurrentChatRoom() {
-//        return currentChatRoom;
-//    }
-//
-//    public static void setCurrentChatRoom(ChatRoom chatRoom) {
-//        currentChatRoom = chatRoom;
-//    }
-//
-//    public static void clearMessages() {
-//        ChatController.messages.clear();
-//    }
 
 }

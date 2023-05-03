@@ -46,7 +46,6 @@ public class ConnectionHandler {
             while (!exit) {
                 try {
                     String response = bufferedReader.readLine();
-                    System.out.println(response);
                     Controller.evaluate_action(response);
                 } catch (IOException e) {
                     System.out.println("failed to read data");
