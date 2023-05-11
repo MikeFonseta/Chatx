@@ -16,7 +16,6 @@ import com.mikefonseta.chatx.Activity.MainActivity;
 import com.mikefonseta.chatx.Adapter.TabAdapter;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
-import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
@@ -26,7 +25,6 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        Controller.setCurrentFragment(this);
         if (AuthenticationController.isLogged()) {
             ((MainActivity) requireActivity()).getSupportActionBar().setTitle(AuthenticationController.getUser().getUsername());
             int user_id = AuthenticationController.getUser().getUser_id();

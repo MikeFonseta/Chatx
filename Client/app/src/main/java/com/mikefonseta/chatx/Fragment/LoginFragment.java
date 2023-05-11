@@ -19,7 +19,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
-import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
@@ -50,8 +49,6 @@ public class LoginFragment extends Fragment {
         textInputLayouts.add(passwordTextInput);
 
         MaterialButton loginButton = view.findViewById(R.id.login_button);
-
-        Controller.setCurrentFragment(this);
 
         loginButton.setOnClickListener(view1 -> {
 
