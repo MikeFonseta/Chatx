@@ -1,9 +1,8 @@
 package com.mikefonseta.chatx.Controller;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.widget.Toast;
-
-import androidx.fragment.app.Fragment;
 
 import com.mikefonseta.chatx.Activity.MainActivity;
 import com.mikefonseta.chatx.Entity.User;
@@ -17,35 +16,36 @@ public class AuthenticationController {
     private static final User user = new User();
     private static boolean isLogged = false;
 
-    public static void evaluate_action(Fragment fragment, String message) {
+    public static void evaluate_action(Activity activity, String message) {
         try {
             JSONObject response = new JSONObject(message);
             String action = response.getString("action");
             if (action.equals(Response.LOGIN.name())) {
-                actionLogin(fragment, response);
+                actionLogin(activity, response);
             } else if (action.equals(Response.REGISTER.name())) {
-                actionRegister(fragment, response);
+                actionRegister(activity, response);
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void actionLogin(Fragment fragment, JSONObject response) throws JSONException {
+    private static void actionLogin(Activity activity, JSONObject response) throws JSONException {
         String status = response.getString("status");
         if (status.equals(Response.OK.name())) {
             user.setUser_id(response.getInt("user_id"));
             user.setUsername(response.getString("username"));
             isLogged = true;
-            fragment.requireActivity().startActivity(new Intent(fragment.getActivity(), MainActivity.class));
+            activity.startActivity(new Intent(activity, MainActivity.class));
         } else {
-            fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), "Credenziali errate", Toast.LENGTH_SHORT).show());
+            String message = response.getString("message");
+            activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());
         }
     }
 
-    private static void actionRegister(Fragment fragment, JSONObject response) throws JSONException {
+    private static void actionRegister(Activity activity, JSONObject response) throws JSONException {
         String message = response.getString("message");
-        fragment.requireActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), message, Toast.LENGTH_SHORT).show());
+        activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());
     }
 
     public static boolean isLogged() {
