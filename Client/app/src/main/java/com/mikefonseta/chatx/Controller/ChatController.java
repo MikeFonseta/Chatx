@@ -46,7 +46,7 @@ public class ChatController {
         if (response.getString("status").equals(Response.OK.name())) {
             Message message = new Message(response.getString("sender"),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null);
+                    response.getString("message"));
             ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
@@ -55,7 +55,7 @@ public class ChatController {
         if (response.getString("status").equals(Response.OK.name())) {
             Message message = new Message(response.getString("sender"),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null);
+                    response.getString("message"));
             ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
@@ -104,8 +104,7 @@ public class ChatController {
             String sender = data.getString("sender");
             int chat = data.getInt("chat");
             String message_content = data.getString("message_content");
-            String sending_time = data.getString("sending_time");
-            Message message = new Message(sender, chat, message_content, sending_time);
+            Message message = new Message(sender, chat, message_content);
             messages.add(message);
         }
         ((ChatActivity) activity).setUI();

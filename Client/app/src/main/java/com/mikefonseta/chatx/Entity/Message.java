@@ -8,11 +8,10 @@ public class Message {
     private String message_content;
     private String date;
 
-    public Message(String sender, int chat, String message_content, String date) {
+    public Message(String sender, int chat, String message_content) {
         this.sender = sender;
         this.chat = chat;
         this.message_content = message_content;
-        this.date = date;
     }
 
     public int getMessage_id() {
