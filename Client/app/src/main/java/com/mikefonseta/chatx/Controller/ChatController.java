@@ -44,7 +44,7 @@ public class ChatController {
 
     private static void actionSendMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(Integer.parseInt(response.getString("sender")),
+            Message message = new Message(response.getString("sender"),
                     Integer.parseInt(response.getString("chat")),
                     response.getString("message"), null);
             ((ChatActivity) chatActivity).addNewMessage(message);
@@ -53,7 +53,7 @@ public class ChatController {
 
     private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(Integer.parseInt(response.getString("sender")),
+            Message message = new Message(response.getString("sender"),
                     Integer.parseInt(response.getString("chat")),
                     response.getString("message"), null);
             ((ChatActivity) chatActivity).addNewMessage(message);
@@ -101,7 +101,7 @@ public class ChatController {
         messages.clear();
         for (int i = 0; i < array.length(); i++) {
             JSONObject data = array.getJSONObject(i);
-            int sender = data.getInt("sender");
+            String sender = data.getString("sender");
             int chat = data.getInt("chat");
             String message_content = data.getString("message_content");
             String sending_time = data.getString("sending_time");

@@ -48,7 +48,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public int getItemViewType(int position) {
         Message message = chatMessages.get(position);
-        if (message.getSender() == AuthenticationController.getUser().getUser_id()) {
+        if (AuthenticationController.getUser().getUsername().equals(message.getSender())) {
             return 0;
         }
         return 1;
