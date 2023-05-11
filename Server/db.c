@@ -246,7 +246,7 @@ int getMessage(const int chat_room_id, json_object *response)
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
-	sprintf(sql, "SELECT * FROM message WHERE chat = %d  ORDER BY sending_time DESC", chat_room_id);
+	sprintf(sql, "SELECT m.message_id, u.username, m.chat, m.message_content FROM message m, user_account u WHERE chat = %d AND m.sender = u.user_id", chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
 	json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
@@ -263,10 +263,9 @@ int getMessage(const int chat_room_id, json_object *response)
 		{
 			json_object *obj = json_object_new_object();
 			json_object_object_add(obj, "message_id", json_object_new_int(atoi(PQgetvalue(res, i, 0))));
-			json_object_object_add(obj, "sender", json_object_new_int(atoi(PQgetvalue(res, i, 1))));
+			json_object_object_add(obj, "sender", json_object_new_string(PQgetvalue(res, i, 1)));
 			json_object_object_add(obj, "chat", json_object_new_int(atoi(PQgetvalue(res, i, 2))));
 			json_object_object_add(obj, "message_content", json_object_new_string(PQgetvalue(res, i, 3)));
-			json_object_object_add(obj, "sending_time", json_object_new_string(PQgetvalue(res, i, 4)));
 
 			json_object_array_add(message_list, obj);
 		}
