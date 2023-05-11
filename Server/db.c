@@ -196,7 +196,7 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 {
 	json_object *chat_room;
 	json_object *sendMessage = json_object_new_object();
-	char *PGstatement = "INSERT INTO Message (sender,chat, message_content) VALUES ($1::INTEGER, $2::INTEGER, $3::VARCHAR)";
+	char *PGstatement = "INSERT INTO Message (sender, chat, message_content) VALUES ($1::INTEGER, $2::INTEGER, $3::VARCHAR) RETURNING (SELECT username FROM user_account WHERE user_id = $1::INTEGER)";
 	const char *paramValues[3] = {from, chat_room_id, message};
 	PGconn *conn = getConnection();
 	PGresult *res = PQexecParams(conn, PGstatement, 3, NULL, paramValues, NULL, NULL, 0);
@@ -212,7 +212,7 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 		json_object_object_add(sendMessage, "action", json_object_new_string("NEW_MESSAGE"));
 		json_object_object_add(sendMessage, "status", json_object_new_string("OK"));
 		json_object_object_add(sendMessage, "chat", json_object_new_string(chat_room_id));
-		json_object_object_add(sendMessage, "sender", json_object_new_string(from));
+		json_object_object_add(sendMessage, "sender", json_object_new_string(PQgetvalue(res, 0, 0)));
 		json_object_object_add(sendMessage, "message", json_object_new_string(message));
 
 		const char *response_char = json_object_to_json_string_ext(sendMessage, JSON_C_TO_STRING_PLAIN);
