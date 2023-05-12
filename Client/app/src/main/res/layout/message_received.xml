@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_gravity="start"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="100dp"
+    app:cardBackgroundColor="@color/purple_200"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:background="@drawable/receiver_message">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:paddingBottom="7dp"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
             android:text="@string/message_sender"
-            android:textSize="17sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/message_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sender"
-            android:paddingLeft="7dp"
-            android:paddingTop="7dp"
-            android:paddingRight="7dp"
-            android:paddingBottom="7dp"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="4dp"
             android:text="@string/received_message"
             android:textColor="@color/white"
-            android:textSize="17sp" />
-
-    </RelativeLayout>
-
-</RelativeLayout>
+            android:textSize="16sp" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

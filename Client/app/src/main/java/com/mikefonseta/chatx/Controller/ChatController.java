@@ -38,13 +38,13 @@ public class ChatController {
             } else if (action.equals(Response.JOIN_ROOM.name()))
                 actionJoinRoom(activity, response);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            System.out.println("Errore lettura json: " + message);
         }
     }
 
     private static void actionSendMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(response.getString("sender"),
+            Message message = new Message(AuthenticationController.getUser().getUsername(),
                     Integer.parseInt(response.getString("chat")),
                     response.getString("message"));
             ((ChatActivity) chatActivity).addNewMessage(message);
