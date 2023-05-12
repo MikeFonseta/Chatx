@@ -18,7 +18,7 @@
             android:paddingTop="7dp"
             android:paddingRight="7dp"
             android:paddingBottom="7dp"
-            android:text="My message (Sender Message Layout)   My message (Sender Message Layout) My message (Sender Message Layout)"
+            android:text="@string/sent_message"
             android:textColor="@color/white"
             android:textSize="17sp" />
 
