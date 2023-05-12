@@ -201,41 +201,41 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 	PGconn *conn = getConnection();
 	PGresult *res = PQexecParams(conn, PGstatement, 3, NULL, paramValues, NULL, NULL, 0);
 
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-	{
+	if (PQresultStatus(res) != PGRES_TUPLES_OK)
 		printf("%s\n", PQresultErrorMessage(res));
-		return 0;
-	}
-
-	if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
+	else
 	{
-		json_object_object_add(sendMessage, "action", json_object_new_string("NEW_MESSAGE"));
-		json_object_object_add(sendMessage, "status", json_object_new_string("OK"));
-		json_object_object_add(sendMessage, "chat", json_object_new_string(chat_room_id));
-		json_object_object_add(sendMessage, "sender", json_object_new_string(PQgetvalue(res, 0, 0)));
-		json_object_object_add(sendMessage, "message", json_object_new_string(message));
+		json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
+		json_object_object_add(response, "status", json_object_new_string("OK"));
+		json_object_object_add(response, "message", json_object_new_string(message));
+		json_object_object_add(response, "sender", json_object_new_string(from));
+		json_object_object_add(response, "chat", json_object_new_string(chat_room_id));
 
-		const char *response_char = json_object_to_json_string_ext(sendMessage, JSON_C_TO_STRING_PLAIN);
-		char *sending = malloc(strlen(response_char) + 2);
-		strcpy(sending, response_char);
-		strcat(sending, "\n");
-		int response_size = strlen(sending);
-
-		for (int i = 0; i < json_object_array_length(chat_room); i++)
+		if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
 		{
-			int sockFD = json_object_get_int(json_object_array_get_idx(chat_room, i));
-			if (sockFD != fd)
+			json_object_object_add(sendMessage, "action", json_object_new_string("NEW_MESSAGE"));
+			json_object_object_add(sendMessage, "status", json_object_new_string("OK"));
+			json_object_object_add(sendMessage, "chat", json_object_new_string(chat_room_id));
+			json_object_object_add(sendMessage, "sender", json_object_new_string(PQgetvalue(res, 0, 0)));
+			json_object_object_add(sendMessage, "message", json_object_new_string(message));
+
+			const char *response_char = json_object_to_json_string_ext(sendMessage, JSON_C_TO_STRING_PLAIN);
+			char *sending = malloc(strlen(response_char) + 2);
+			strcpy(sending, response_char);
+			strcat(sending, "\n");
+			int response_size = strlen(sending);
+
+			for (int i = 0; i < json_object_array_length(chat_room); i++)
 			{
-				// Invio al client connesso che appartiene a questa chat_room_id
-				send(sockFD, sending, response_size, 0);
+				int sockFD = json_object_get_int(json_object_array_get_idx(chat_room, i));
+				if (sockFD != fd)
+				{
+					// Invio al client connesso che appartiene a questa chat_room_id
+					send(sockFD, sending, response_size, 0);
+				}
 			}
 		}
 	}
-	json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
-	json_object_object_add(response, "status", json_object_new_string("OK"));
-	json_object_object_add(response, "message", json_object_new_string(message));
-	json_object_object_add(response, "sender", json_object_new_string(from));
-	json_object_object_add(response, "chat", json_object_new_string(chat_room_id));
 	PQclear(res);
 	PQfinish(conn);
 	return 1;
@@ -246,7 +246,7 @@ int getMessage(const int chat_room_id, json_object *response)
 	int rows = 0;
 	PGconn *conn = getConnection();
 	char sql[256];
-	sprintf(sql, "SELECT m.message_id, u.username, m.chat, m.message_content FROM message m, user_account u WHERE chat = %d AND m.sender = u.user_id", chat_room_id);
+	sprintf(sql, "SELECT m.message_id, u.username, m.chat, m.message_content FROM message m, user_account u WHERE chat = %d AND m.sender = u.user_id ORDER BY m.message_id", chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
 	json_object_object_add(response, "action", json_object_new_string("OPEN_ROOM"));
