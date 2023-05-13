@@ -14,7 +14,7 @@ import com.mikefonseta.chatx.R;
 
 import java.util.List;
 
-public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
+public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Message> chatMessages;
 
@@ -29,26 +29,30 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        if (viewType == 0) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_sent, parent, false);
-        } else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_received, parent, false);
-        }
-        return new MessageViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == 0)
+            return new SentMessageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_sent, parent, false));
+        else
+            return new ReceivedMessageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.message_received, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = chatMessages.get(position);
-        holder.message.setText(message.getMessage_content());
+        if (holder.getItemViewType() == 0) {
+            SentMessageViewHolder messageViewHolder = (SentMessageViewHolder) holder;
+            messageViewHolder.message.setText(message.getMessage_content());
+        } else {
+            ReceivedMessageViewHolder receivedMessageViewHolder = (ReceivedMessageViewHolder) holder;
+            receivedMessageViewHolder.sender.setText(message.getSender());
+            receivedMessageViewHolder.message.setText(message.getMessage_content());
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
         Message message = chatMessages.get(position);
-        if (message.getSender() == AuthenticationController.getUser().getUser_id()) {
+        if (AuthenticationController.getUser().getUsername().equals(message.getSender())) {
             return 0;
         }
         return 1;
@@ -69,12 +73,24 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         notifyItemInserted(chatMessages.size() - 1);
     }
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    public static class SentMessageViewHolder extends RecyclerView.ViewHolder {
 
         public TextView message;
 
-        public MessageViewHolder(@NonNull View itemView) {
+        public SentMessageViewHolder(@NonNull View itemView) {
             super(itemView);
+            message = itemView.findViewById(R.id.message_content);
+        }
+    }
+
+    public static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView sender;
+        public TextView message;
+
+        public ReceivedMessageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            sender = itemView.findViewById(R.id.sender);
             message = itemView.findViewById(R.id.message_content);
         }
     }

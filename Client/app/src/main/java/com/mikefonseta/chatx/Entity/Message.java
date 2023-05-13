@@ -3,17 +3,15 @@ package com.mikefonseta.chatx.Entity;
 public class Message {
 
     private int message_id;
-    private int sender;
+    private String sender;
     private int chat;
     private String message_content;
     private String date;
 
-    public Message(int message_id, int sender, int chat, String message_content, String date) {
-        this.message_id = message_id;
+    public Message(String sender, int chat, String message_content) {
         this.sender = sender;
         this.chat = chat;
         this.message_content = message_content;
-        this.date = date;
     }
 
     public int getMessage_id() {
@@ -24,11 +22,11 @@ public class Message {
         this.message_id = message_id;
     }
 
-    public int getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(int sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 

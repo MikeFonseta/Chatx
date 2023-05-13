@@ -22,4 +22,7 @@
     <string name="request_access">Vuoi chiedere l\'accesso a questa stanza?</string>
     <string name="message_hint">Enter Message</string>
     <string name="send_button">INVIA</string>
+    <string name="message_sender">TextView</string>
+    <string name="received_message">Receiver Message</string>
+    <string name="sent_message">sent message</string>
 </resources>

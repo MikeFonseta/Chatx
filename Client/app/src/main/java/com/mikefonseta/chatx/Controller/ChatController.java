@@ -38,26 +38,24 @@ public class ChatController {
             } else if (action.equals(Response.JOIN_ROOM.name()))
                 actionJoinRoom(activity, response);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            System.out.println("Errore lettura json: " + message);
         }
     }
 
     private static void actionSendMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(-1,
-                    Integer.parseInt(response.getString("sender")),
+            Message message = new Message(AuthenticationController.getUser().getUsername(),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null);
+                    response.getString("message"));
             ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
 
     private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(-1,
-                    Integer.parseInt(response.getString("sender")),
+            Message message = new Message(response.getString("sender"),
                     Integer.parseInt(response.getString("chat")),
-                    response.getString("message"), null);
+                    response.getString("message"));
             ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
@@ -103,12 +101,10 @@ public class ChatController {
         messages.clear();
         for (int i = 0; i < array.length(); i++) {
             JSONObject data = array.getJSONObject(i);
-            int message_id = data.getInt("message_id");
-            int sender = data.getInt("sender");
+            String sender = data.getString("sender");
             int chat = data.getInt("chat");
             String message_content = data.getString("message_content");
-            String sending_time = data.getString("sending_time");
-            Message message = new Message(message_id, sender, chat, message_content, sending_time);
+            Message message = new Message(sender, chat, message_content);
             messages.add(message);
         }
         ((ChatActivity) activity).setUI();

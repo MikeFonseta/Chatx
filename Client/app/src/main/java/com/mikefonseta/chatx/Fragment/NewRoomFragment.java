@@ -15,7 +15,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
-import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
@@ -29,7 +28,6 @@ public class NewRoomFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Controller.setCurrentFragment(this);
         TextInputLayout roomInputLayout = view.findViewById(R.id.room_text_layout);
         TextInputEditText roomEditText = view.findViewById(R.id.room_edit_text);
         Button button = view.findViewById(R.id.new_room_button);

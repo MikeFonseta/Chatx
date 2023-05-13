@@ -17,7 +17,7 @@ public class ConnectionHandler {
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
-        String IP_ADDRESS = "192.168.0.107";
+        String IP_ADDRESS = "192.168.0.105";
         int PORT = 8889;
         try {
             Socket socket = new Socket(IP_ADDRESS, PORT);
@@ -46,6 +46,7 @@ public class ConnectionHandler {
             while (!exit) {
                 try {
                     String response = bufferedReader.readLine();
+                    System.out.println(response);
                     Controller.evaluate_action(response);
                 } catch (IOException e) {
                     System.out.println("failed to read data");
@@ -59,6 +60,7 @@ public class ConnectionHandler {
 
     public void doRequest(String message) {
         Thread thread = new Thread(() -> {
+            System.out.println(message);
             printWriter.println(message);
             printWriter.flush();
         });
