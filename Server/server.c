@@ -86,15 +86,33 @@ void *client_handler(void *arg)
 				   json_object_to_json_string_ext(received, JSON_C_TO_STRING_PLAIN));
 
 			response = json_object_new_object();
-			evaluate_action(clientInfo->socketfd, received, response);
+			int result = evaluate_action(clientInfo->socketfd, received, response);
 
 			const char *response_char = json_object_to_json_string_ext(response, JSON_C_TO_STRING_PLAIN);
 			char *sending = malloc(strlen(response_char) + 2);
 			strcpy(sending, response_char);
 			strcat(sending, "\n");
 			int response_size = strlen(sending);
-			if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
-				perror("send failed");
+
+			if (result == USER)
+			{
+				if (sent_size = send(clientInfo->socketfd, sending, response_size, 0) == -1)
+					perror("send failed");
+			}
+			else if (result == ALL)
+			{
+				json_object *chat_room_array, *chat_room_id;
+				json_object_object_get_ex(response, "chat_room_id", &chat_room_id);
+				const char *room_id = json_object_get_string(chat_room_id);
+				if (json_object_object_get_ex(chat_room_list, room_id, &chat_room_array))
+				{
+					for (int i = 0; i < json_object_array_length(chat_room_array); i++)
+					{
+						int socket = json_object_get_int(json_object_array_get_idx(chat_room_array, i));
+						send(socket, sending, response_size, 0);
+					}
+				}
+			}
 			json_object_put(response);
 		}
 	}

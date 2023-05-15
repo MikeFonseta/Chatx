@@ -26,7 +26,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 	{
 		json_object_object_get_ex(request, "username", &username);
 		json_object_object_get_ex(request, "password", &password);
-		return loginUser(fd, json_object_get_string(username), json_object_get_string(password), response);
+		return loginUser(json_object_get_string(username), json_object_get_string(password), response);
 	}
 	if (strcmp(json_object_get_string(action), "REGISTER") == 0)
 	{
@@ -39,7 +39,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		json_object_object_get_ex(request, "message", &message);
 		json_object_object_get_ex(request, "from", &from);
-		return sendMessage(fd, json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
+		return sendMessage(json_object_get_string(chat_room_id), json_object_get_string(from), json_object_get_string(message), response);
 	}
 	if (strcmp(json_object_get_string(action), "OPEN_ROOM") == 0)
 	{
@@ -139,10 +139,10 @@ int registerUser(const char *user, const char *password, json_object *response)
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
-int loginUser(int fd, const char *user, const char *password, json_object *response)
+int loginUser(const char *user, const char *password, json_object *response)
 {
 	int rows = 0;
 	int char_converted;
@@ -173,7 +173,7 @@ int loginUser(int fd, const char *user, const char *password, json_object *respo
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
 int logout(int fd)
@@ -191,7 +191,7 @@ int logout(int fd)
 	}
 }
 
-int sendMessage(int fd, const char *chat_room_id, const char *from, const char *message, json_object *response)
+int sendMessage(const char *chat_room_id, const char *from, const char *message, json_object *response)
 {
 	json_object *chat_room;
 	json_object *sendMessage = json_object_new_object();
@@ -204,40 +204,15 @@ int sendMessage(int fd, const char *chat_room_id, const char *from, const char *
 		printf("%s\n", PQresultErrorMessage(res));
 	else
 	{
-		json_object_object_add(response, "action", json_object_new_string("SEND_MESSAGE"));
+		json_object_object_add(response, "action", json_object_new_string("NEW_MESSAGE"));
 		json_object_object_add(response, "status", json_object_new_string("OK"));
 		json_object_object_add(response, "message", json_object_new_string(message));
-		json_object_object_add(response, "sender", json_object_new_string(from));
-		json_object_object_add(response, "chat", json_object_new_string(chat_room_id));
-
-		if (json_object_object_get_ex(chat_room_list, chat_room_id, &chat_room))
-		{
-			json_object_object_add(sendMessage, "action", json_object_new_string("NEW_MESSAGE"));
-			json_object_object_add(sendMessage, "status", json_object_new_string("OK"));
-			json_object_object_add(sendMessage, "chat", json_object_new_string(chat_room_id));
-			json_object_object_add(sendMessage, "sender", json_object_new_string(PQgetvalue(res, 0, 0)));
-			json_object_object_add(sendMessage, "message", json_object_new_string(message));
-
-			const char *response_char = json_object_to_json_string_ext(sendMessage, JSON_C_TO_STRING_PLAIN);
-			char *sending = malloc(strlen(response_char) + 2);
-			strcpy(sending, response_char);
-			strcat(sending, "\n");
-			int response_size = strlen(sending);
-
-			for (int i = 0; i < json_object_array_length(chat_room); i++)
-			{
-				int sockFD = json_object_get_int(json_object_array_get_idx(chat_room, i));
-				if (sockFD != fd)
-				{
-					// Invio al client connesso che appartiene a questa chat_room_id
-					send(sockFD, sending, response_size, 0);
-				}
-			}
-		}
+		json_object_object_add(response, "sender", json_object_new_string(PQgetvalue(res, 0, 0)));
+		json_object_object_add(response, "chat_room_id", json_object_new_string(chat_room_id));
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return 1;
+	return ALL;
 }
 
 int getMessage(const int chat_room_id, json_object *response)
@@ -272,7 +247,7 @@ int getMessage(const int chat_room_id, json_object *response)
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
 int joinRoom(const int user_id, const int chat_room_id, json_object *response)
@@ -297,7 +272,7 @@ int joinRoom(const int user_id, const int chat_room_id, json_object *response)
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
 int acceptRequest(const int user_id, const int chat_room_id, json_object *response)
@@ -322,7 +297,7 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
 int removeUser(const int user_id, const int chat_room_id, json_object *response)
@@ -340,7 +315,7 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return 0;
 }
 
 int createRoom(const int fd, const int room_owner_id, const char *chat_room_name, json_object *response)
@@ -371,7 +346,7 @@ int createRoom(const int fd, const int room_owner_id, const char *chat_room_name
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
 
 int updateRoom(const char *chat_room_id, const char *new_name, json_object *response)
@@ -385,11 +360,16 @@ int updateRoom(const char *chat_room_id, const char *new_name, json_object *resp
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		printf("%s\n", PQresultErrorMessage(res));
 	else
+	{
 		rows = PQntuples(res);
+		json_object_object_add(response, "action", json_object_new_string("UPDATE"));
+		json_object_object_add(response, "chat_room_id", json_object_new_int(atoi(chat_room_id)));
+		json_object_object_add(response, "chat_room_name", json_object_new_string(new_name));
+	}
 
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return ALL;
 }
 
 int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *response)
@@ -407,7 +387,7 @@ int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *
 
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return 0;
 }
 
 int getRooms(int fd, const int user_id, json_object *response)
@@ -479,5 +459,5 @@ int getRooms(int fd, const int user_id, json_object *response)
 	}
 	PQclear(res);
 	PQfinish(conn);
-	return rows;
+	return USER;
 }
