@@ -10,5 +10,6 @@ public enum Response {
     SEND_MESSAGE,
     NEW_MESSAGE,
     CREATE,
-    JOIN_ROOM
+    JOIN_ROOM,
+    UPDATE;
 }
