@@ -2,11 +2,9 @@ package com.mikefonseta.chatx.Entity;
 
 public class Message {
 
-    private int message_id;
     private String sender;
     private int chat;
     private String message_content;
-    private String date;
 
     public Message(String sender, int chat, String message_content) {
         this.sender = sender;
@@ -14,12 +12,7 @@ public class Message {
         this.message_content = message_content;
     }
 
-    public int getMessage_id() {
-        return message_id;
-    }
-
-    public void setMessage_id(int message_id) {
-        this.message_id = message_id;
+    public Message() {
     }
 
     public String getSender() {
@@ -46,11 +39,4 @@ public class Message {
         this.message_content = message_content;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 }
