@@ -12,7 +12,8 @@ import java.net.UnknownHostException;
 public class ConnectionHandler {
 
     private static ConnectionHandler connectionHandler = null;
-    private final boolean exit = false;
+    private static boolean exit = false;
+    private Socket socket;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
 
@@ -20,7 +21,7 @@ public class ConnectionHandler {
         String IP_ADDRESS = "192.168.0.105";
         int PORT = 8889;
         try {
-            Socket socket = new Socket(IP_ADDRESS, PORT);
+            socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream());
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             listen();
@@ -41,6 +42,10 @@ public class ConnectionHandler {
         return connectionHandler;
     }
 
+    public static void setExitToTrue() {
+        exit = true;
+    }
+
     public void listen() {
         Thread listenThread = new Thread(() -> {
             while (!exit) {
@@ -52,6 +57,15 @@ public class ConnectionHandler {
                     System.out.println("failed to read data");
                     e.printStackTrace();
                     break;
+                }
+            }
+            if (exit) {
+                printWriter.close();
+                try {
+                    bufferedReader.close();
+                    socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -66,5 +80,4 @@ public class ConnectionHandler {
         });
         thread.start();
     }
-
 }
