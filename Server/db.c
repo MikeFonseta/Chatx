@@ -78,9 +78,8 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 	}
 	if (strcmp(json_object_get_string(action), "DELETE") == 0)
 	{
-		json_object_object_get_ex(request, "owner", &owner);
-		json_object_object_get_ex(request, "roomName", &roomName);
-		return deleteRoom(json_object_get_string(owner), json_object_get_string(roomName), response);
+		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
+		return deleteRoom(json_object_get_string(chat_room_id), response);
 	}
 	if (strcmp(json_object_get_string(action), "GET_ROOMS") == 0)
 	{
@@ -366,28 +365,30 @@ int updateRoom(const char *chat_room_id, const char *new_name, json_object *resp
 		json_object_object_add(response, "chat_room_id", json_object_new_int(atoi(chat_room_id)));
 		json_object_object_add(response, "chat_room_name", json_object_new_string(new_name));
 	}
-
 	PQclear(res);
 	PQfinish(conn);
 	return ALL;
 }
 
-int deleteRoom(const char *room_owner, const char *chat_room_name, json_object *response)
+int deleteRoom(const char *chat_room_id, json_object *response)
 {
 	int rows = 0;
-	char *PGstatement = "DELETE FROM Chat_room WHERE chat_room_name = $1::VARCHAR";
-	const char *paramValues[1] = {chat_room_name};
+	char *PGstatement = "DELETE FROM Chat_room WHERE chat_room_id = $1::INTEGER";
+	const char *paramValues[1] = {chat_room_id};
 	PGconn *conn = getConnection();
 	PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		printf("%s\n", PQresultErrorMessage(res));
 	else
+	{
 		rows = PQntuples(res);
-
+		json_object_object_add(response, "action", json_object_new_string("DELETE"));
+		json_object_object_add(response, "chat_room_id", json_object_new_int(atoi(chat_room_id)));
+	}
 	PQclear(res);
 	PQfinish(conn);
-	return 0;
+	return ALL;
 }
 
 int getRooms(int fd, const int user_id, json_object *response)
