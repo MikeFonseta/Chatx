@@ -11,5 +11,6 @@ public enum Response {
     NEW_MESSAGE,
     CREATE,
     JOIN_ROOM,
-    UPDATE;
+    UPDATE,
+    DELETE
 }

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mikefonseta.chatx.Adapter.MessageListAdapter;
+import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
 import com.mikefonseta.chatx.Controller.Controller;
 import com.mikefonseta.chatx.Entity.Message;
@@ -38,6 +39,7 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         String room_name = bundle.getString("ROOM_NAME");
         int room_id = bundle.getInt("ROOM_ID");
+        int room_owner = bundle.getInt("ROOM_OWNER");
         getSupportActionBar().setTitle(room_name);
         Controller.setCurrentActivity(this);
         ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(room_id));
@@ -59,14 +61,17 @@ public class ChatActivity extends AppCompatActivity {
         ImageButton menuButton = findViewById(R.id.menu);
         menuButton.setOnClickListener(view -> {
             PopupMenu menu = new PopupMenu(this, view);
-            menu.inflate(R.menu.owner_menu);
+            if (AuthenticationController.getUser().getUser_id() == room_owner)
+                menu.inflate(R.menu.owner_menu);
+            else
+                menu.inflate(R.menu.user_menu);
+
             menu.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.rename) {
+                if (item.getItemId() == R.id.rename)
                     renameRoom(room_id);
-                    return true;
-                }
-                else
-                    return true;
+                if (item.getItemId() == R.id.delete)
+                    deleteRoom(room_id);
+                return true;
             });
             menu.show();
         });
@@ -102,6 +107,25 @@ public class ChatActivity extends AppCompatActivity {
                         ConnectionHandler.getInstance().doRequest(ChatController.getUpdateRoomRequest(room_id, textInputLayout.getEditText().getText().toString()));
                 })
                 .setNegativeButton("Annulla", null)
+                .show();
+    }
+
+    public void deleteRoom(int room_id) {
+        new MaterialAlertDialogBuilder(this)
+                .setMessage("Vuoi davvero eliminare questa stanza?")
+                .setPositiveButton("Si", (dialogInterface, i) -> ConnectionHandler.getInstance().doRequest(ChatController.getDeleteRoomRequest(room_id)))
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    public void updateTitle(String room_name) {
+        getSupportActionBar().setTitle(room_name);
+    }
+
+    public void leaveRoom() {
+        new MaterialAlertDialogBuilder(this)
+                .setMessage("Non fai più parte di questa stanza")
+                .setPositiveButton("Ok", (dialogInterface, i) -> finish())
                 .show();
     }
 }
