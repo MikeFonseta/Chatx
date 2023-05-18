@@ -72,9 +72,10 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 	}
 	if (strcmp(json_object_get_string(action), "UPDATE") == 0)
 	{
+		json_object_object_get_ex(request, "user_id", &user_id);
 		json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
 		json_object_object_get_ex(request, "newName", &newName);
-		return updateRoom(json_object_get_string(chat_room_id), json_object_get_string(newName), response);
+		return updateRoom(json_object_get_string(user_id), json_object_get_string(chat_room_id), json_object_get_string(newName), response);
 	}
 	if (strcmp(json_object_get_string(action), "DELETE") == 0)
 	{
@@ -348,13 +349,13 @@ int createRoom(const int fd, const int room_owner_id, const char *chat_room_name
 	return USER;
 }
 
-int updateRoom(const char *chat_room_id, const char *new_name, json_object *response)
+int updateRoom(const char *chat_room_owner, const char *chat_room_id, const char *new_name, json_object *response)
 {
 	int rows = 0;
-	char *PGstatement = "UPDATE Chat_room SET chat_room_name = $2::VARCHAR WHERE chat_room_id = $1::INTEGER";
-	const char *paramValues[2] = {chat_room_id, new_name};
+	char *PGstatement = "UPDATE Chat_room SET chat_room_name = $3::VARCHAR WHERE chat_room_id = $2::INTEGER AND room_owner = $1::INTEGER";
+	const char *paramValues[2] = {chat_room_owner, chat_room_id, new_name};
 	PGconn *conn = getConnection();
-	PGresult *res = PQexecParams(conn, PGstatement, 2, NULL, paramValues, NULL, NULL, 0);
+	PGresult *res = PQexecParams(conn, PGstatement, 3, NULL, paramValues, NULL, NULL, 0);
 
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		printf("%s\n", PQresultErrorMessage(res));
