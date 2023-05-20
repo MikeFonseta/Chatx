@@ -37,6 +37,7 @@ public class AuthenticationController {
             user.setUsername(response.getString("username"));
             isLogged = true;
             activity.startActivity(new Intent(activity, MainActivity.class));
+            activity.finish();
         } else {
             String message = response.getString("message");
             activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());

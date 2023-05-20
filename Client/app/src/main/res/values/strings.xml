@@ -25,4 +25,8 @@
     <string name="message_sender">TextView</string>
     <string name="received_message">Receiver Message</string>
     <string name="sent_message">sent message</string>
+    <string name="rename_room">Rinonima stanza</string>
+    <string name="delete_room">Elimina stanza</string>
+    <string name="room_textView">Inserisci un nuovo nome per la stanza</string>
+    <string name="leave_room">Abbandona stanza</string>
 </resources>

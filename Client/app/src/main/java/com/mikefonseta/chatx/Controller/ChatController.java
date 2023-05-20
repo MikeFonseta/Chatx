@@ -29,34 +29,46 @@ public class ChatController {
                 actionGetRooms(response);
             } else if (action.equals(Response.OPEN_ROOM.name())) {
                 actionOpenRoom(activity, response);
-            } else if (action.equals(Response.SEND_MESSAGE.name())) {
-                actionSendMessage(activity, response);
             } else if (action.equals(Response.NEW_MESSAGE.name())) {
                 actionNewMessage(activity, response);
             } else if (action.equals(Response.CREATE.name())) {
                 actionNewRoom(response);
-            } else if (action.equals(Response.JOIN_ROOM.name()))
+            } else if (action.equals(Response.JOIN_ROOM.name())) {
                 actionJoinRoom(activity, response);
+            } else if (action.equals(Response.UPDATE.name())) {
+                actionUpdateRoom(activity, response);
+            } else if (action.equals(Response.DELETE.name())) {
+                actionDeleteRoom(activity, response);
+            }
         } catch (JSONException e) {
             System.out.println("Errore lettura json: " + message);
         }
     }
 
-    private static void actionSendMessage(Activity chatActivity, JSONObject response) throws JSONException {
+    private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(AuthenticationController.getUser().getUsername(),
-                    Integer.parseInt(response.getString("chat")),
-                    response.getString("message"));
+            Message message = new Message();
+            message.setChat(Integer.parseInt(response.getString("chat_room_id")));
+            message.setMessage_content(response.getString("message"));
+            message.setSender(response.getString("sender"));
             ((ChatActivity) chatActivity).addNewMessage(message);
         }
     }
 
-    private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
-        if (response.getString("status").equals(Response.OK.name())) {
-            Message message = new Message(response.getString("sender"),
-                    Integer.parseInt(response.getString("chat")),
-                    response.getString("message"));
-            ((ChatActivity) chatActivity).addNewMessage(message);
+    private static void actionUpdateRoom(Activity activity, JSONObject response) throws JSONException {
+        String chat_room_name = response.getString("chat_room_name");
+        int chat_room_id = response.getInt("chat_room_id");
+        if (activity instanceof ChatActivity) {
+            ChatActivity chatActivity = (ChatActivity) activity;
+            chatActivity.runOnUiThread(() -> chatActivity.updateTitle(chat_room_name));
+        }
+    }
+
+    private static void actionDeleteRoom(Activity activity, JSONObject response) throws JSONException {
+        int chat_room_id = response.getInt("chat_room_id");
+        if (activity instanceof ChatActivity) {
+            ChatActivity chatActivity = (ChatActivity) activity;
+            chatActivity.runOnUiThread(chatActivity::leaveRoom);
         }
     }
 
@@ -170,6 +182,29 @@ public class ChatController {
         try {
             jsonObject.put("action", Response.JOIN_ROOM.name());
             jsonObject.put("user_id", user_id);
+            jsonObject.put("chat_room_id", chat_room_id);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getUpdateRoomRequest(int chat_room_id, String newName) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", Response.UPDATE.name());
+            jsonObject.put("chat_room_id", chat_room_id);
+            jsonObject.put("newName", newName);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getDeleteRoomRequest(int chat_room_id) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", Response.DELETE.name());
             jsonObject.put("chat_room_id", chat_room_id);
         } catch (JSONException e) {
             System.err.println(e.getMessage());

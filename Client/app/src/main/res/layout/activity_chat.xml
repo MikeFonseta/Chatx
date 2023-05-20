@@ -30,7 +30,6 @@
             android:id="@+id/message_content_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
             android:layout_toStartOf="@+id/send_button"
             android:background="@android:color/transparent"
@@ -42,12 +41,20 @@
 
         <Button
             android:id="@+id/send_button"
-            android:layout_width="84dp"
+            android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
+            android:layout_toStartOf="@+id/menu"
             android:background="?attr/selectableItemBackground"
             android:text="@string/send_button"
             android:textColor="@color/purple_700" />
+
+        <ImageButton
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="menu"
+            app:srcCompat="@drawable/ic_drawer_menu_24px" />
 
     </RelativeLayout>
 

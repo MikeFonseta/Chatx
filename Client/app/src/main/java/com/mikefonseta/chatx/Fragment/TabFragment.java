@@ -92,10 +92,12 @@ public class TabFragment extends Fragment {
 
     public void openRoom(ChatRoom chatRoom) {
         int chat_room_id = chatRoom.getChat_room_id();
+        int room_owner = chatRoom.getRoom_owner();
         String chat_room_name = chatRoom.getChat_room_name();
 
         Bundle bundle = new Bundle();
         bundle.putInt("ROOM_ID", chat_room_id);
+        bundle.putInt("ROOM_OWNER", room_owner);
         bundle.putString("ROOM_NAME", chat_room_name);
 
         Intent intent = new Intent(getActivity(), ChatActivity.class);

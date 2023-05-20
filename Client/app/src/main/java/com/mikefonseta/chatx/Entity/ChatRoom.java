@@ -16,10 +16,6 @@ public class ChatRoom {
         return chat_room_id;
     }
 
-    public void setChat_room_id(int chat_room_id) {
-        this.chat_room_id = chat_room_id;
-    }
-
     public String getChat_room_name() {
         return chat_room_name;
     }
@@ -32,7 +28,4 @@ public class ChatRoom {
         return room_owner;
     }
 
-    public void setRoom_owner(int room_owner) {
-        this.room_owner = room_owner;
-    }
 }
