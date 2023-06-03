@@ -71,6 +71,8 @@ public class ChatActivity extends AppCompatActivity {
                     renameRoom(room_id);
                 if (item.getItemId() == R.id.delete)
                     deleteRoom(room_id);
+                if (item.getItemId() == R.id.leave)
+                    leaveRoom(room_id);
                 return true;
             });
             menu.show();
@@ -84,10 +86,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void setUI() {
-        runOnUiThread(() -> {
-            messageListAdapter.setChatMessages(ChatController.getCurrentMessageList());
-            messageRecycler.setAdapter(messageListAdapter);
-        });
+        messageListAdapter.setChatMessages(ChatController.getCurrentMessageList());
+        messageRecycler.setAdapter(messageListAdapter);
     }
 
     public void addNewMessage(Message message) {
@@ -118,13 +118,21 @@ public class ChatActivity extends AppCompatActivity {
                 .show();
     }
 
+    public void leaveRoom(int room_id) {
+        new MaterialAlertDialogBuilder(this)
+                .setMessage("Vuoi lasciare questa stanza?")
+                .setPositiveButton("Si", (dialogInterface, i) -> ConnectionHandler.getInstance().doRequest(ChatController.getLeaveRoomRequest(room_id)))
+                .setNegativeButton("No", null)
+                .show();
+    }
+
     public void updateTitle(String room_name) {
         getSupportActionBar().setTitle(room_name);
     }
 
-    public void leaveRoom() {
+    public void showError(String message) {
         new MaterialAlertDialogBuilder(this)
-                .setMessage("Non fai più parte di questa stanza")
+                .setMessage(message)
                 .setPositiveButton("Ok", (dialogInterface, i) -> finish())
                 .show();
     }

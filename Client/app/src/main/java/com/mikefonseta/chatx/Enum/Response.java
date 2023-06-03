@@ -12,5 +12,6 @@ public enum Response {
     CREATE,
     JOIN_ROOM,
     UPDATE,
-    DELETE
+    DELETE,
+    REMOVE_USER
 }
