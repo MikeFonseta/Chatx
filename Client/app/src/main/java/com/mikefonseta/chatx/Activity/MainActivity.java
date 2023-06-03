@@ -9,7 +9,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mikefonseta.chatx.Controller.Controller;
-import com.mikefonseta.chatx.Network.ConnectionHandler;
 import com.mikefonseta.chatx.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,10 +28,5 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
-    @Override
-    public void onBackPressed() {
-        ConnectionHandler.setExitToTrue();
-        super.onBackPressed();
-    }
 }
 
