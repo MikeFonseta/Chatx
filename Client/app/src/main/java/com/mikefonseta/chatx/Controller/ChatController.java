@@ -57,7 +57,6 @@ public class ChatController {
 
     private static void actionUpdateRoom(Activity activity, JSONObject response) throws JSONException {
         String chat_room_name = response.getString("chat_room_name");
-        int chat_room_id = response.getInt("chat_room_id");
         if (activity instanceof ChatActivity) {
             ChatActivity chatActivity = (ChatActivity) activity;
             chatActivity.runOnUiThread(() -> chatActivity.updateTitle(chat_room_name));
@@ -65,10 +64,9 @@ public class ChatController {
     }
 
     private static void actionDeleteRoom(Activity activity, JSONObject response) throws JSONException {
-        int chat_room_id = response.getInt("chat_room_id");
         if (activity instanceof ChatActivity) {
             ChatActivity chatActivity = (ChatActivity) activity;
-            chatActivity.runOnUiThread(chatActivity::leaveRoom);
+            chatActivity.runOnUiThread(() -> chatActivity.showError("Non fai più parte di questa stanza"));
         }
     }
 
@@ -109,17 +107,21 @@ public class ChatController {
     }
 
     private static void actionOpenRoom(Activity activity, JSONObject response) throws JSONException {
-        JSONArray array = response.getJSONArray("message_list");
-        messages.clear();
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject data = array.getJSONObject(i);
-            String sender = data.getString("sender");
-            int chat = data.getInt("chat");
-            String message_content = data.getString("message_content");
-            Message message = new Message(sender, chat, message_content);
-            messages.add(message);
+        if (response.getString("status").equals(Response.OK.name())) {
+            JSONArray array = response.getJSONArray("message_list");
+            messages.clear();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject data = array.getJSONObject(i);
+                String sender = data.getString("sender");
+                int chat = data.getInt("chat");
+                String message_content = data.getString("message_content");
+                Message message = new Message(sender, chat, message_content);
+                messages.add(message);
+            }
+            ((ChatActivity) activity).setUI();
+        } else {
+            ((ChatActivity) activity).showError(response.getString("message"));
         }
-        ((ChatActivity) activity).setUI();
     }
 
     private static void actionNewRoom(JSONObject response) throws JSONException {
@@ -193,6 +195,7 @@ public class ChatController {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("action", Response.UPDATE.name());
+            jsonObject.put("user_id", AuthenticationController.getUser().getUser_id());
             jsonObject.put("chat_room_id", chat_room_id);
             jsonObject.put("newName", newName);
         } catch (JSONException e) {
@@ -206,6 +209,18 @@ public class ChatController {
         try {
             jsonObject.put("action", Response.DELETE.name());
             jsonObject.put("chat_room_id", chat_room_id);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getLeaveRoomRequest(int chat_room_id) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", Response.REMOVE_USER.name());
+            jsonObject.put("chat_room_id", chat_room_id);
+            jsonObject.put("user_id", AuthenticationController.getUser().getUser_id());
         } catch (JSONException e) {
             System.err.println(e.getMessage());
         }

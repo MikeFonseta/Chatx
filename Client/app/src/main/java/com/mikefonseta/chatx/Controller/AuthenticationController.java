@@ -1,7 +1,9 @@
 package com.mikefonseta.chatx.Controller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.mikefonseta.chatx.Activity.MainActivity;
@@ -13,7 +15,7 @@ import org.json.JSONObject;
 
 public class AuthenticationController {
 
-    private static final User user = new User();
+    private static User user;
     private static boolean isLogged = false;
 
     public static void evaluate_action(Activity activity, String message) {
@@ -33,9 +35,17 @@ public class AuthenticationController {
     private static void actionLogin(Activity activity, JSONObject response) throws JSONException {
         String status = response.getString("status");
         if (status.equals(Response.OK.name())) {
+            user = new User();
             user.setUser_id(response.getInt("user_id"));
             user.setUsername(response.getString("username"));
             isLogged = true;
+
+            SharedPreferences sharedPreferences = activity.getApplicationContext().getSharedPreferences("credentials", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("username", response.getString("username"));
+            editor.putString("password", response.getString("password"));
+            editor.apply();
+
             activity.startActivity(new Intent(activity, MainActivity.class));
             activity.finish();
         } else {
@@ -57,6 +67,10 @@ public class AuthenticationController {
         return user;
     }
 
+    public static void logout() {
+        user = null;
+    }
+
     public static String getLoginRequest(String username, String password) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -75,6 +89,16 @@ public class AuthenticationController {
             jsonObject.put("action", "REGISTER");
             jsonObject.put("username", username);
             jsonObject.put("password", password);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getLogoutRequest() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", "LOGOUT");
         } catch (JSONException e) {
             System.err.println(e.getMessage());
         }
