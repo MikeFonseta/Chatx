@@ -87,6 +87,10 @@ int evaluate_action(int fd, json_object *request, json_object *response)
 		json_object_object_get_ex(request, "user_id", &user_id);
 		return getRooms(fd, json_object_get_int(user_id), response);
 	}
+	if (strcmp(json_object_get_string(action), "LOGOUT") == 0)
+	{
+		logout(fd);
+	}
 	json_object_put(request);
 }
 
@@ -169,6 +173,7 @@ int loginUser(const char *user, const char *password, json_object *response)
 			json_object_object_add(response, "status", json_object_new_string("OK"));
 			json_object_object_add(response, "user_id", json_object_new_int64(char_converted));
 			json_object_object_add(response, "username", json_object_new_string(user));
+			json_object_object_add(response, "password", json_object_new_string(password));
 		}
 	}
 	PQclear(res);
@@ -227,6 +232,7 @@ int getMessage(const int chat_room_id, json_object *response)
 	if (PQresultStatus(res) != PGRES_TUPLES_OK)
 	{
 		json_object_object_add(response, "status", json_object_new_string("FAILED"));
+		json_object_object_add(response, "message", json_object_new_string("Impossibile aprire la stanza"));
 	}
 	else
 	{
@@ -311,11 +317,14 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		printf("%s\n", PQresultErrorMessage(res));
 	else
+	{
 		rows = PQntuples(res);
+		json_object_object_add(response, "action", json_object_new_string("DELETE"));
+	}
 
 	PQclear(res);
 	PQfinish(conn);
-	return 0;
+	return USER;
 }
 
 int createRoom(const int fd, const int room_owner_id, const char *chat_room_name, json_object *response)
@@ -353,7 +362,7 @@ int updateRoom(const char *chat_room_owner, const char *chat_room_id, const char
 {
 	int rows = 0;
 	char *PGstatement = "UPDATE Chat_room SET chat_room_name = $3::VARCHAR WHERE chat_room_id = $2::INTEGER AND room_owner = $1::INTEGER";
-	const char *paramValues[2] = {chat_room_owner, chat_room_id, new_name};
+	const char *paramValues[3] = {chat_room_owner, chat_room_id, new_name};
 	PGconn *conn = getConnection();
 	PGresult *res = PQexecParams(conn, PGstatement, 3, NULL, paramValues, NULL, NULL, 0);
 
