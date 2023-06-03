@@ -11,18 +11,18 @@ import java.net.UnknownHostException;
 
 public class ConnectionHandler {
 
-    private static ConnectionHandler connectionHandler = null;
-    private static boolean exit = false;
-    private Socket socket;
-    private PrintWriter printWriter;
+    private static final boolean exit = false;
+    private static final ConnectionHandler connectionHandler = new ConnectionHandler();
+    private static PrintWriter printWriter;
     private BufferedReader bufferedReader;
 
+
     private ConnectionHandler() {
-        String IP_ADDRESS = "192.168.0.105";
+        String IP_ADDRESS = "192.168.137.82";
         int PORT = 8889;
         try {
-            socket = new Socket(IP_ADDRESS, PORT);
-            printWriter = new PrintWriter(socket.getOutputStream());
+            Socket socket = new Socket(IP_ADDRESS, PORT);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             listen();
         } catch (UnknownHostException e) {
@@ -36,14 +36,15 @@ public class ConnectionHandler {
     }
 
     public static ConnectionHandler getInstance() {
-        if (connectionHandler == null) {
-            connectionHandler = new ConnectionHandler();
-        }
         return connectionHandler;
     }
 
-    public static void setExitToTrue() {
-        exit = true;
+    public static void doRequest(String message) {
+        Thread thread = new Thread(() -> {
+            System.out.println(message);
+            printWriter.println(message);
+        });
+        thread.start();
     }
 
     public void listen() {
@@ -59,25 +60,8 @@ public class ConnectionHandler {
                     break;
                 }
             }
-            if (exit) {
-                printWriter.close();
-                try {
-                    bufferedReader.close();
-                    socket.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         });
         listenThread.start();
     }
 
-    public void doRequest(String message) {
-        Thread thread = new Thread(() -> {
-            System.out.println(message);
-            printWriter.println(message);
-            printWriter.flush();
-        });
-        thread.start();
-    }
 }
