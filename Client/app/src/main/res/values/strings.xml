@@ -29,4 +29,6 @@
     <string name="delete_room">Elimina stanza</string>
     <string name="room_textView">Inserisci un nuovo nome per la stanza</string>
     <string name="leave_room">Abbandona stanza</string>
+    <string name="menu">menu</string>
+    <string name="logout">Esci</string>
 </resources>
