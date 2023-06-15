@@ -19,12 +19,14 @@ public class AuthenticationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Controller.setCurrentActivity(this);
+        Thread connectionThread = new Thread(ConnectionHandler::getInstance);
+        connectionThread.start();
 
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("credentials", MODE_PRIVATE);
         if (preferences.contains("username") && preferences.contains("password")) {
             String username = preferences.getString("username", null);
             String password = preferences.getString("password", null);
-            Thread thread = new Thread(() -> ConnectionHandler.doRequest(AuthenticationController.getLoginRequest(username, password)));
+            Thread thread = new Thread(() -> ConnectionHandler.getInstance().doRequest(AuthenticationController.getLoginRequest(username, password)));
             thread.start();
         } else {
             if (savedInstanceState == null) {
