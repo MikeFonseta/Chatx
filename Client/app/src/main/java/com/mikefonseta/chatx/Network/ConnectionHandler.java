@@ -16,9 +16,8 @@ public class ConnectionHandler {
     private static PrintWriter printWriter;
     private BufferedReader bufferedReader;
 
-
     private ConnectionHandler() {
-        String IP_ADDRESS = "192.168.137.82";
+        String IP_ADDRESS = "192.168.0.106";
         int PORT = 8889;
         try {
             Socket socket = new Socket(IP_ADDRESS, PORT);
@@ -39,7 +38,7 @@ public class ConnectionHandler {
         return connectionHandler;
     }
 
-    public static void doRequest(String message) {
+    public void doRequest(String message) {
         Thread thread = new Thread(() -> {
             System.out.println(message);
             printWriter.println(message);

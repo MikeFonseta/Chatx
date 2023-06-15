@@ -34,7 +34,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout() {
-        ConnectionHandler.doRequest(AuthenticationController.getLogoutRequest());
+        ConnectionHandler.getInstance().doRequest(AuthenticationController.getLogoutRequest());
         AuthenticationController.logout();
         requireActivity().getApplicationContext().deleteSharedPreferences("credentials");
         requireActivity().finish();
