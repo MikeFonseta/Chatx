@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/navigation_utenti_attesa"
-        android:name="com.mikefonseta.chatx.Fragment.UtentiInAttesaFragment"
+        android:name="com.mikefonseta.chatx.Fragment.WaitingUserFragment"
         android:label="@string/title_activity_UtentiAttesa"
-        tools:layout="@layout/fragment_utenti_attesa" />
+        tools:layout="@layout/fragment_waiting_users" />
 </navigation>

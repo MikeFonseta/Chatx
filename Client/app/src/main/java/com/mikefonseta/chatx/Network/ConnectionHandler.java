@@ -17,8 +17,8 @@ public class ConnectionHandler {
     private BufferedReader bufferedReader;
 
     private ConnectionHandler() {
-        String IP_ADDRESS = "192.168.0.106";
-        int PORT = 8889;
+        String IP_ADDRESS = "13.80.75.158";
+        int PORT = 8888;
         try {
             Socket socket = new Socket(IP_ADDRESS, PORT);
             printWriter = new PrintWriter(socket.getOutputStream(), true);

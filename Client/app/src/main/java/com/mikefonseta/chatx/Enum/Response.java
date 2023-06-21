@@ -13,5 +13,7 @@ public enum Response {
     JOIN_ROOM,
     UPDATE,
     DELETE,
-    REMOVE_USER
+    REMOVE_USER,
+
+    GET_WAITING_USERS
 }

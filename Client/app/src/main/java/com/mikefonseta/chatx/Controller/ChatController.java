@@ -19,6 +19,7 @@ public class ChatController {
 
     private static final List<ChatRoom> acceptedChatRooms = new ArrayList<>();
     private static final List<ChatRoom> otherChatRooms = new ArrayList<>();
+    private static final List<ChatRoom> waitingUserChatRooms = new ArrayList<>();
     private static final List<Message> messages = new ArrayList<>();
 
     public static void evaluate_action(Activity activity, String message) {
@@ -35,6 +36,8 @@ public class ChatController {
                 actionNewRoom(response);
             } else if (action.equals(Response.JOIN_ROOM.name())) {
                 actionJoinRoom(activity, response);
+            } else if (action.equals(Response.GET_WAITING_USERS.name())) {
+                actionWaitingUsers(response);
             } else if (action.equals(Response.UPDATE.name())) {
                 actionUpdateRoom(activity, response);
             } else if (action.equals(Response.DELETE.name())) {
@@ -42,6 +45,24 @@ public class ChatController {
             }
         } catch (JSONException e) {
             System.out.println("Errore lettura json: " + message);
+        }
+    }
+
+    private static void actionWaitingUsers(JSONObject response) throws JSONException {
+        JSONArray waitingArray = response.getJSONArray("waiting");
+        getWaitingUsersChatRooms(waitingArray);
+    }
+
+    private static void getWaitingUsersChatRooms(JSONArray array) throws JSONException{
+        waitingUserChatRooms.clear();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject data = array.getJSONObject(i);
+            int user_id = data.getInt("user_id");
+            int chat_room_id = data.getInt("chat_room_id");
+            String chat_room_name = data.getString("chat_room_name");
+            String username = data.getString("username");
+            ChatRoom chatRoom = new ChatRoom(user_id,chat_room_id,chat_room_name,username);
+            waitingUserChatRooms.add(chatRoom);
         }
     }
 
@@ -143,6 +164,17 @@ public class ChatController {
         return jsonObject.toString();
     }
 
+    public static String getWaitingUsersRequest(int user_id) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", Response.GET_WAITING_USERS.name());
+            jsonObject.put("user_id", user_id);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
     public static String getMessageRequest(int chat_room_id) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -233,6 +265,10 @@ public class ChatController {
 
     public static List<ChatRoom> getOtherChatRooms() {
         return otherChatRooms;
+    }
+
+    public static List<ChatRoom> getWaitingUserChatRooms() {
+        return  waitingUserChatRooms;
     }
 
     public static List<Message> getCurrentMessageList() {
