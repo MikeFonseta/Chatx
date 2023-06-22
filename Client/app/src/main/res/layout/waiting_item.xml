@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/chat_room_name_waiting"
+        android:layout_width="393dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="0dp"
+        android:background="@drawable/button_style_background"
+        android:gravity="center"
+        android:text="NOME STANZA"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/waiting_user"
+        android:layout_width="141dp"
+        android:layout_height="31dp"
+        android:layout_alignEnd="@+id/richiesta"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="185dp"
+        android:layout_marginBottom="41dp"
+        android:gravity="center|right"
+        android:text="USERNAME"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/richiesta"
+        android:layout_width="wrap_content"
+        android:layout_height="27dp"
+        android:layout_alignStart="@+id/chat_room_name_waiting"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="57dp"
+        android:layout_marginBottom="42dp"
+        android:gravity="center|left"
+        android:text="vuole accedere a:"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</RelativeLayout>
+

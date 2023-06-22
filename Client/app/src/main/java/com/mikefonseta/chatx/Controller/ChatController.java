@@ -48,23 +48,6 @@ public class ChatController {
         }
     }
 
-    private static void actionWaitingUsers(JSONObject response) throws JSONException {
-        JSONArray waitingArray = response.getJSONArray("waiting");
-        getWaitingUsersChatRooms(waitingArray);
-    }
-
-    private static void getWaitingUsersChatRooms(JSONArray array) throws JSONException{
-        waitingUserChatRooms.clear();
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject data = array.getJSONObject(i);
-            int user_id = data.getInt("user_id");
-            int chat_room_id = data.getInt("chat_room_id");
-            String chat_room_name = data.getString("chat_room_name");
-            String username = data.getString("username");
-            ChatRoom chatRoom = new ChatRoom(user_id,chat_room_id,chat_room_name,username);
-            waitingUserChatRooms.add(chatRoom);
-        }
-    }
 
     private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
@@ -96,6 +79,11 @@ public class ChatController {
         activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());
     }
 
+    private static void actionWaitingUsers(JSONObject response) throws JSONException {
+        JSONArray waitingArray = response.getJSONArray("waiting");
+        getWaitingUsersChatRooms(waitingArray);
+    }
+
     private static void actionGetRooms(JSONObject response) throws JSONException {
         JSONArray acceptedArray = response.getJSONArray("accepted");
         JSONArray otherArray = response.getJSONArray("other");
@@ -112,6 +100,19 @@ public class ChatController {
             int room_owner = data.getInt("room_owner_id");
             ChatRoom chatRoom = new ChatRoom(chat_room_id, chat_room_name, room_owner);
             acceptedChatRooms.add(chatRoom);
+        }
+    }
+
+    private static void getWaitingUsersChatRooms(JSONArray array) throws JSONException{
+        waitingUserChatRooms.clear();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject data = array.getJSONObject(i);
+            int user_id = data.getInt("user_id");
+            int chat_room_id = data.getInt("chat_room_id");
+            String chat_room_name = data.getString("chat_room_name");
+            String username = data.getString("username");
+            ChatRoom chatRoom = new ChatRoom(user_id,chat_room_id,chat_room_name,username);
+            waitingUserChatRooms.add(chatRoom);
         }
     }
 

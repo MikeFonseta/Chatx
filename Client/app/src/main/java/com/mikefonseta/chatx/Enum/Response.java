@@ -14,6 +14,5 @@ public enum Response {
     UPDATE,
     DELETE,
     REMOVE_USER,
-
     GET_WAITING_USERS
 }

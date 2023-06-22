@@ -37,4 +37,12 @@ public class ChatRoom {
         return room_owner;
     }
 
+    public int getUser_id_waiting() {
+        return user_id_waiting;
+    }
+
+    public String getUsername_waiting() {
+        return username_waiting;
+    }
+
 }

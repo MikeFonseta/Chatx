@@ -10,11 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mikefonseta.chatx.Activity.MainActivity;
-import com.mikefonseta.chatx.Adapter.ChatRoomListAdapter;
 import com.mikefonseta.chatx.Adapter.ItemClickSupport;
+import com.mikefonseta.chatx.Adapter.WaitingUserListAdapter;
 import com.mikefonseta.chatx.Controller.AuthenticationController;
 import com.mikefonseta.chatx.Controller.ChatController;
 import com.mikefonseta.chatx.Network.ConnectionHandler;
@@ -39,19 +40,27 @@ public class WaitingUserFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerViewWaiting);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new ChatRoomListAdapter(ChatController.getWaitingUserChatRooms(), 2));
+        recyclerView.setAdapter(new WaitingUserListAdapter(ChatController.getWaitingUserChatRooms()));
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener((recyclerView, position, v) -> {
-            ChatRoomListAdapter adapter = (ChatRoomListAdapter) recyclerView.getAdapter();
+            WaitingUserListAdapter adapter = (WaitingUserListAdapter) recyclerView.getAdapter();
             new MaterialAlertDialogBuilder(requireActivity())
                     .setView(R.layout.dialog_request_waiting_user)
                     .setPositiveButton("Si", (dialogInterface, i) -> {
-
                     })
                     .setNegativeButton("NO", null).show();
 
+        });
+
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_waiting);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            int user_id = AuthenticationController.getUser().getUser_id();
+            ConnectionHandler.getInstance().doRequest(ChatController.getWaitingUsersRequest(user_id));
+            recyclerView.setAdapter(new WaitingUserListAdapter(ChatController.getWaitingUserChatRooms()));
+            swipeRefreshLayout.setRefreshing(false);
         });
 
     }
