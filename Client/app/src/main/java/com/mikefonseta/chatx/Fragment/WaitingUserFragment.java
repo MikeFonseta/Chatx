@@ -49,9 +49,12 @@ public class WaitingUserFragment extends Fragment {
             new MaterialAlertDialogBuilder(requireActivity())
                     .setView(R.layout.dialog_request_waiting_user)
                     .setPositiveButton("Si", (dialogInterface, i) -> {
+                        int user_id = adapter.getChatRoom(position).getUser_id_waiting();
+                        int chat_room_id = adapter.getChatRoom(position).getChat_room_id();
+                        ConnectionHandler.getInstance().doRequest(ChatController.getAcceptRequest(user_id, chat_room_id));
+                        adapter.remove(position);
                     })
                     .setNegativeButton("NO", null).show();
-
         });
 
         SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_waiting);

@@ -44,6 +44,11 @@ public class WaitingUserListAdapter extends RecyclerView.Adapter<WaitingUserList
         return chatRoomList.get(position);
     }
 
+    public void remove(int position) {
+        chatRoomList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public static class WaitingUserViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView chat_room_name;

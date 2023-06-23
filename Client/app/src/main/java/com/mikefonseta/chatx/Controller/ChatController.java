@@ -38,6 +38,8 @@ public class ChatController {
                 actionJoinRoom(activity, response);
             } else if (action.equals(Response.GET_WAITING_USERS.name())) {
                 actionWaitingUsers(response);
+            } else if (action.equals(Response.ACCEPT_REQUEST.name())) {
+                actionAcceptRequest(activity,response);
             } else if (action.equals(Response.UPDATE.name())) {
                 actionUpdateRoom(activity, response);
             } else if (action.equals(Response.DELETE.name())) {
@@ -47,7 +49,6 @@ public class ChatController {
             System.out.println("Errore lettura json: " + message);
         }
     }
-
 
     private static void actionNewMessage(Activity chatActivity, JSONObject response) throws JSONException {
         if (response.getString("status").equals(Response.OK.name())) {
@@ -82,6 +83,11 @@ public class ChatController {
     private static void actionWaitingUsers(JSONObject response) throws JSONException {
         JSONArray waitingArray = response.getJSONArray("waiting");
         getWaitingUsersChatRooms(waitingArray);
+    }
+
+    private static void actionAcceptRequest(Activity activity,JSONObject response) throws JSONException {
+        String message = response.getString("message");
+        activity.runOnUiThread(() -> Toast.makeText(activity, message, Toast.LENGTH_SHORT).show());
     }
 
     private static void actionGetRooms(JSONObject response) throws JSONException {
@@ -180,6 +186,18 @@ public class ChatController {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("action", Response.OPEN_ROOM.name());
+            jsonObject.put("chat_room_id", chat_room_id);
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        }
+        return jsonObject.toString();
+    }
+
+    public static String getAcceptRequest(int user_id, int chat_room_id) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", Response.ACCEPT_REQUEST.name());
+            jsonObject.put("user_id", user_id);
             jsonObject.put("chat_room_id", chat_room_id);
         } catch (JSONException e) {
             System.err.println(e.getMessage());
