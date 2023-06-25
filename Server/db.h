@@ -25,5 +25,4 @@ int updateRoom(const char *chat_room_owner, const char *chat_room_name, const ch
 int deleteRoom(const char *chat_room_id, json_object *response);
 int getRooms(const int fd, const int user_id, json_object *response);
 
-
 #endif

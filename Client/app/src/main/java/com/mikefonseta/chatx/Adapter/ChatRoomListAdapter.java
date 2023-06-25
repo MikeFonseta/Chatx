@@ -50,11 +50,6 @@ public class ChatRoomListAdapter extends RecyclerView.Adapter<ChatRoomListAdapte
         return chatRoomList.get(position);
     }
 
-    public void renameRoom(int position, String new_name) {
-        chatRoomList.get(position).setChat_room_name(new_name);
-        notifyItemChanged(position);
-    }
-
     public void remove(int position) {
         chatRoomList.remove(position);
         notifyItemRemoved(position);

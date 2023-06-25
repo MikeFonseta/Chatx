@@ -75,7 +75,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class SentMessageViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView message;
+        public final TextView message;
 
         public SentMessageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,8 +85,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView sender;
-        public TextView message;
+        public final TextView sender;
+        public final TextView message;
 
         public ReceivedMessageViewHolder(@NonNull View itemView) {
             super(itemView);

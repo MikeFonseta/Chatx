@@ -4,7 +4,7 @@
 PGconn *getConnection()
 {
         PGconn *conn;
-        conn = PQconnectdb("dbname=chatx host=localhost user=giusi password=admin");
+        conn = PQconnectdb("dbname=chatx host=localhost user=mike password=admin");
         if (PQstatus(conn) == CONNECTION_BAD)
         {
                 fprintf(stderr, "Unable to connect to the database: %s\n", PQerrorMessage(conn));
@@ -35,7 +35,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
                 json_object_object_get_ex(request, "password", &password);
                 return registerUser(json_object_get_string(username), json_object_get_string(password), response);
         }
-	if (strcmp(json_object_get_string(action), "SEND_MESSAGE") == 0)
+        if (strcmp(json_object_get_string(action), "SEND_MESSAGE") == 0)
         {
                 json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
                 json_object_object_get_ex(request, "message", &message);
@@ -56,9 +56,9 @@ int evaluate_action(int fd, json_object *request, json_object *response)
         if (strcmp(json_object_get_string(action), "GET_WAITING_USERS") == 0)
         {
                 json_object_object_get_ex(request, "user_id", &user_id);
-                return waitingUsers(json_object_get_int(user_id),response);
+                return waitingUsers(json_object_get_int(user_id), response);
         }
-	if (strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0)
+        if (strcmp(json_object_get_string(action), "ACCEPT_REQUEST") == 0)
         {
                 json_object_object_get_ex(request, "user_id", &user_id);
                 json_object_object_get_ex(request, "chat_room_id", &chat_room_id);
@@ -94,7 +94,7 @@ int evaluate_action(int fd, json_object *request, json_object *response)
                 return getRooms(fd, json_object_get_int(user_id), response);
         }
         if (strcmp(json_object_get_string(action), "LOGOUT") == 0)
-	{
+        {
                 logout(fd);
         }
         json_object_put(request);
@@ -297,42 +297,41 @@ int waitingUsers(const int user_id, json_object *response)
         char char_id[10];
         sprintf(char_id, "%d", user_id);
         char *PGstatement = "select user_account.user_id, request.chat_room_id, request.chat_room_name, user_account.username "
-                        "from (join_requests INNER JOIN chat_room ON chat_room=chat_room_id)as REQUEST INNER JOIN user_account ON REQUEST.user_id=user_account.user_id "
-                        "where accepted='false' and room_owner= $1::INTEGER";
+                            "from (join_requests INNER JOIN chat_room ON chat_room=chat_room_id)as REQUEST INNER JOIN user_account ON REQUEST.user_id=user_account.user_id "
+                            "where accepted='false' and room_owner= $1::INTEGER";
         const char *paramValues[1] = {(const char *)char_id};
         PGconn *conn = getConnection();
         PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
 
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
                 printf("%s\n", PQresultErrorMessage(res));
-                else
+        else
         {
-            rows = PQntuples(res);
-            if (rows == 0)
+                rows = PQntuples(res);
+                if (rows == 0)
                 {
                         json_object_object_add(response, "status", json_object_new_string("FAILED"));
                         json_object_object_add(response, "message", json_object_new_string("Non ci sono utenti in attesa"));
                 }
                 else
                 {
-            for (int i = 0; i < rows; i++)
-            {
-                json_object *obj = json_object_new_object();
+                        for (int i = 0; i < rows; i++)
+                        {
+                                json_object *obj = json_object_new_object();
 
-                char_converted = strtol(PQgetvalue(res, i, 0), NULL, 10);
-                json_object_object_add(obj, "user_id", json_object_new_int64(char_converted));
+                                char_converted = strtol(PQgetvalue(res, i, 0), NULL, 10);
+                                json_object_object_add(obj, "user_id", json_object_new_int64(char_converted));
 
-                char_converted = strtol(PQgetvalue(res, i, 1), NULL, 10);
-                json_object_object_add(obj, "chat_room_id", json_object_new_int64(char_converted));
+                                char_converted = strtol(PQgetvalue(res, i, 1), NULL, 10);
+                                json_object_object_add(obj, "chat_room_id", json_object_new_int64(char_converted));
 
-                char_converted = strtol(PQgetvalue(res, i, 2), NULL, 10);
-                json_object_object_add(obj, "chat_room_name", json_object_new_string(PQgetvalue(res, i, 2)));
+                                char_converted = strtol(PQgetvalue(res, i, 2), NULL, 10);
+                                json_object_object_add(obj, "chat_room_name", json_object_new_string(PQgetvalue(res, i, 2)));
 
-                char_converted = strtol(PQgetvalue(res, i, 3), NULL, 10);
-                json_object_object_add(obj, "username", json_object_new_string(PQgetvalue(res, i, 3)));
-                json_object_array_add(waiting, obj);
-            }
-
+                                char_converted = strtol(PQgetvalue(res, i, 3), NULL, 10);
+                                json_object_object_add(obj, "username", json_object_new_string(PQgetvalue(res, i, 3)));
+                                json_object_array_add(waiting, obj);
+                        }
                 }
         }
         PQclear(res);
@@ -364,7 +363,6 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
         PQfinish(conn);
         return USER;
 }
-
 
 int removeUser(const int user_id, const int chat_room_id, json_object *response)
 {
@@ -475,8 +473,8 @@ int getRooms(int fd, const int user_id, json_object *response)
         char char_id[10];
         sprintf(char_id, "%d", user_id);
         char *PGstatement = "SELECT C.CHAT_ROOM_ID, C.CHAT_ROOM_NAME, C.ROOM_OWNER, U.username, J.ACCEPTED FROM CHAT_ROOM C "
-                                                "LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM, "
-                                                "USER_ACCOUNT U WHERE C.ROOM_OWNER = U.USER_ID";
+                            "LEFT JOIN (SELECT * FROM JOIN_REQUESTS WHERE JOIN_REQUESTS.USER_ID = $1::INTEGER) J ON C.CHAT_ROOM_ID = J.CHAT_ROOM, "
+                            "USER_ACCOUNT U WHERE C.ROOM_OWNER = U.USER_ID";
         const char *paramValues[1] = {(const char *)char_id};
         PGconn *conn = getConnection();
         PGresult *res = PQexecParams(conn, PGstatement, 1, NULL, paramValues, NULL, NULL, 0);
@@ -510,7 +508,7 @@ int getRooms(int fd, const int user_id, json_object *response)
                                         json_object_array_add(waiting, obj);
                         }
                 }
-		for (int i = 0; i < json_object_array_length(accepted); ++i)
+                for (int i = 0; i < json_object_array_length(accepted); ++i)
                 {
                         found = 0;
                         json_object *chat_room_id, *array;
@@ -532,7 +530,3 @@ int getRooms(int fd, const int user_id, json_object *response)
         PQfinish(conn);
         return USER;
 }
-
-                            
-
-	

@@ -23,10 +23,6 @@ public class Message {
         this.sender = sender;
     }
 
-    public int getChat() {
-        return chat;
-    }
-
     public void setChat(int chat) {
         this.chat = chat;
     }

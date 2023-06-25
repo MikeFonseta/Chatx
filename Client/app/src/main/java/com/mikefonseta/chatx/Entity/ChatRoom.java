@@ -2,7 +2,7 @@ package com.mikefonseta.chatx.Entity;
 
 public class ChatRoom {
 
-    private int chat_room_id;
+    private final int chat_room_id;
     private String chat_room_name;
     private int room_owner;
     private int user_id_waiting;

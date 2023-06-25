@@ -18,7 +18,7 @@
         android:layout_marginBottom="0dp"
         android:background="@drawable/button_style_background"
         android:gravity="center"
-        android:text="NOME STANZA"
+        android:text="@string/room_name"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -34,8 +34,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="209dp"
         android:layout_marginBottom="47dp"
-        android:gravity="center|right"
-        android:text="USERNAME"
+        android:gravity="center|end"
+        android:text="@string/username"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -51,7 +51,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="39dp"
         android:layout_marginBottom="47dp"
-        android:gravity="center|left"
+        android:gravity="center|start"
         android:text="vuole accedere a:"
         android:textColor="@color/white"
         android:textSize="20sp" />

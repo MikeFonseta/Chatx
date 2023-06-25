@@ -14,8 +14,7 @@
 
     <string name="title_activity_UtentiAttesa">Utenti In Attesa</string>
 
-    <string name="title_activity_Profilo">Profilo</string>
-    <string name="text_profilo">Profilo</string>
+    <string name="profile">Profilo</string>
 
     <string name="no_input">Questo campo non può essere vuoto</string>
     <string name="label_room_name">Nome stanza</string>
@@ -32,4 +31,5 @@
     <string name="leave_room">Abbandona stanza</string>
     <string name="menu">menu</string>
     <string name="logout">Esci</string>
+    <string name="room_name">NOME STANZA</string>
 </resources>

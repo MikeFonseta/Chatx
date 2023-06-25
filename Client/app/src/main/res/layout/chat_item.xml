@@ -17,7 +17,7 @@
         android:layout_marginEnd="8dp"
         android:background="@drawable/button_style_background"
         android:gravity="center"
-        android:text="NOME STANZA"
+        android:text="@string/room_name"
         android:textColor="@color/white"
         android:textSize="27sp" />
 </RelativeLayout>

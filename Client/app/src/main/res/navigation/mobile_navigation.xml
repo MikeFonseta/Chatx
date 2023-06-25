@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/navigation_profilo"
         android:name="com.mikefonseta.chatx.Fragment.ProfileFragment"
-        android:label="@string/title_activity_Profilo"
+        android:label="@string/profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
