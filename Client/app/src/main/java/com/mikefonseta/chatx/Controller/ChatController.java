@@ -65,6 +65,9 @@ public class ChatController {
 
     private static void actionDeleteRoom(Activity activity, JSONObject response) throws JSONException {
         if (activity instanceof ChatActivity) {
+            int chat_room_id = response.getInt("chat_room_id");
+            acceptedChatRooms.removeIf(chatRoom -> chatRoom.getChat_room_id() == chat_room_id);
+            otherChatRooms.removeIf(chatRoom -> chatRoom.getChat_room_id() == chat_room_id);
             ChatActivity chatActivity = (ChatActivity) activity;
             chatActivity.runOnUiThread(() -> chatActivity.showError("Non fai più parte di questa stanza"));
         }
@@ -107,20 +110,24 @@ public class ChatController {
     }
 
     private static void actionOpenRoom(Activity activity, JSONObject response) throws JSONException {
-        if (response.getString("status").equals(Response.OK.name())) {
-            JSONArray array = response.getJSONArray("message_list");
-            messages.clear();
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject data = array.getJSONObject(i);
-                String sender = data.getString("sender");
-                int chat = data.getInt("chat");
-                String message_content = data.getString("message_content");
-                Message message = new Message(sender, chat, message_content);
-                messages.add(message);
+        if (activity instanceof ChatActivity) {
+            ChatActivity chatActivity = (ChatActivity) activity;
+            if (response.getString("status").equals(Response.OK.name())) {
+                JSONArray array = response.getJSONArray("message_list");
+                messages.clear();
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject data = array.getJSONObject(i);
+                    String sender = data.getString("sender");
+                    int chat = data.getInt("chat");
+                    String message_content = data.getString("message_content");
+                    Message message = new Message(sender, chat, message_content);
+                    messages.add(message);
+                }
+                chatActivity.runOnUiThread(chatActivity::setUI);
+            } else {
+                String message = response.getString("message");
+                chatActivity.runOnUiThread(() -> chatActivity.showError(message));
             }
-            ((ChatActivity) activity).setUI();
-        } else {
-            ((ChatActivity) activity).showError(response.getString("message"));
         }
     }
 

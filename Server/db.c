@@ -314,13 +314,14 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
 	sprintf(sql, "DELETE FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
 	PGresult *res = PQexec(conn, sql);
 
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		printf("%s\n", PQresultErrorMessage(res));
-	else
-	{
-		rows = PQntuples(res);
-		json_object_object_add(response, "action", json_object_new_string("DELETE"));
-	}
+        if (PQresultStatus(res) != PGRES_COMMAND_OK)
+                printf("%s\n", PQresultErrorMessage(res));
+        else
+        {
+                rows = PQntuples(res);
+                json_object_object_add(response, "action", json_object_new_string("DELETE"));
+                json_object_object_add(response, "chat_room_id", json_object_new_int(atoi(chat_room_id)));
+        }
 
 	PQclear(res);
 	PQfinish(conn);
