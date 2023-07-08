@@ -43,7 +43,7 @@ public class ChatController {
             } else if (action.equals(Response.UPDATE.name())) {
                 actionUpdateRoom(activity, response);
             } else if (action.equals(Response.DELETE.name())) {
-                actionDeleteRoom(activity);
+                actionDeleteRoom(activity, response);
             }
         } catch (JSONException e) {
             System.out.println("Errore lettura json: " + message);
@@ -69,7 +69,7 @@ public class ChatController {
         }
     }
 
-    private static void actionDeleteRoom(Activity activity) {
+    private static void actionDeleteRoom(Activity activity, JSONObject response) throws JSONException {
         if (activity instanceof ChatActivity) {
             int chat_room_id = response.getInt("chat_room_id");
             acceptedChatRooms.removeIf(chatRoom -> chatRoom.getChat_room_id() == chat_room_id);
