@@ -13,30 +13,24 @@ import com.mikefonseta.chatx.R;
 
 import java.util.List;
 
-public class ChatRoomListAdapter extends RecyclerView.Adapter<ChatRoomListAdapter.ChatRoomViewHolder> {
+public class WaitingUserListAdapter extends RecyclerView.Adapter<WaitingUserListAdapter.WaitingUserViewHolder> {
 
-    private final int tab;
     private final List<ChatRoom> chatRoomList;
 
-    public ChatRoomListAdapter(List<ChatRoom> rooms, int tab) {
-        this.chatRoomList = rooms;
-        this.tab = tab;
-    }
-
-    public int getTab() {
-        return tab;
+    public WaitingUserListAdapter(List<ChatRoom> chatRoomList) {
+        this.chatRoomList = chatRoomList;
     }
 
     @NonNull
     @Override
-    public ChatRoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public WaitingUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.chat_item, parent, false);
-        return new ChatRoomViewHolder(view);
+        View view = inflater.inflate(R.layout.waiting_item, parent, false);
+        return new WaitingUserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatRoomViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull WaitingUserViewHolder holder, int position) {
         ChatRoom chatRoom = chatRoomList.get(position);
         holder.bind(chatRoom);
     }
@@ -55,17 +49,21 @@ public class ChatRoomListAdapter extends RecyclerView.Adapter<ChatRoomListAdapte
         notifyItemRemoved(position);
     }
 
-    public static class ChatRoomViewHolder extends RecyclerView.ViewHolder {
+    public static class WaitingUserViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView chat_room_name;
+        private final TextView username;
 
-        public ChatRoomViewHolder(@NonNull View itemView) {
+        public WaitingUserViewHolder(View itemView) {
             super(itemView);
-            chat_room_name = itemView.findViewById(R.id.chat_room_name);
+            chat_room_name = itemView.findViewById(R.id.chat_room_name_waiting);
+            username = itemView.findViewById(R.id.waiting_user);
         }
 
         public void bind(ChatRoom chatRoom) {
             chat_room_name.setText(chatRoom.getChat_room_name());
+            username.setText(chatRoom.getUsername_waiting());
         }
+
     }
 }

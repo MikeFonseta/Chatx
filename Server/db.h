@@ -16,6 +16,7 @@ int logout(int fd);
 
 int getMessage(const int chat_room_id, json_object *response);
 int joinRoom(const int user_id, const int chat_room_id, json_object *response);
+int waitingUsers(const int user_id, json_object *response);
 int sendMessage(const char *char_room_id, const char *from, const char *message, json_object *response);
 int acceptRequest(const int user_id, const int chat_room_id, json_object *response);
 int removeUser(const int user_id, const int chat_room_id, json_object *response);

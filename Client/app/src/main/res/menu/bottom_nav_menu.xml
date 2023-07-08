@@ -20,6 +20,6 @@
     <item
         android:id="@+id/navigation_profilo"
         android:icon="@drawable/ic_profilo_24"
-        android:title="@string/title_activity_Profilo" />
+        android:title="@string/profile" />
 
 </menu>
