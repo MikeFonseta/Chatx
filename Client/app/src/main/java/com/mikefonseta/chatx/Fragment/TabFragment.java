@@ -79,6 +79,12 @@ public class TabFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUi();
+    }
+
     public void setUi() {
         switch (position) {
             case 0:
@@ -104,4 +110,5 @@ public class TabFragment extends Fragment {
         intent.putExtras(bundle);
         startActivity(intent);
     }
+
 }
