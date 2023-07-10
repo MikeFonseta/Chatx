@@ -44,7 +44,7 @@ public class ChatActivity extends AppCompatActivity {
         Controller.setCurrentActivity(this);
         ConnectionHandler.getInstance().doRequest(ChatController.getMessageRequest(room_id));
 
-        dialogView = getLayoutInflater().inflate(R.layout.edit_room, null);
+        dialogView =  View.inflate(this, R.layout.edit_room,null);
         textInputLayout = dialogView.findViewById(R.id.room_input_layout);
 
         messageRecycler = findViewById(R.id.message_recycler_view);
