@@ -366,11 +366,11 @@ int acceptRequest(const int user_id, const int chat_room_id, json_object *respon
 
 int removeUser(const int user_id, const int chat_room_id, json_object *response)
 {
-	int rows = 0;
-	PGconn *conn = getConnection();
-	char sql[256];
-	sprintf(sql, "DELETE FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
-	PGresult *res = PQexec(conn, sql);
+        int rows = 0;
+        PGconn *conn = getConnection();
+        char sql[256];
+        sprintf(sql, "DELETE FROM join_requests WHERE join_requests.user_id = %d AND join_requests.chat_room = %d", user_id, chat_room_id);
+        PGresult *res = PQexec(conn, sql);
 
         if (PQresultStatus(res) != PGRES_COMMAND_OK)
                 printf("%s\n", PQresultErrorMessage(res));
@@ -378,12 +378,12 @@ int removeUser(const int user_id, const int chat_room_id, json_object *response)
         {
                 rows = PQntuples(res);
                 json_object_object_add(response, "action", json_object_new_string("DELETE"));
-                json_object_object_add(response, "chat_room_id", json_object_new_int(atoi(chat_room_id)));
+                json_object_object_add(response, "chat_room_id", json_object_new_int(chat_room_id));
         }
 
-	PQclear(res);
-	PQfinish(conn);
-	return USER;
+        PQclear(res);
+        PQfinish(conn);
+        return USER;
 }
 
 int createRoom(const int fd, const int room_owner_id, const char *chat_room_name, json_object *response)
@@ -398,12 +398,17 @@ int createRoom(const int fd, const int room_owner_id, const char *chat_room_name
         PGresult *res = PQexecParams(conn, PGstatement, 2, NULL, paramValues, NULL, NULL, 0);
 
         if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
                 printf("%s\n", PQresultErrorMessage(res));
+                json_object_object_add(response, "action", json_object_new_string("CREATE"));
+                json_object_object_add(response, "status", json_object_new_string("FAILED"));
+        }
         else
         {
                 rows = PQntuples(res);
                 char_converted = strtol(PQgetvalue(res, 0, 0), NULL, 10);
                 json_object_object_add(response, "action", json_object_new_string("CREATE"));
+                json_object_object_add(response, "status", json_object_new_string("OK"));
                 json_object_object_add(response, "chat_room_id", json_object_new_int64(char_converted));
                 json_object_object_add(response, "chat_room_name", json_object_new_string(chat_room_name));
                 json_object_object_add(response, "room_owner_id", json_object_new_int64(room_owner_id));

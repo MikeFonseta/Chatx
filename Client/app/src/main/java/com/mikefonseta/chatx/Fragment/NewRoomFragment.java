@@ -31,7 +31,7 @@ public class NewRoomFragment extends Fragment {
         TextInputLayout roomInputLayout = view.findViewById(R.id.room_text_layout);
         TextInputEditText roomEditText = view.findViewById(R.id.room_edit_text);
         Button button = view.findViewById(R.id.new_room_button);
-        button.setOnClickListener(view1 -> {
+        button.setOnClickListener(v -> {
             if (TextUtils.isEmpty(roomEditText.getText()))
                 roomInputLayout.setError("Inserisci un nome per la stanza");
             else {
@@ -40,4 +40,5 @@ public class NewRoomFragment extends Fragment {
             }
         });
     }
+
 }

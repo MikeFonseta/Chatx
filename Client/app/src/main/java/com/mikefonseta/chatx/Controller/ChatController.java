@@ -33,7 +33,7 @@ public class ChatController {
             } else if (action.equals(Response.NEW_MESSAGE.name())) {
                 actionNewMessage(activity, response);
             } else if (action.equals(Response.CREATE.name())) {
-                actionNewRoom(response);
+                actionNewRoom(activity, response);
             } else if (action.equals(Response.JOIN_ROOM.name())) {
                 actionJoinRoom(activity, response);
             } else if (action.equals(Response.GET_WAITING_USERS.name())) {
@@ -160,12 +160,16 @@ public class ChatController {
         }
     }
 
-    private static void actionNewRoom(JSONObject response) throws JSONException {
-        int chat_room_id = response.getInt("chat_room_id");
-        String chat_room_name = response.getString("chat_room_name");
-        int room_owner_id = response.getInt("room_owner_id");
-        ChatRoom chatRoom = new ChatRoom(chat_room_id, chat_room_name, room_owner_id);
-        acceptedChatRooms.add(chatRoom);
+    private static void actionNewRoom(Activity activity, JSONObject response) throws JSONException {
+        if (response.getString("status").equals(Response.OK.name())) {
+            int chat_room_id = response.getInt("chat_room_id");
+            String chat_room_name = response.getString("chat_room_name");
+            int room_owner_id = response.getInt("room_owner_id");
+            ChatRoom chatRoom = new ChatRoom(chat_room_id, chat_room_name, room_owner_id);
+            acceptedChatRooms.add(chatRoom);
+            activity.runOnUiThread(() -> Toast.makeText(activity, "Stanza creata con successo", Toast.LENGTH_SHORT).show());
+        } else
+            activity.runOnUiThread(() -> Toast.makeText(activity, "Errore! Stanza non creata", Toast.LENGTH_SHORT).show());
     }
 
     public static String getRoomsRequest(int user_id) {
